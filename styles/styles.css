@@ -2,7 +2,7 @@
     font-family: Pixel1;
     src: url(PearSoda.ttf)
 }
-@font-face {
-    font-family: Pixel2;
-    src: url(KiwiSoda.ttf);
+
+body {
+    font-family: Pixel1;
 }
