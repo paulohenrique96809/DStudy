@@ -9,18 +9,18 @@ body {
 
 ul {
     list-style: none;
-    width: 130px;
+    width: 140px;
     height: 100%;
     background-color: #f1f1f1;
     position: fixed;
     overflow: auto;
-    font-size: 150%;
+    font-size: 140%;
 }
 
 li a {
     display: block;
     color: black;
-    padding: 8px 16px;
+    padding: 8px 14px;
     text-decoration: none;
 }
 
@@ -30,7 +30,7 @@ li a:hover {
 }
 
 .icon {
-    width: 40%;
+    width: 30%;
     height: 20%;
     float: left;
 }
