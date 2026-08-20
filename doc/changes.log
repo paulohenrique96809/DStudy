@@ -1,12 +1,54 @@
-30/04/2026 - Definição da paleta de cores
-	   - Criação da documentação
-	   - Concept art da logo
+30/04/2026 *Paulodev* - Definição da paleta de cores
+	- Criação da documentação
+	- Concept art da logo
 
-31/04/2026 - Esboço da logo
-	   - Conceituação do banco de dados
+31/04/2026 *Paulodev* - Esboço da logo
+	- Conceituação do banco de dados
 
-02/05/2026 - Simplificaçao da logo
+02/05/2026 *Paulodev* - Simplificação da logo
 
-05/05/2026 - Criação do repositório
-	   - Criação dos arquivos básicos locais
+05/05/2026 *Paulodev* - Criação do repositório
+	- Criação dos arquivos básicos locais
 
+06/05/2026 *Paulodev* - Adição da imagem da logo
+	- Criação de pasta para documentação e mudanças.
+
+07/05/2026 *Paulodev* - Adição de fontes personalizadas
+	- Teste de fonte
+
+12/05/2026 *Paulodev* - Criação do arquivo das páginas
+	- Teste de adição de um menu vertical
+
+15/05/2026 *Paulodev* - Criação de páginas para o menu vertical
+	- HTML base para páginas do menu vertical.
+	- Teste do menu vertical.
+
+06/08/2026 *Paulodev* - Atualização do arquivo README.md
+	- Mesclagem da branch paulodev
+	- Adição da logo
+	- Adição da fonte personalizada PearSoda
+	- Criação do arquivo base das páginas principais:
+		-apoia.html
+		-cadastro.html
+		-configurações.html
+		-login.html
+		-perfil.html
+		-sobre.html
+		-study.html
+
+06/08/2026 *Yasdev* - Criação da página no Figma
+
+17/08/2026 *Yasdev* - Adição de ícones, menu e matérias
+
+18/08/2026 *Paulodev* - Renomeação do arquivo scripts.js para main.js.
+	- Criação do arquivo api.js
+	- Criação da variável API_BASE_URL para quando o flask estiver rodando no arquivo api.js.
+	- Adição de uma função para fazer requisições HTTP no arquivo api.js.
+
+20/08/2026 *Paulodev* - Primeiro passo do código api.js
+	- Adição da função apiRequest
+	- Adição da função para requisições GET
+	- Adição da função para requisições PUT
+	- Adição da função para requisições DELETE
+
+20/08/2026 *Yasdev* - Atualização da página principal 
