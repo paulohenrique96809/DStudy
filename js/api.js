@@ -67,3 +67,62 @@ export async function apiRequest(endpoint, options = {}) {
     }
 }
 
+/**
+ * Função conveniente para requisições GET
+ * 
+ * @param {string} endpoint - O caminho da API
+ * @returns {Promise} - Retorna os dados da resposta
+ * 
+ * Exemplo: const materias = await get('/materias');
+ */
+export async function get(endpoint) {
+    return apiRequest(endpoint, { method: 'GET' });
+}
+
+/**
+ * Função conveniente para requisições POST
+ * 
+ * @param {string} endpoint - O caminho da API
+ * @param {object} data - Os dados a serem enviados no corpo da requisição
+ * @returns {Promise} - Retorna os dados da resposta
+ * 
+ * Exemplo: const resultado = await post('/flashcards/responder', { flashcardId: 1, acertou: true });
+ */
+export async function post(endpoint, data) {
+    return apiRequest(endpoint, {
+        method: 'POST',
+        body: data
+    });
+}
+
+/**
+ * Função conveniente para requisições PUT
+ * 
+ * @param {string} endpoint - O caminho da API
+ * @param {object} data - Os dados a serem enviados no corpo da requisição
+ * @returns {Promise} - Retorna os dados da resposta
+ */
+export async function put(endpoint, data) {
+    return apiRequest(endpoint, {
+        method: 'PUT',
+        body: data
+    });
+}
+
+/**
+ * Função conveniente para requisições DELETE
+ * 
+ * @param {string} endpoint - O caminho da API
+ * @returns {Promise} - Retorna null em caso de sucesso
+ */
+export async function del(endpoint) {
+    return apiRequest(endpoint, { method: 'DELETE' });
+}
+
+// Para testes iniciais sem servidor, podemos simular dados
+// Isso será removido quando o Flask estiver pronto
+export function simularResposta(dados) {
+    console.log('🔵 [MODO TESTE] Dados simulados:', dados);
+    return dados;
+}
+
