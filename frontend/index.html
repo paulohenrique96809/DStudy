@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/styles.css"
+    <title>FlashStudy - P01</title>
+</head>
+<body>
+    <div class="container">
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <h1>📚 FlashStudy</h1>
+            <p>Sistema de estudos com flashcards - TCC</p>
+            <span class="badge">P01 - Preparação do JavaScript</span>
+        </header>
+
+        <!-- ===== STATUS ===== -->
+        <div id="app-status">
+            ⏳ Inicializando aplicação...
+        </div>
+
+        <!-- ===== AÇÕES ===== -->
+        <div class="action-card">
+            <h2>🧪 Testes</h2>
+            <div class="actions">
+                <button class="btn btn-primary" id="btn-teste">
+                    Testar API
+                </button>
+                <button class="btn btn-success" id="btn-materias">
+                    Carregar Matérias
+                </button>
+                <button class="btn btn-outline" onclick="console.clear(); console.log('🧹 Console limpo!')">
+                    Limpar Console
+                </button>
+            </div>
+            <p style="margin-top: 12px; font-size: 13px; color: #666;">
+                💡 Abra o console (F12) para ver os logs da aplicação
+            </p>
+        </div>
+
+        <!-- ===== MATÉRIAS ===== -->
+        <div class="action-card">
+            <h2>📚 Matérias</h2>
+            <div id="materias-container">
+                <p style="color: #666; text-align: center; padding: 20px;">
+                    Clique em "Carregar Matérias" para ver a lista
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 13px; border-top: 1px solid #ddd; padding-top: 20px;">
+            <p>
+                Desenvolvido por Paulo - TCC Desenvolvimento de Sistemas
+                <br>
+                Pipeline: P01 ✅ | Próximo: P02 - Arquitetura dos módulos
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== CARREGA O JAVASCRIPT COMO MÓDULO ===== -->
+    <script type="module">
+        // Importa a aplicação principal
+        import app from './js/main.js';
+        
+        // Torna a aplicação acessível globalmente
+        window.app = app;
+        
+        console.log('✅ Módulo principal carregado!');
+        console.log('💡 Digite "app" no console para interagir');
+        console.log('💡 Exemplos:');
+        console.log('  await app.carregarMaterias()');
+        console.log('  await app.selecionarMateria(1)');
+        console.log('  await app.testarConexao()');
+    </script>
+</body>
+</html>

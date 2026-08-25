@@ -1,15 +1,27 @@
 // frontend/js/main.js
 
-// Importa as funções da API
-import { get, post, simularResposta } from './api.js';
+/**
+ * MAIN - Ponto de entrada da aplicação
+ * 
+ * Responsabilidades:
+ * - Inicializar a aplicação quando a página carrega
+ * - Gerenciar o estado global (usuário, matérias, etc.)
+ * - Coordenar a navegação entre telas
+ * 
+ * Por enquanto, apenas testa se a estrutura está funcionando
+ */
+
+// Importa funções da API
+import { 
+    get, 
+    post, 
+    getSimulado,
+    dadosSimulados 
+} from './api.js';
 
 /**
- * Classe principal que gerencia a aplicação
- * 
- * O que ela faz:
- * - Inicializa a aplicação quando a página carrega
- * - Gerencia a navegação entre as telas
- * - Mantém o estado da aplicação (ex: usuário logado)
+ * Classe principal da aplicação
+ * Tudo começa aqui
  */
 class App {
     constructor() {
@@ -24,207 +36,205 @@ class App {
 
     /**
      * Método de inicialização
-     * - Configura event listeners
+     * - Configura listeners
      * - Carrega dados iniciais
+     * - Mostra status no console
      */
     async init() {
-        console.log('🚀 Aplicação iniciada!');
+        console.log('🚀 ===== APLICAÇÃO INICIADA =====');
+        console.log('📅', new Date().toLocaleString());
+        console.log('📦 Versão: P01 - Preparação do JavaScript');
         
         // Configura os eventos da página
         this.setupEventListeners();
         
-        // Carrega as matérias (exemplo)
+        // Testa a API simulada
+        await this.testarConexao();
+        
+        // Carrega as matérias (simulado)
         await this.carregarMaterias();
         
-        // Exibe um feedback visual de que está funcionando
-        this.mostrarStatusInicial();
+        // Mostra status na tela
+        this.mostrarStatus('✅ JavaScript carregado com sucesso!', 'success');
+        
+        console.log('💡 Dica: Digite "app" no console para acessar a aplicação');
+        console.log('💡 Exemplo: await app.carregarMaterias()');
+        console.log('💡 Exemplo: await app.testarConexao()');
+        console.log('🏁 ===== APLICAÇÃO PRONTA =====');
     }
 
     /**
      * Configura os listeners de eventos da página
-     * Exemplo: cliques em botões, submit de formulários
      */
     setupEventListeners() {
-        // Exemplo: quando o DOM estiver carregado, podemos adicionar listeners
+        // Aguarda o DOM carregar
         document.addEventListener('DOMContentLoaded', () => {
             console.log('📄 DOM carregado!');
             
-            // Exemplo: botão de teste
+            // Botão de teste
             const btnTeste = document.getElementById('btn-teste');
             if (btnTeste) {
                 btnTeste.addEventListener('click', () => {
-                    this.testarAPI();
+                    this.testarConexao();
+                });
+            }
+            
+            // Botão para carregar matérias
+            const btnMaterias = document.getElementById('btn-materias');
+            if (btnMaterias) {
+                btnMaterias.addEventListener('click', () => {
+                    this.carregarMaterias();
                 });
             }
         });
     }
 
     /**
-     * Carrega a lista de matérias da API
-     * 
-     * Quando o Flask estiver pronto, isso vai buscar dados reais
-     * Por enquanto, usamos dados simulados para testes
+     * Testa a conexão com a API
+     * Tenta usar a API real, se falhar, usa a simulação
+     */
+    async testarConexao() {
+        console.log('🧪 Testando conexão com a API...');
+        
+        try {
+            // Tenta fazer uma requisição real
+            // const resultado = await get('/materias');
+            // console.log('✅ API real respondendo!', resultado);
+            
+            // Por enquanto, usamos simulação
+            console.log('🔵 Usando modo de simulação (Flask não está rodando)');
+            const materiasSimuladas = await getSimulado('/materias');
+            console.log('✅ Teste de simulação bem-sucedido!', materiasSimuladas);
+            
+            this.mostrarStatus('✅ Modo de simulação ativo. Teste concluído!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Erro no teste de conexão:', error);
+            this.mostrarStatus('❌ Erro na conexão. Verifique o console.', 'error');
+        }
+    }
+
+    /**
+     * Carrega as matérias (simulado)
      */
     async carregarMaterias() {
+        console.log('📚 Carregando matérias...');
+        
         try {
-            // Tenta buscar da API real
-            // const materias = await get('/materias');
+            // Usa dados simulados
+            const materias = await getSimulado('/materias');
+            this.materias = materias;
             
-            // Por enquanto, usamos dados simulados
-            const materiasSimuladas = [
-                { id: 1, nome: 'Back-End', descricao: 'APIs, bancos de dados e lógica de servidor' },
-                { id: 2, nome: 'Front-End', descricao: 'HTML, CSS e interatividade' },
-                { id: 3, nome: 'Mobile', descricao: 'Desenvolvimento para dispositivos móveis' },
-                { id: 4, nome: 'Inteligência Artificial', descricao: 'Machine Learning e algoritmos' },
-                { id: 5, nome: 'Lógica de Programação', descricao: 'Algoritmos e estruturas de dados' },
-                { id: 6, nome: 'Redes', descricao: 'TCP/IP, roteamento e segurança' },
-                { id: 7, nome: 'Processos', descricao: 'Metodologias e ciclos de desenvolvimento' }
-            ];
-            
-            this.materias = simularResposta(materiasSimuladas);
+            console.log('📚 Matérias carregadas:', this.materias);
             this.renderizarMaterias();
+            this.mostrarStatus(`✅ ${this.materias.length} matérias carregadas!`, 'success');
             
         } catch (error) {
             console.error('❌ Erro ao carregar matérias:', error);
-            this.mostrarErro('Não foi possível carregar as matérias.');
+            this.mostrarStatus('❌ Erro ao carregar matérias.', 'error');
         }
     }
 
     /**
-     * Renderiza as matérias no HTML
-     * Por enquanto, apenas mostra no console
-     * Depois, isso vai gerar elementos HTML dinâmicos
+     * Renderiza as matérias na tela (versão simplificada para P01)
      */
     renderizarMaterias() {
-        console.log('📚 Matérias carregadas:', this.materias);
-        
-        // Exemplo de como poderia renderizar no HTML
         const container = document.getElementById('materias-container');
-        if (container) {
-            container.innerHTML = this.materias.map(materia => `
-                <div class="materia-card" data-id="${materia.id}">
-                    <h3>${materia.nome}</h3>
-                    <p>${materia.descricao}</p>
-                    <button onclick="app.iniciarEstudo(${materia.id})">Estudar</button>
-                </div>
-            `).join('');
+        if (!container) {
+            console.warn('⚠️ Container de matérias não encontrado');
+            return;
         }
+
+        if (!this.materias || this.materias.length === 0) {
+            container.innerHTML = '<p>Nenhuma matéria encontrada.</p>';
+            return;
+        }
+
+        // Cria cards para cada matéria
+        container.innerHTML = this.materias.map(materia => `
+            <div class="materia-card" data-id="${materia.id}">
+                <h3>${materia.nome}</h3>
+                <p>${materia.descricao || 'Descrição não disponível'}</p>
+                <button onclick="app.selecionarMateria(${materia.id})">
+                    Estudar
+                </button>
+            </div>
+        `).join('');
+
+        console.log(`✅ ${this.materias.length} matérias renderizadas`);
     }
 
     /**
-     * Função de teste para verificar se a API está funcionando
-     * Exemplo de como faríamos uma requisição POST
-     */
-    async testarAPI() {
-        console.log('🧪 Testando API...');
-        
-        try {
-            // Exemplo de requisição POST (simulado)
-            const dadosTeste = {
-                flashcardId: 1,
-                acertou: true
-            };
-            
-            // Quando o Flask estiver pronto, seria:
-            // const resultado = await post('/flashcards/responder', dadosTeste);
-            
-            // Por enquanto, simulamos
-            const resultadoSimulado = {
-                success: true,
-                flashcard: {
-                    id: 1,
-                    pergunta: 'O que é uma API?',
-                    resposta: 'Interface de Programação de Aplicações'
-                },
-                status: 'acertou',
-                sequencia: 1
-            };
-            
-            const resultado = simularResposta(resultadoSimulado);
-            console.log('✅ Teste concluído:', resultado);
-            
-            alert('✅ Teste concluído! Verifique o console para ver os detalhes.');
-            
-        } catch (error) {
-            console.error('❌ Erro no teste:', error);
-            alert('❌ Erro no teste. Verifique o console.');
-        }
-    }
-
-    /**
-     * Inicia o estudo de uma matéria
+     * Seleciona uma matéria para estudo
      * @param {number} materiaId - ID da matéria
      */
-    async iniciarEstudo(materiaId) {
-        console.log(`📖 Iniciando estudo da matéria ${materiaId}`);
+    async selecionarMateria(materiaId) {
+        console.log(`📖 Selecionando matéria ${materiaId}...`);
         
         try {
-            // Quando o Flask estiver pronto:
-            // const flashcards = await get(`/materias/${materiaId}/flashcards`);
+            // Busca flashcards da matéria
+            const flashcards = await getSimulado(`/materias/${materiaId}/flashcards`);
             
-            // Por enquanto, simulamos
-            const flashcardsSimulados = [
-                { id: 1, pergunta: 'O que é REST?', resposta: 'Arquitetura para APIs' },
-                { id: 2, pergunta: 'O que é JSON?', resposta: 'Formato de dados' }
-            ];
+            if (flashcards.length === 0) {
+                this.mostrarStatus('⚠️ Esta matéria não tem flashcards ainda.', 'warning');
+                return;
+            }
             
-            const flashcards = simularResposta(flashcardsSimulados);
+            console.log(`🃏 ${flashcards.length} flashcards encontrados:`, flashcards);
             
-            // Navega para a tela de estudo
-            this.mostrarTelaEstudo(flashcards);
+            // Mostra o primeiro flashcard no console
+            this.flashcardAtual = flashcards[0];
+            console.log('📝 Primeiro flashcard:', this.flashcardAtual);
+            
+            // Feedback visual
+            this.mostrarStatus(`✅ ${flashcards.length} flashcards carregados! Pronto para estudar.`, 'success');
+            
+            // Abre um alerta com o flashcard (temporário para teste)
+            alert(`📚 Matéria selecionada!\n\nPergunta: ${this.flashcardAtual.pergunta}\nResposta: ${this.flashcardAtual.resposta}\n\n(Em breve isso será a tela de estudo)`);
             
         } catch (error) {
-            console.error('❌ Erro ao iniciar estudo:', error);
-            this.mostrarErro('Não foi possível iniciar o estudo.');
+            console.error('❌ Erro ao selecionar matéria:', error);
+            this.mostrarStatus('❌ Erro ao carregar flashcards.', 'error');
         }
     }
 
     /**
-     * Mostra a tela de estudo com os flashcards
-     * @param {array} flashcards - Lista de flashcards
+     * Mostra mensagens de status na tela
+     * @param {string} mensagem - Texto da mensagem
+     * @param {string} tipo - success, error, warning
      */
-    mostrarTelaEstudo(flashcards) {
-        // Aqui futuramente iremos renderizar a tela de estudo
-        console.log('🃏 Flashcards para estudar:', flashcards);
-        
-        // Por enquanto, apenas um alerta
-        alert(`📚 Iniciando estudo com ${flashcards.length} flashcards!`);
-    }
-
-    /**
-     * Mostra um feedback visual de que a aplicação está rodando
-     */
-    mostrarStatusInicial() {
-        console.log('✅ Aplicação pronta para uso!');
-        console.log('💡 Dica: Use app.testarAPI() para testar a comunicação');
-        
-        // Adiciona um indicador visual no HTML
+    mostrarStatus(mensagem, tipo = 'info') {
         const statusDiv = document.getElementById('app-status');
-        if (statusDiv) {
-            statusDiv.innerHTML = '✅ JavaScript carregado com sucesso!';
-            statusDiv.style.color = 'green';
-        }
-    }
-
-    /**
-     * Mostra mensagens de erro
-     * @param {string} mensagem - Mensagem de erro
-     */
-    mostrarErro(mensagem) {
-        console.error('❌', mensagem);
+        if (!statusDiv) return;
         
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.textContent = mensagem;
-            errorDiv.style.display = 'block';
+        // Cores por tipo
+        const cores = {
+            success: '#28a745',
+            error: '#dc3545',
+            warning: '#ffc107',
+            info: '#17a2b8'
+        };
+        
+        statusDiv.textContent = mensagem;
+        statusDiv.style.color = cores[tipo] || cores.info;
+        statusDiv.style.display = 'block';
+        statusDiv.style.padding = '10px';
+        statusDiv.style.borderRadius = '4px';
+        statusDiv.style.backgroundColor = '#f8f9fa';
+        statusDiv.style.border = `1px solid ${cores[tipo] || cores.info}`;
+        
+        // Se for erro, mostra no console também
+        if (tipo === 'error') {
+            console.error('❌', mensagem);
         }
     }
 }
 
 // Cria uma instância global da aplicação
-// Isso permite acessar o app de qualquer lugar (ex: onclick)
 const app = new App();
+
+// Torna a aplicação acessível globalmente para testes no console
+window.app = app;
 
 // Exporta a instância para uso em outros módulos
 export default app;
-

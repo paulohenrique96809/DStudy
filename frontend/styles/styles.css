@@ -3,8 +3,17 @@
     src: url(PearSoda.ttf)
 }
 
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
 body {
-    font-family: Pixel1;
+    font-family: Pixel1, Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
 }
 
 ul {
@@ -34,3 +43,188 @@ li a:hover {
     height: 20%;
     float: left;
 }
+        
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+        }
+        
+ .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+        }
+        
+.header p {
+    opacity: 0.9;
+    font-size: 16px;
+        }
+        
+.header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 8px;
+        }
+        
+#app-status {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    display: none;
+    font-weight: 500;
+    transition: all 0.3s;
+        }
+        
+/* ===== CARDS DE AÇÃO ===== */
+.action-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+.action-card h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 12px;
+        }
+        
+.action-card .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+        }
+        
+        /* ===== BOTÕES ===== */
+.btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+        }
+        
+.btn-primary {
+    background: #667eea;
+    color: white;
+        }
+        
+.btn-primary:hover {
+    background: #5a6fd6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+.btn-success {
+    background: #28a745;
+    color: white;
+        }
+        
+.btn-success:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
+.btn-outline {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+        }
+        
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+        }
+        
+/* ===== MATÉRIAS ===== */
+#materias-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+        }
+        
+.materia-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    border-left: 4px solid #667eea;
+        }
+        
+.materia-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+.materia-card h3 {
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 18px;
+        }
+        
+.materia-card p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+        }
+        
+.materia-card .btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+        }
+        
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 22px;
+            }
+            
+    #materias-container {
+        grid-template-columns: 1fr;
+            }
+            
+    .actions {
+        flex-direction: column;
+            }
+            
+    .actions .btn {
+        width: 100%;
+            }
+        }
+        
+        /* ===== ANIMAÇÃO DE CARREGAMENTO ===== */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+        }
+        
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+        }
