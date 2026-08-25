@@ -28,13 +28,13 @@
 	- Adição da logo
 	- Adição da fonte personalizada PearSoda
 	- Criação do arquivo base das páginas principais:
-		-apoia.html
-		-cadastro.html
-		-configurações.html
-		-login.html
-		-perfil.html
-		-sobre.html
-		-study.html
+		frontend\pages\ apoia.html
+		frontend\pages\ cadastro.html
+		frontend\pages\ configurações.html
+		frontend\pages\ login.html
+		frontend\pages\ perfil.html
+		frontend\pages\ sobre.html
+		frontend\pages\ study.html
 
 06/08/2026 *Yasdev* - Criação da página no Figma
 
@@ -54,3 +54,21 @@
 20/08/2026 *Yasdev* - Atualização da página principal
 
 24/08/2026 *Yasdev* - Atualização da Home do site.
+
+24/08/2026 *Paulodev* - Adição da função para requisições POST no arquivo api.js
+	- Adição da função para requisições PATCH no arquivo api.js
+	- Adição da função para requisições OPTIONS no arquivo api.js
+	- Adição da função para requisições HEAD no arquivo api.js
+	- Adição da função para requisições TRACE no arquivo api.js
+	- Adição da função para requisições CONNECT no arquivo api.js
+	- Adição da função para requisições customizadas no arquivo api.js
+	- Adição da função para requisições com body no arquivo api.js
+	- Adição da função para requisições com headers no arquivo api.js
+
+25/08/2026 *Paulodev* - Criação da arquitetura inicial da segunda fase da pipeline
+	- Criação do arquivo frontend\js\ estudo.js
+	- Criação do arquivo frontend\js\ materias.js
+	- Criação do arquivo frontend\js\ progresso.js
+	- Criação da pasta components
+	- Criação do arquivo frontend\js\components\ flashcard.js
+	- Criação do arquivo frontend\js\components\ progresso.js
