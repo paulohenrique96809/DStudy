@@ -72,3 +72,14 @@
 	- Criação da pasta components
 	- Criação do arquivo frontend\js\components\ flashcard.js
 	- Criação do arquivo frontend\js\components\ progresso.js
+
+26/08/2026 *Paulodev* - Arquitetura dos módulos - P02
+	- Cria módulo materias.js (listagem e seleção)
+	- Cria módulo estudo.js (sessão de estudo)
+	- Cria módulo progresso.js (progresso do usuário)
+	- Cria componente flashcard.js (renderização de flashcards)
+	- Cria componente progresso.js (componentes visuais)
+	- Atualiza main.js para coordenar os módulos
+	- Atualiza index.html com duas telas (matérias/estudo)
+	- Adiciona navegação entre telas
+	- Adiciona sistema de progresso visual
