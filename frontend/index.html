@@ -12,41 +12,42 @@
         <header class="header">
             <h1>📚 DStudy</h1>
             <p>Sistema de estudos com flashcards - TCC</p>
-            <span class="badge">P01 - Preparação do JavaScript</span>
+            <span class="badge">P02 - Arquitetura dos módulos</span>
         </header>
 
-        <!-- ===== STATUS ===== -->
-        <div id="app-status">
-            ⏳ Inicializando aplicação...
-        </div>
-
-        <!-- ===== AÇÕES ===== -->
-        <div class="action-card">
-            <h2>🧪 Testes</h2>
-            <div class="actions">
-                <button class="btn btn-primary" id="btn-teste">
-                    Testar API
-                </button>
-                <button class="btn btn-success" id="btn-materias">
-                    Carregar Matérias
-                </button>
-                <button class="btn btn-outline" onclick="console.clear(); console.log('🧹 Console limpo!')">
-                    Limpar Console
-                </button>
+       <!-- ===== TELA DE MATÉRIAS ===== -->
+        <div id="tela-materias" class="tela ativa">
+            <div class="action-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <h2 style="margin-bottom: 10px;">📚 Matérias</h2>
+                <p style="color: #666; font-size: 14px;">Selecione uma matéria para começar a estudar</p>
             </div>
-            <p style="margin-top: 12px; font-size: 13px; color: #666;">
-                💡 Abra o console (F12) para ver os logs da aplicação
-            </p>
-        </div>
-
-        <!-- ===== MATÉRIAS ===== -->
-        <div class="action-card">
-            <h2>📚 Matérias</h2>
             <div id="materias-container">
-                <p style="color: #666; text-align: center; padding: 20px;">
-                    Clique em "Carregar Matérias" para ver a lista
-                </p>
+                <p class="empty-state">Carregando matérias...</p>
             </div>
+            
+
+        <!-- ===== PROGRESSO ===== -->
+            <div id="progresso-container">
+                <p class="empty-state">Carregando progresso...</p>
+            </div>
+        </div>
+
+        <!-- ===== TELA DE ESTUDO ===== -->
+        <div id="tela-estudo" class="tela">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="btn btn-secondary" id="btn-voltar">
+                    ← Voltar
+                </button>
+                <span style="font-size: 14px; color: #666;">Estudo</span>
+            </div>
+            
+            <div id="estudo-info"></div>
+            
+            <div id="estudo-container">
+                <p class="empty-state">Selecione uma matéria para começar</p>
+            </div>
+            
+            <div id="flashcard-container"></div>
         </div>
 
         <!-- ===== FOOTER ===== -->
@@ -54,14 +55,13 @@
             <p>
                 Desenvolvido por Paulo - TCC Desenvolvimento de Sistemas
                 <br>
-                Pipeline: P01 ✅ | Próximo: P02 - Arquitetura dos módulos
+                Pipeline: P02 ✅ | Próximo: P03 - Comunicação com a API
             </p>
         </div>
     </div>
 
     <!-- ===== CARREGA O JAVASCRIPT COMO MÓDULO ===== -->
     <script type="module">
-        // Importa a aplicação principal
         import app from './js/main.js';
         
         // Torna a aplicação acessível globalmente
@@ -70,9 +70,8 @@
         console.log('✅ Módulo principal carregado!');
         console.log('💡 Digite "app" no console para interagir');
         console.log('💡 Exemplos:');
-        console.log('  await app.carregarMaterias()');
-        console.log('  await app.selecionarMateria(1)');
-        console.log('  await app.testarConexao()');
+        console.log('  await app.testarIntegracao()');
+        console.log('  app.mostrarTelaMaterias()');
     </script>
 </body>
 </html>

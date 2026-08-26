@@ -4,237 +4,180 @@
  * MAIN - Ponto de entrada da aplicação
  * 
  * Responsabilidades:
- * - Inicializar a aplicação quando a página carrega
- * - Gerenciar o estado global (usuário, matérias, etc.)
- * - Coordenar a navegação entre telas
+ * - Inicializar a aplicação
+ * - Gerenciar o roteamento entre telas
+ * - Coordenar os módulos
+ * - Gerenciar estado global
  * 
- * Por enquanto, apenas testa se a estrutura está funcionando
+ * Agora com a arquitetura completa de módulos!
  */
 
-// Importa funções da API
-import { 
-    get, 
-    post, 
-    getSimulado,
-    dadosSimulados 
-} from './api.js';
+// Importa os módulos
+import { materias } from './materias.js';
+import { estudo } from './estudo.js';
+import { progresso } from './progresso.js';
+import { flashcardComponent } from './components/flashcard.js';
+import { progressoComponent } from './components/progresso.js';
 
 /**
  * Classe principal da aplicação
- * Tudo começa aqui
  */
 class App {
     constructor() {
-        // Estado da aplicação
-        this.usuario = null;
-        this.materias = [];
-        this.flashcardAtual = null;
+        // Estado
+        this.telaAtual = 'materias';
+        this.materiaSelecionada = null;
         
-        // Inicializa quando a página carrega
+        // Inicializa
         this.init();
     }
 
     /**
-     * Método de inicialização
-     * - Configura listeners
-     * - Carrega dados iniciais
-     * - Mostra status no console
+     * Inicialização da aplicação
      */
     async init() {
         console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-        console.log('📅', new Date().toLocaleString());
-        console.log('📦 Versão: P01 - Preparação do JavaScript');
+        console.log('📦 Versão: P02 - Arquitetura dos módulos');
+        console.log('📁 Módulos carregados:');
+        console.log('  - materias.js ✅');
+        console.log('  - estudo.js ✅');
+        console.log('  - progresso.js ✅');
+        console.log('  - components/flashcard.js ✅');
+        console.log('  - components/progresso.js ✅');
         
-        // Configura os eventos da página
+        // Configura eventos
         this.setupEventListeners();
         
-        // Testa a API simulada
-        await this.testarConexao();
-        
-        // Carrega as matérias (simulado)
+        // Carrega matérias automaticamente
         await this.carregarMaterias();
         
-        // Mostra status na tela
-        this.mostrarStatus('✅ JavaScript carregado com sucesso!', 'success');
+        // Carrega progresso
+        await this.carregarProgresso();
         
-        console.log('💡 Dica: Digite "app" no console para acessar a aplicação');
-        console.log('💡 Exemplo: await app.carregarMaterias()');
-        console.log('💡 Exemplo: await app.testarConexao()');
         console.log('🏁 ===== APLICAÇÃO PRONTA =====');
+        console.log('💡 Digite "app" no console para interagir');
+        console.log('💡 Módulos disponíveis:');
+        console.log('  - app.materias');
+        console.log('  - app.estudo');
+        console.log('  - app.progresso');
     }
 
     /**
-     * Configura os listeners de eventos da página
+     * Configura os listeners de eventos
      */
     setupEventListeners() {
-        // Aguarda o DOM carregar
+        // Escuta seleção de matéria
+        document.addEventListener('materiaSelecionada', (e) => {
+            this.materiaSelecionada = e.detail.materia;
+            this.mostrarTelaEstudo();
+        });
+
+        // Botões de navegação
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 DOM carregado!');
-            
-            // Botão de teste
-            const btnTeste = document.getElementById('btn-teste');
-            if (btnTeste) {
-                btnTeste.addEventListener('click', () => {
-                    this.testarConexao();
-                });
-            }
-            
-            // Botão para carregar matérias
-            const btnMaterias = document.getElementById('btn-materias');
-            if (btnMaterias) {
-                btnMaterias.addEventListener('click', () => {
-                    this.carregarMaterias();
-                });
+            const btnVoltar = document.getElementById('btn-voltar');
+            if (btnVoltar) {
+                btnVoltar.addEventListener('click', () => this.mostrarTelaMaterias());
             }
         });
     }
 
     /**
-     * Testa a conexão com a API
-     * Tenta usar a API real, se falhar, usa a simulação
-     */
-    async testarConexao() {
-        console.log('🧪 Testando conexão com a API...');
-        
-        try {
-            // Tenta fazer uma requisição real
-            // const resultado = await get('/materias');
-            // console.log('✅ API real respondendo!', resultado);
-            
-            // Por enquanto, usamos simulação
-            console.log('🔵 Usando modo de simulação (Flask não está rodando)');
-            const materiasSimuladas = await getSimulado('/materias');
-            console.log('✅ Teste de simulação bem-sucedido!', materiasSimuladas);
-            
-            this.mostrarStatus('✅ Modo de simulação ativo. Teste concluído!', 'success');
-            
-        } catch (error) {
-            console.error('❌ Erro no teste de conexão:', error);
-            this.mostrarStatus('❌ Erro na conexão. Verifique o console.', 'error');
-        }
-    }
-
-    /**
-     * Carrega as matérias (simulado)
+     * Carrega as matérias
      */
     async carregarMaterias() {
-        console.log('📚 Carregando matérias...');
-        
         try {
-            // Usa dados simulados
-            const materias = await getSimulado('/materias');
-            this.materias = materias;
-            
-            console.log('📚 Matérias carregadas:', this.materias);
-            this.renderizarMaterias();
-            this.mostrarStatus(`✅ ${this.materias.length} matérias carregadas!`, 'success');
-            
+            await materias.carregar();
+            console.log('✅ Matérias carregadas com sucesso');
         } catch (error) {
             console.error('❌ Erro ao carregar matérias:', error);
-            this.mostrarStatus('❌ Erro ao carregar matérias.', 'error');
         }
     }
 
     /**
-     * Renderiza as matérias na tela (versão simplificada para P01)
+     * Carrega o progresso
      */
-    renderizarMaterias() {
-        const container = document.getElementById('materias-container');
-        if (!container) {
-            console.warn('⚠️ Container de matérias não encontrado');
-            return;
+    async carregarProgresso() {
+        try {
+            await progresso.carregar();
+            console.log('✅ Progresso carregado com sucesso');
+        } catch (error) {
+            console.error('❌ Erro ao carregar progresso:', error);
         }
-
-        if (!this.materias || this.materias.length === 0) {
-            container.innerHTML = '<p>Nenhuma matéria encontrada.</p>';
-            return;
-        }
-
-        // Cria cards para cada matéria
-        container.innerHTML = this.materias.map(materia => `
-            <div class="materia-card" data-id="${materia.id}">
-                <h3>${materia.nome}</h3>
-                <p>${materia.descricao || 'Descrição não disponível'}</p>
-                <button onclick="app.selecionarMateria(${materia.id})">
-                    Estudar
-                </button>
-            </div>
-        `).join('');
-
-        console.log(`✅ ${this.materias.length} matérias renderizadas`);
     }
 
     /**
-     * Seleciona uma matéria para estudo
-     * @param {number} materiaId - ID da matéria
+     * Mostra a tela de matérias
      */
-    async selecionarMateria(materiaId) {
-        console.log(`📖 Selecionando matéria ${materiaId}...`);
+    mostrarTelaMaterias() {
+        this.telaAtual = 'materias';
+        
+        document.getElementById('tela-materias').style.display = 'block';
+        document.getElementById('tela-estudo').style.display = 'none';
+        
+        // Limpa o estudo
+        estudo.mostrarMensagem('');
+        flashcardComponent.limpar();
+    }
+
+    /**
+     * Mostra a tela de estudo
+     */
+    async mostrarTelaEstudo() {
+        if (!this.materiaSelecionada) {
+            console.error('❌ Nenhuma matéria selecionada');
+            return;
+        }
+
+        this.telaAtual = 'estudo';
+        
+        document.getElementById('tela-materias').style.display = 'none';
+        document.getElementById('tela-estudo').style.display = 'block';
+        
+        // Inicia o estudo
+        await estudo.iniciar(this.materiaSelecionada);
+    }
+
+    /**
+     * Teste de integração entre módulos
+     */
+    async testarIntegracao() {
+        console.log('🧪 Testando integração entre módulos...');
         
         try {
-            // Busca flashcards da matéria
-            const flashcards = await getSimulado(`/materias/${materiaId}/flashcards`);
+            // Testa matérias
+            await materias.carregar();
+            console.log('✅ Módulo materias OK');
             
-            if (flashcards.length === 0) {
-                this.mostrarStatus('⚠️ Esta matéria não tem flashcards ainda.', 'warning');
-                return;
-            }
+            // Testa progresso
+            await progresso.carregar();
+            console.log('✅ Módulo progresso OK');
             
-            console.log(`🃏 ${flashcards.length} flashcards encontrados:`, flashcards);
+            // Testa componentes
+            const testFlashcard = {
+                id: 999,
+                pergunta: 'Teste de integração?',
+                resposta: 'Funcionando perfeitamente!'
+            };
+            flashcardComponent.renderizar(testFlashcard);
+            console.log('✅ Componente flashcard OK');
             
-            // Mostra o primeiro flashcard no console
-            this.flashcardAtual = flashcards[0];
-            console.log('📝 Primeiro flashcard:', this.flashcardAtual);
-            
-            // Feedback visual
-            this.mostrarStatus(`✅ ${flashcards.length} flashcards carregados! Pronto para estudar.`, 'success');
-            
-            // Abre um alerta com o flashcard (temporário para teste)
-            alert(`📚 Matéria selecionada!\n\nPergunta: ${this.flashcardAtual.pergunta}\nResposta: ${this.flashcardAtual.resposta}\n\n(Em breve isso será a tela de estudo)`);
+            console.log('🎉 Todos os módulos integrados com sucesso!');
             
         } catch (error) {
-            console.error('❌ Erro ao selecionar matéria:', error);
-            this.mostrarStatus('❌ Erro ao carregar flashcards.', 'error');
-        }
-    }
-
-    /**
-     * Mostra mensagens de status na tela
-     * @param {string} mensagem - Texto da mensagem
-     * @param {string} tipo - success, error, warning
-     */
-    mostrarStatus(mensagem, tipo = 'info') {
-        const statusDiv = document.getElementById('app-status');
-        if (!statusDiv) return;
-        
-        // Cores por tipo
-        const cores = {
-            success: '#28a745',
-            error: '#dc3545',
-            warning: '#ffc107',
-            info: '#17a2b8'
-        };
-        
-        statusDiv.textContent = mensagem;
-        statusDiv.style.color = cores[tipo] || cores.info;
-        statusDiv.style.display = 'block';
-        statusDiv.style.padding = '10px';
-        statusDiv.style.borderRadius = '4px';
-        statusDiv.style.backgroundColor = '#f8f9fa';
-        statusDiv.style.border = `1px solid ${cores[tipo] || cores.info}`;
-        
-        // Se for erro, mostra no console também
-        if (tipo === 'error') {
-            console.error('❌', mensagem);
+            console.error('❌ Erro no teste de integração:', error);
         }
     }
 }
 
-// Cria uma instância global da aplicação
+// Cria instância global
 const app = new App();
 
-// Torna a aplicação acessível globalmente para testes no console
+// Torna os módulos acessíveis globalmente para testes
 window.app = app;
+window.materias = materias;
+window.estudo = estudo;
+window.progresso = progresso;
+window.flashcardComponent = flashcardComponent;
+window.progressoComponent = progressoComponent;
 
-// Exporta a instância para uso em outros módulos
 export default app;
