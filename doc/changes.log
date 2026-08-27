@@ -94,3 +94,12 @@
 	- Implementa verificação de disponibilidade da API
 	- Adiciona teste completo de todas as rotas
 	- Adiciona controles na interface para alternar modos
+	- Adiciona importação de get e post no main.js
+	- Corrige erro 'get is not defined' no testarAPI()
+	- Melhora mensagens de log do teste
+	- Adiciona alerta visual de sucesso/erro
+	- Corrige extração do ID da matéria na rota /materias/:id/flashcards
+	- Adiciona validação de array na resposta
+	- Adiciona fallback para campos question/answer
+	- Adiciona método debugFlashcards() para testes
+	- Melhora logs para identificar problemas
