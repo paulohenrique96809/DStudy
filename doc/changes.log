@@ -83,3 +83,14 @@
 	- Atualiza index.html com duas telas (matérias/estudo)
 	- Adiciona navegação entre telas
 	- Adiciona sistema de progresso visual
+
+27/08/2026 *Paulodev* - Comunicação Front-End ↔ Back-End preparada - P03
+	- Implementa apiRequest() central com suporte a GET/POST/PUT/DELETE
+	- Adiciona modo de simulação para testes sem Flask
+	- Cria banco de dados simulado com matérias, flashcards e progresso
+	- Implementa fallback automático para simulação
+	- Atualiza módulos para usar a API (real ou simulada)
+	- Adiciona funções de configuração (setBaseUrl, setModoSimulacao)
+	- Implementa verificação de disponibilidade da API
+	- Adiciona teste completo de todas as rotas
+	- Adiciona controles na interface para alternar modos
