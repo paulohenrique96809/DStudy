@@ -28,26 +28,55 @@ export class FlashcardComponent {
      */
     renderizar(flashcard) {
         if (!this.container) {
-            console.warn('⚠️ Container do flashcard não encontrado');
+            console.warn('⚠️ [FLASHCARD] Container não encontrado');
+            return;
+        }
+
+        // ⭐ DEBUG: Verifica o que está chegando
+        console.log('📝 [FLASHCARD] Renderizando:', flashcard);
+
+        // ⭐ VALIDAÇÃO: Verifica se o flashcard tem os campos necessários
+        if (!flashcard) {
+            console.error('❌ [FLASHCARD] Flashcard é null ou undefined');
+            this.container.innerHTML = `
+                <div class="flashcard-error">
+                    <p>❌ Erro: Flashcard inválido</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (!flashcard.pergunta) {
+            console.error('❌ [FLASHCARD] Flashcard sem pergunta:', flashcard);
+            this.container.innerHTML = `
+                <div class="flashcard-error">
+                    <p>❌ Erro: Flashcard sem pergunta</p>
+                    <p style="font-size: 12px; color: #666;">Dados recebidos: ${JSON.stringify(flashcard)}</p>
+                </div>
+            `;
             return;
         }
 
         this.flashcard = flashcard;
         this.mostrandoResposta = false;
 
+        // ⭐ CORREÇÃO: Usa os campos corretos
+        const pergunta = flashcard.pergunta || 'Pergunta não disponível';
+        const resposta = flashcard.resposta || 'Resposta não disponível';
+
         this.container.innerHTML = `
             <div class="flashcard" id="flashcard">
                 <div class="flashcard-inner">
                     <div class="flashcard-front">
                         <div class="flashcard-label">Pergunta</div>
-                        <div class="flashcard-pergunta">${flashcard.pergunta}</div>
+                        <div class="flashcard-pergunta">${pergunta}</div>
                         <button class="btn btn-primary" id="btn-mostrar-resposta">
                             👁️ Mostrar resposta
                         </button>
                     </div>
                     <div class="flashcard-back" style="display: none;">
                         <div class="flashcard-label">Resposta</div>
-                        <div class="flashcard-resposta">${flashcard.resposta}</div>
+                        <div class="flashcard-resposta">${resposta}</div>
                         <div class="flashcard-actions">
                             <button class="btn btn-danger" id="btn-errou" disabled>
                                 ❌ Errei
@@ -65,6 +94,8 @@ export class FlashcardComponent {
         // Atualiza referências
         this.flashcardElement = document.getElementById('flashcard');
         this.feedbackElement = document.getElementById('flashcard-feedback');
+        
+        console.log('✅ [FLASHCARD] Renderizado com sucesso:', pergunta);
     }
 
     /**
@@ -75,11 +106,13 @@ export class FlashcardComponent {
         
         this.mostrandoResposta = true;
         
-        const front = this.container.querySelector('.flashcard-front');
-        const back = this.container.querySelector('.flashcard-back');
+        const front = this.container?.querySelector('.flashcard-front');
+        const back = this.container?.querySelector('.flashcard-back');
         
         if (front) front.style.display = 'none';
         if (back) back.style.display = 'block';
+        
+        console.log('👁️ [FLASHCARD] Resposta revelada');
     }
 
     /**
@@ -102,6 +135,7 @@ export class FlashcardComponent {
         `;
         
         this.feedbackElement.style.display = 'block';
+        console.log(`📝 [FLASHCARD] Feedback: ${acertou ? 'Acertou' : 'Errou'}`);
     }
 
     /**
@@ -128,6 +162,7 @@ export class FlashcardComponent {
         }
         this.flashcard = null;
         this.mostrandoResposta = false;
+        console.log('🧹 [FLASHCARD] Limpo');
     }
 }
 

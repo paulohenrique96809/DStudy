@@ -15,6 +15,28 @@
             <span class="badge">P02 - Arquitetura dos módulos</span>
         </header>
 
+        <!-- ===== CONTROLES DA API ===== -->
+<div class="action-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <h2 style="margin-bottom: 10px;">🔧 Controles da API</h2>
+    <div class="actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="app.testarAPI()">
+            🧪 Testar API
+        </button>
+        <button class="btn btn-success" onclick="app.setModoSimulacao(true); location.reload();">
+            🔵 Modo Simulação
+        </button>
+        <button class="btn btn-danger" onclick="app.setModoSimulacao(false); location.reload();">
+            🔴 Modo API Real
+        </button>
+        <button class="btn btn-secondary" onclick="console.clear(); console.log('🧹 Console limpo!')">
+            Limpar Console
+        </button>
+    </div>
+    <p style="margin-top: 12px; font-size: 13px; color: #666;">
+        💡 Modo atual: <strong id="modo-atual">${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'}</strong>
+    </p>
+</div>
+
        <!-- ===== TELA DE MATÉRIAS ===== -->
         <div id="tela-materias" class="tela ativa">
             <div class="action-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">

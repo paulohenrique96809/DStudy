@@ -15,7 +15,7 @@
  * - components/flashcard.js (para renderizar flashcards)
  */
 
-import { get, post } from './api.js';
+import { get, post, isModoSimulacao } from './api.js';
 import { flashcardComponent } from './components/flashcard.js';
 
 /**
@@ -30,46 +30,85 @@ export class Estudo {
         this.estaRespondendo = false;
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
+        this.loading = false;
     }
 
-    /**
-     * Inicia uma sessão de estudo para uma matéria
-     * @param {object} materia - Objeto da matéria
-     */
-    async iniciar(materia) {
-        this.materia = materia;
-        console.log(`📖 Iniciando estudo de: ${materia.nome}`);
+   // frontend/js/estudo.js
 
-        try {
-            // Busca flashcards da matéria
-            // Quando o Flask estiver pronto:
-            // this.flashcards = await get(`/materias/${materia.id}/flashcards`);
-            
-            // Dados simulados para teste
-            this.flashcards = [
-                { id: 1, pergunta: 'O que é uma API?', resposta: 'Interface de Programação de Aplicações' },
-                { id: 2, pergunta: 'O que é REST?', resposta: 'Arquitetura para APIs web' },
-                { id: 3, pergunta: 'O que é JSON?', resposta: 'Formato de dados leve para troca de informações' },
-                { id: 4, pergunta: 'O que é um endpoint?', resposta: 'URL onde uma API pode ser acessada' }
-            ];
+/**
+ * Inicia uma sessão de estudo para uma matéria
+ * @param {object} materia - Objeto da matéria
+ */
+async iniciar(materia) {
+    this.materia = materia;
+    this.loading = true;
+    
+    console.log(`📖 [ESTUDO] Iniciando: ${materia.nome} (${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'})`);
 
-            if (this.flashcards.length === 0) {
-                this.mostrarMensagem('⚠️ Nenhum flashcard disponível para esta matéria.');
-                return;
-            }
+    try {
+        this.mostrarLoading();
 
-            // Reinicia o estado
-            this.indiceAtual = 0;
-            this.estaRespondendo = false;
-            
-            // Mostra o primeiro flashcard
-            this.mostrarFlashcard();
-            
-        } catch (error) {
-            console.error('❌ Erro ao iniciar estudo:', error);
-            this.mostrarMensagem('❌ Erro ao carregar flashcards. Tente novamente.');
+        // ⭐ Busca flashcards da matéria
+        const endpoint = `/materias/${materia.id}/flashcards`;
+        console.log(`📡 [ESTUDO] Buscando: ${endpoint}`);
+        
+        const resposta = await get(endpoint);
+        console.log(`📦 [ESTUDO] Resposta bruta:`, resposta);
+
+        // ⭐ VALIDAÇÃO: Verifica se a resposta é um array
+        if (!Array.isArray(resposta)) {
+            console.error('❌ [ESTUDO] Resposta não é um array:', resposta);
+            this.mostrarMensagem('❌ Erro: Dados inválidos recebidos da API.');
+            this.loading = false;
+            return;
         }
+
+        // ⭐ VALIDAÇÃO: Filtra flashcards válidos
+        this.flashcards = resposta.filter(f => {
+            const valido = f && typeof f === 'object' && f.pergunta && f.resposta;
+            if (!valido) {
+                console.warn('⚠️ [ESTUDO] Flashcard inválido ignorado:', f);
+            }
+            return valido;
+        });
+
+        // ⭐ CORREÇÃO: Se não encontrou com 'pergunta', tenta com 'question'
+        if (this.flashcards.length === 0 && resposta.length > 0) {
+            console.log('🔄 [ESTUDO] Tentando converter campos (question/answer)');
+            this.flashcards = resposta
+                .filter(f => f && typeof f === 'object')
+                .map(f => ({
+                    id: f.id || f.flashcard_id || 0,
+                    pergunta: f.pergunta || f.question || f.pergunta_text || 'Pergunta não disponível',
+                    resposta: f.resposta || f.answer || f.resposta_text || 'Resposta não disponível'
+                }))
+                .filter(f => f.pergunta !== 'Pergunta não disponível');
+        }
+
+        if (this.flashcards.length === 0) {
+            console.warn('⚠️ [ESTUDO] Nenhum flashcard válido encontrado');
+            this.mostrarMensagem('⚠️ Nenhum flashcard disponível para esta matéria.');
+            this.loading = false;
+            return;
+        }
+
+        console.log(`✅ [ESTUDO] ${this.flashcards.length} flashcards carregados`);
+        console.log(`📝 [ESTUDO] Primeiro flashcard:`, this.flashcards[0]);
+
+        // Reinicia o estado
+        this.indiceAtual = 0;
+        this.estaRespondendo = false;
+        
+        // Mostra o primeiro flashcard
+        this.mostrarFlashcard();
+        this.loading = false;
+
+    } catch (error) {
+        console.error('❌ [ESTUDO] Erro ao iniciar:', error);
+        this.mostrarMensagem(`❌ Erro ao carregar flashcards: ${error.message}`);
+        this.loading = false;
     }
+}
 
     /**
      * Mostra o flashcard atual
@@ -82,6 +121,27 @@ export class Estudo {
 
         this.flashcardAtual = this.flashcards[this.indiceAtual];
         this.estaRespondendo = false;
+
+        // ⭐ DEBUG: Verifica o flashcard atual
+        console.log(`🃏 [ESTUDO] Flashcard ${this.indiceAtual + 1}/${this.flashcards.length}:`, this.flashcardAtual);
+
+        // ⭐ VALIDAÇÃO: Verifica se o flashcard tem os campos necessários
+        if (!this.flashcardAtual) {
+            console.error('❌ [ESTUDO] Flashcard atual é null/undefined');
+            this.mostrarMensagem('❌ Erro: Flashcard inválido');
+            return;
+        }
+
+        if (!this.flashcardAtual.pergunta) {
+            console.error('❌ [ESTUDO] Flashcard sem pergunta:', this.flashcardAtual);
+            // Tenta corrigir: se tiver 'question' em vez de 'pergunta'
+            if (this.flashcardAtual.question) {
+                this.flashcardAtual.pergunta = this.flashcardAtual.question;
+            }
+            if (this.flashcardAtual.answer) {
+                this.flashcardAtual.resposta = this.flashcardAtual.answer;
+            }
+        }
 
         // Atualiza informações
         this.atualizarInfo();
@@ -145,8 +205,10 @@ export class Estudo {
         flashcardComponent.mostrarResposta();
         
         // Habilita os botões de resposta
-        document.getElementById('btn-acertou').disabled = false;
-        document.getElementById('btn-errou').disabled = false;
+        const btnAcertou = document.getElementById('btn-acertou');
+        const btnErrou = document.getElementById('btn-errou');
+        if (btnAcertou) btnAcertou.disabled = false;
+        if (btnErrou) btnErrou.disabled = false;
     }
 
     /**
@@ -157,30 +219,20 @@ export class Estudo {
         if (!this.flashcardAtual) return;
 
         // Desabilita os botões para evitar múltiplos cliques
-        document.getElementById('btn-acertou').disabled = true;
-        document.getElementById('btn-errou').disabled = true;
+        const btnAcertou = document.getElementById('btn-acertou');
+        const btnErrou = document.getElementById('btn-errou');
+        if (btnAcertou) btnAcertou.disabled = true;
+        if (btnErrou) btnErrou.disabled = true;
 
-        console.log(`📝 Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
+        console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
 
         try {
-            // Quando o Flask estiver pronto:
-            // const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
-            //     acertou: acertou
-            // });
-            
-            // Simula uma resposta da API
-            const resultado = {
-                success: true,
-                flashcard: this.flashcardAtual,
-                acertou: acertou,
-                sequencia: acertou ? 1 : 0,
-                dominado: false,
-                proximo_flashcard: this.indiceAtual + 1 < this.flashcards.length 
-                    ? this.flashcards[this.indiceAtual + 1] 
-                    : null
-            };
+            // Envia resposta para a API
+            const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
+                acertou: acertou
+            });
 
-            console.log('✅ Resposta registrada:', resultado);
+            console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
             // Feedback visual
             flashcardComponent.mostrarFeedback(acertou);
@@ -193,12 +245,12 @@ export class Estudo {
             this.mostrarFlashcard();
 
         } catch (error) {
-            console.error('❌ Erro ao enviar resposta:', error);
-            flashcardComponent.mostrarErro('Erro ao registrar resposta.');
+            console.error('❌ [ESTUDO] Erro ao enviar resposta:', error);
+            flashcardComponent.mostrarErro('Erro ao registrar resposta. Tente novamente.');
             
             // Reabilita os botões
-            document.getElementById('btn-acertou').disabled = false;
-            document.getElementById('btn-errou').disabled = false;
+            if (btnAcertou) btnAcertou.disabled = false;
+            if (btnErrou) btnErrou.disabled = false;
         }
     }
 
@@ -206,7 +258,7 @@ export class Estudo {
      * Conclui o estudo da matéria
      */
     concluirEstudo() {
-        console.log('🎉 Estudo concluído!');
+        console.log('🎉 [ESTUDO] Estudo concluído!');
         flashcardComponent.limpar();
         
         if (this.infoContainer) {
@@ -229,6 +281,20 @@ export class Estudo {
     mostrarMensagem(mensagem) {
         if (this.container) {
             this.container.innerHTML = `<p class="mensagem">${mensagem}</p>`;
+        }
+    }
+
+    /**
+     * Mostra indicador de carregamento
+     */
+    mostrarLoading() {
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando flashcards...</p>
+                </div>
+            `;
         }
     }
 

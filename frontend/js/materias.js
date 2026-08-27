@@ -4,7 +4,7 @@
  * MATERIAS - Módulo de gerenciamento de matérias
  * 
  * Responsabilidades:
- * - Buscar matérias da API
+ * - Buscar matérias da API (real ou simulada)
  * - Renderizar lista de matérias na tela
  * - Gerenciar a seleção de uma matéria
  * - Navegar para a tela de estudo
@@ -13,7 +13,7 @@
  * - api.js (para comunicação com o Back-End)
  */
 
-import { get } from './api.js';
+import { get, isModoSimulacao } from './api.js';
 
 /**
  * Classe para gerenciar matérias
@@ -22,6 +22,7 @@ export class Materias {
     constructor() {
         this.lista = [];
         this.container = document.getElementById('materias-container');
+        this.loading = false;
     }
 
     /**
@@ -29,27 +30,28 @@ export class Materias {
      * @returns {Promise<Array>} - Lista de matérias
      */
     async carregar() {
+        if (this.loading) return this.lista;
+        
+        this.loading = true;
+        this.mostrarLoading();
+
         try {
-            // Quando o Flask estiver pronto:
-            // this.lista = await get('/materias');
+            console.log(`📚 [MATERIAS] Buscando matérias... (${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'})`);
             
-            // Por enquanto, dados simulados para teste
-            this.lista = [
-                { id: 1, nome: 'Back-End', descricao: 'APIs, bancos de dados e lógica de servidor' },
-                { id: 2, nome: 'Front-End', descricao: 'HTML, CSS e interatividade' },
-                { id: 3, nome: 'Mobile', descricao: 'Desenvolvimento para dispositivos móveis' },
-                { id: 4, nome: 'Inteligência Artificial', descricao: 'Machine Learning e algoritmos' },
-                { id: 5, nome: 'Lógica de Programação', descricao: 'Algoritmos e estruturas de dados' },
-                { id: 6, nome: 'Redes', descricao: 'TCP/IP, roteamento e segurança' },
-                { id: 7, nome: 'Processos', descricao: 'Metodologias e ciclos de desenvolvimento' }
-            ];
+            // Busca da API
+            this.lista = await get('/materias');
             
+            console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
             this.renderizar();
             return this.lista;
-            
+
         } catch (error) {
-            console.error('❌ Erro ao carregar matérias:', error);
+            console.error('❌ [MATERIAS] Erro ao carregar:', error);
+            this.mostrarErro('Não foi possível carregar as matérias.');
             throw error;
+
+        } finally {
+            this.loading = false;
         }
     }
 
@@ -58,12 +60,16 @@ export class Materias {
      */
     renderizar() {
         if (!this.container) {
-            console.warn('⚠️ Container de matérias não encontrado');
+            console.warn('⚠️ [MATERIAS] Container não encontrado');
             return;
         }
 
         if (this.lista.length === 0) {
-            this.container.innerHTML = '<p class="empty-state">Nenhuma matéria disponível.</p>';
+            this.container.innerHTML = `
+                <div class="empty-state">
+                    <p>📭 Nenhuma matéria disponível.</p>
+                </div>
+            `;
             return;
         }
 
@@ -94,11 +100,11 @@ export class Materias {
     selecionar(id) {
         const materia = this.lista.find(m => m.id === id);
         if (!materia) {
-            console.error(`❌ Matéria ${id} não encontrada`);
+            console.error(`❌ [MATERIAS] Matéria ${id} não encontrada`);
             return;
         }
 
-        console.log(`📖 Matéria selecionada: ${materia.nome} (ID: ${id})`);
+        console.log(`📖 [MATERIAS] Selecionada: ${materia.nome} (ID: ${id})`);
         
         // Dispara um evento personalizado para o main.js
         const event = new CustomEvent('materiaSelecionada', {
@@ -115,7 +121,74 @@ export class Materias {
     getPorId(id) {
         return this.lista.find(m => m.id === id) || null;
     }
+
+    /**
+     * Mostra indicador de carregamento
+     */
+    mostrarLoading() {
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando matérias...</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Mostra mensagem de erro
+     * @param {string} mensagem - Mensagem de erro
+     */
+    mostrarErro(mensagem) {
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="error-state">
+                    <p>❌ ${mensagem}</p>
+                    <button class="btn btn-primary" onclick="window.location.reload()">
+                        🔄 Tentar novamente
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // ============================================================
+    // ⭐ NOVO MÉTODO ADICIONADO AQUI - Para debug
+    // ============================================================
+
+    /**
+     * ⭐ DEBUG: Verifica os flashcards de uma matéria
+     * @param {number} materiaId - ID da matéria
+     */
+    async debugFlashcards(materiaId) {
+        console.log(`🔍 [DEBUG] Buscando flashcards da matéria ${materiaId}`);
+        
+        try {
+            const resposta = await get(`/materias/${materiaId}/flashcards`);
+            console.log(`📦 [DEBUG] Resposta:`, resposta);
+            console.log(`📊 [DEBUG] Tipo: ${typeof resposta}`);
+            console.log(`📊 [DEBUG] É array? ${Array.isArray(resposta)}`);
+            
+            if (Array.isArray(resposta) && resposta.length > 0) {
+                console.log(`📝 [DEBUG] Primeiro item:`, resposta[0]);
+                console.log(`📝 [DEBUG] Campos do primeiro item:`, Object.keys(resposta[0]));
+                console.log(`📝 [DEBUG] pergunta: ${resposta[0].pergunta || '❌ NÃO ENCONTRADO'}`);
+                console.log(`📝 [DEBUG] resposta: ${resposta[0].resposta || '❌ NÃO ENCONTRADO'}`);
+            } else {
+                console.warn(`⚠️ [DEBUG] Nenhum flashcard encontrado ou resposta vazia`);
+            }
+            
+            return resposta;
+        } catch (error) {
+            console.error(`❌ [DEBUG] Erro:`, error);
+            throw error;
+        }
+    }
 }
 
 // Cria e exporta uma instância única (singleton)
 export const materias = new Materias();
+
+// ⭐ Para debug no console
+window.materiasDebug = materias;
