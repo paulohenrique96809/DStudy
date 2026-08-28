@@ -4,20 +4,34 @@
  * MATERIAS - Módulo de gerenciamento de matérias
  * 
  * Responsabilidades:
- * - Buscar matérias da API (real ou simulada)
- * - Renderizar lista de matérias na tela
- * - Gerenciar a seleção de uma matéria
- * - Navegar para a tela de estudo
- * 
- * Dependências:
- * - api.js (para comunicação com o Back-End)
+ * - Buscar matérias da API
+ * - Renderizar lista de matérias
+ * - USAR O PROGRESSO DO MÓDULO progresso.js
  */
 
 import { get, isModoSimulacao } from './api.js';
+import { progresso } from './progresso.js'; // ⭐ Importa o progresso
 
-/**
- * Classe para gerenciar matérias
- */
+const ICONES_MATERIAS = {
+    'Back-End': '⚙️',
+    'Front-End': '🎨',
+    'Mobile': '📱',
+    'Inteligência Artificial': '🤖',
+    'Lógica de Programação': '🧠',
+    'Redes': '🌐',
+    'Processos': '📋'
+};
+
+const CORES_MATERIAS = {
+    'Back-End': '#6c5ce7',
+    'Front-End': '#00b894',
+    'Mobile': '#0984e3',
+    'Inteligência Artificial': '#e17055',
+    'Lógica de Programação': '#fdcb6e',
+    'Redes': '#00cec9',
+    'Processos': '#fd79a8'
+};
+
 export class Materias {
     constructor() {
         this.lista = [];
@@ -25,10 +39,6 @@ export class Materias {
         this.loading = false;
     }
 
-    /**
-     * Carrega todas as matérias da API
-     * @returns {Promise<Array>} - Lista de matérias
-     */
     async carregar() {
         if (this.loading) return this.lista;
         
@@ -36,18 +46,23 @@ export class Materias {
         this.mostrarLoading();
 
         try {
-            console.log(`📚 [MATERIAS] Buscando matérias... (${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'})`);
+            console.log(`📚 [MATERIAS] Buscando matérias...`);
             
-            // Busca da API
+            // Busca matérias
             this.lista = await get('/materias');
+            
+            // ⭐ CARREGA O PROGRESSO (se não estiver carregado)
+            if (!progresso.dados) {
+                await progresso.carregar();
+            }
             
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
             this.renderizar();
             return this.lista;
 
         } catch (error) {
-            console.error('❌ [MATERIAS] Erro ao carregar:', error);
-            this.mostrarErro('Não foi possível carregar as matérias.');
+            console.error('❌ [MATERIAS] Erro:', error);
+            this.mostrarErro('Erro ao carregar matérias.');
             throw error;
 
         } finally {
@@ -56,7 +71,7 @@ export class Materias {
     }
 
     /**
-     * Renderiza as matérias no container HTML
+     * ⭐ RENDERIZA USANDO OS DADOS DO PROGRESSO
      */
     renderizar() {
         if (!this.container) {
@@ -65,26 +80,47 @@ export class Materias {
         }
 
         if (this.lista.length === 0) {
-            this.container.innerHTML = `
-                <div class="empty-state">
-                    <p>📭 Nenhuma matéria disponível.</p>
-                </div>
-            `;
+            this.container.innerHTML = `<div class="empty-state"><p>📭 Nenhuma matéria disponível.</p></div>`;
             return;
         }
 
-        // Gera HTML para cada matéria
-        this.container.innerHTML = this.lista.map(materia => `
-            <div class="materia-card" data-id="${materia.id}">
-                <h3>${materia.nome}</h3>
-                <p>${materia.descricao || 'Descrição não disponível'}</p>
-                <button class="btn btn-primary btn-estudar" data-id="${materia.id}">
-                    📖 Estudar
-                </button>
-            </div>
-        `).join('');
+        this.container.innerHTML = this.lista.map(materia => {
+            // ⭐ PEGA O PROGRESSO DO MÓDULO CENTRAL
+            const p = progresso.getProgressoParaCard(materia.id);
+            const percentual = Math.round(p.percentual || 0);
+            const icone = ICONES_MATERIAS[materia.nome] || '📚';
+            const cor = CORES_MATERIAS[materia.nome] || '#667eea';
+            const status = this.getStatus(percentual);
+            
+            return `
+                <div class="materia-card" data-id="${materia.id}" style="border-left-color: ${cor};">
+                    <div class="materia-header">
+                        <span class="materia-icone" style="background: ${cor}20; color: ${cor};">
+                            ${icone}
+                        </span>
+                        <span class="materia-status ${status.classe}">${status.texto}</span>
+                    </div>
+                    <h3 class="materia-nome">${materia.nome}</h3>
+                    <p class="materia-descricao">${materia.descricao || 'Sem descrição'}</p>
+                    
+                    <div class="materia-progresso">
+                        <div class="progresso-info">
+                            <span class="progresso-texto">${p.dominados}/${p.total} flashcards</span>
+                            <span class="progresso-percentual">${percentual}%</span>
+                        </div>
+                        <div class="progresso-bar">
+                            <div class="progresso-fill" style="width: ${percentual}%; background: ${cor};"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-estudar" data-id="${materia.id}">
+                        📖 Estudar
+                    </button>
+                </div>
+            `;
+        }).join('');
 
-        // Adiciona eventos aos botões
+        // Eventos dos botões
         this.container.querySelectorAll('.btn-estudar').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = parseInt(e.target.dataset.id);
@@ -93,38 +129,35 @@ export class Materias {
         });
     }
 
-    /**
-     * Seleciona uma matéria para estudo
-     * @param {number} id - ID da matéria
-     */
+    getStatus(percentual) {
+        if (percentual === 100) return { texto: '🏆 Concluído', classe: 'status-concluido' };
+        if (percentual >= 50) return { texto: '📖 Em andamento', classe: 'status-andamento' };
+        if (percentual > 0) return { texto: '🔰 Iniciado', classe: 'status-iniciado' };
+        return { texto: '⏳ Não iniciado', classe: 'status-nao-iniciado' };
+    }
+
     selecionar(id) {
         const materia = this.lista.find(m => m.id === id);
         if (!materia) {
-            console.error(`❌ [MATERIAS] Matéria ${id} não encontrada`);
+            console.error(`❌ Matéria ${id} não encontrada`);
             return;
         }
-
-        console.log(`📖 [MATERIAS] Selecionada: ${materia.nome} (ID: ${id})`);
-        
-        // Dispara um evento personalizado para o main.js
-        const event = new CustomEvent('materiaSelecionada', {
-            detail: { materia }
-        });
-        document.dispatchEvent(event);
+        console.log(`📖 Selecionada: ${materia.nome}`);
+        document.dispatchEvent(new CustomEvent('materiaSelecionada', { detail: { materia } }));
     }
 
-    /**
-     * Retorna uma matéria pelo ID
-     * @param {number} id - ID da matéria
-     * @returns {object|null} - Matéria encontrada ou null
-     */
     getPorId(id) {
         return this.lista.find(m => m.id === id) || null;
     }
 
     /**
-     * Mostra indicador de carregamento
+     * ⭐ ATUALIZA O PROGRESSO E RE-RENDERIZA
      */
+    async atualizarProgresso() {
+        await progresso.carregar();
+        this.renderizar();
+    }
+
     mostrarLoading() {
         if (this.container) {
             this.container.innerHTML = `
@@ -136,10 +169,6 @@ export class Materias {
         }
     }
 
-    /**
-     * Mostra mensagem de erro
-     * @param {string} mensagem - Mensagem de erro
-     */
     mostrarErro(mensagem) {
         if (this.container) {
             this.container.innerHTML = `
@@ -152,43 +181,6 @@ export class Materias {
             `;
         }
     }
-
-    // ============================================================
-    // ⭐ NOVO MÉTODO ADICIONADO AQUI - Para debug
-    // ============================================================
-
-    /**
-     * ⭐ DEBUG: Verifica os flashcards de uma matéria
-     * @param {number} materiaId - ID da matéria
-     */
-    async debugFlashcards(materiaId) {
-        console.log(`🔍 [DEBUG] Buscando flashcards da matéria ${materiaId}`);
-        
-        try {
-            const resposta = await get(`/materias/${materiaId}/flashcards`);
-            console.log(`📦 [DEBUG] Resposta:`, resposta);
-            console.log(`📊 [DEBUG] Tipo: ${typeof resposta}`);
-            console.log(`📊 [DEBUG] É array? ${Array.isArray(resposta)}`);
-            
-            if (Array.isArray(resposta) && resposta.length > 0) {
-                console.log(`📝 [DEBUG] Primeiro item:`, resposta[0]);
-                console.log(`📝 [DEBUG] Campos do primeiro item:`, Object.keys(resposta[0]));
-                console.log(`📝 [DEBUG] pergunta: ${resposta[0].pergunta || '❌ NÃO ENCONTRADO'}`);
-                console.log(`📝 [DEBUG] resposta: ${resposta[0].resposta || '❌ NÃO ENCONTRADO'}`);
-            } else {
-                console.warn(`⚠️ [DEBUG] Nenhum flashcard encontrado ou resposta vazia`);
-            }
-            
-            return resposta;
-        } catch (error) {
-            console.error(`❌ [DEBUG] Erro:`, error);
-            throw error;
-        }
-    }
 }
 
-// Cria e exporta uma instância única (singleton)
 export const materias = new Materias();
-
-// ⭐ Para debug no console
-window.materiasDebug = materias;

@@ -8,11 +8,8 @@
  * - Gerenciar o roteamento entre telas
  * - Coordenar os módulos
  * - Gerenciar estado global
- * 
- * Agora com suporte a API real e simulada!
  */
 
-// Importa os módulos
 import { materias } from './materias.js';
 import { estudo } from './estudo.js';
 import { progresso } from './progresso.js';
@@ -24,15 +21,23 @@ import {
     isModoSimulacao,
     verificarAPI,
     get,
-    post
+    post,
+    put,
+    del
 } from './api.js';
 
-/**
- * Classe principal da aplicação
- */
 class App {
     constructor() {
-        // Estado
+        // ⭐ ============================================================
+        // ⭐ ATRIBUI OS MÓDULOS COMO PROPRIEDADES DA CLASSE
+        // ⭐ ============================================================
+        this.materias = materias;
+        this.estudo = estudo;
+        this.progresso = progresso;
+        this.flashcardComponent = flashcardComponent;
+        this.progressoComponent = progressoComponent;
+        
+        // Estado da aplicação
         this.telaAtual = 'materias';
         this.materiaSelecionada = null;
         this.apiDisponivel = false;
@@ -41,103 +46,66 @@ class App {
         this.init();
     }
 
-    /**
-     * Inicialização da aplicação
-     */
     async init() {
-        console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-        console.log('📦 Versão: P03 - Comunicação com a API');
-        
-        // ===== CONFIGURAÇÃO DA API =====
-        this.configurarAPI();
-        
-        // ===== CARREGA MÓDULOS =====
-        console.log('📁 Módulos carregados:');
-        console.log('  - materias.js ✅');
-        console.log('  - estudo.js ✅');
-        console.log('  - progresso.js ✅');
-        console.log('  - components/flashcard.js ✅');
-        console.log('  - components/progresso.js ✅');
-        
-        // ===== CONFIGURA EVENTOS =====
-        this.setupEventListeners();
-        
-        // ===== CARREGA DADOS =====
-        await this.carregarDadosIniciais();
-        
-        // ===== VERIFICA API =====
-        await this.verificarConexaoAPI();
-        
-        console.log('🏁 ===== APLICAÇÃO PRONTA =====');
-        console.log('💡 Digite "app" no console para interagir');
-        console.log('💡 Comandos úteis:');
-        console.log('  - app.verificarConexaoAPI()');
-        console.log('  - app.setModoSimulacao(true/false)');
-        console.log('  - await app.materias.carregar()');
-    }
+    console.log('🚀 ===== APLICAÇÃO INICIADA =====');
+    console.log('📦 Versão: P04 - Página de matérias');
+    
+    this.configurarAPI();
+    this.setupEventListeners();
+    
+    // ⭐ CARREGA TUDO EM SEQUÊNCIA
+    await progresso.carregar();  // Primeiro o progresso
+    await materias.carregar();   // Depois as matérias (usa o progresso)
+    
+    console.log('🏁 ===== APLICAÇÃO PRONTA =====');
+    console.log('💡 Comandos:');
+    console.log('  await app.materias.carregar()');
+    console.log('  await app.progresso.carregar()');
+    console.log('  await app.testarAPI()');
+}
 
-    /**
-     * Configura a API
-     */
     configurarAPI() {
-        // ===== CONFIGURAR URL DA API =====
-        // Em desenvolvimento local:
-        // setBaseUrl('http://localhost:5000/api');
-        
-        // Em produção:
-        // setBaseUrl('https://seuservidor.com/api');
-        
-        // Por enquanto, mantém vazio (usará simulação)
         setBaseUrl('');
-        
-        // ===== CONFIGURAR MODO DE SIMULAÇÃO =====
-        // true = usa dados simulados (recomendado para testes iniciais)
-        // false = usa API real (quando o Flask estiver pronto)
         setModoSimulacao(true);
-        
         console.log(`🔧 API configurada: ${isModoSimulacao() ? 'MODO SIMULAÇÃO' : 'MODO REAL'}`);
     }
 
-    /**
-     * Configura os listeners de eventos
-     */
     setupEventListeners() {
-        // Escuta seleção de matéria
-        document.addEventListener('materiaSelecionada', (e) => {
-            this.materiaSelecionada = e.detail.materia;
-            this.mostrarTelaEstudo();
-        });
+    // Escuta seleção de matéria
+    document.addEventListener('materiaSelecionada', (e) => {
+        this.materiaSelecionada = e.detail.materia;
+        this.mostrarTelaEstudo();
+    });
 
-        // Botões de navegação
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnVoltar = document.getElementById('btn-voltar');
-            if (btnVoltar) {
-                btnVoltar.addEventListener('click', () => this.mostrarTelaMaterias());
-            }
-        });
-    }
+    // ⭐ ESCUTA ATUALIZAÇÃO DE PROGRESSO
+    document.addEventListener('progressoAtualizado', async (e) => {
+        console.log('📊 [MAIN] Progresso atualizado, re-renderizando...');
+        await this.materias.atualizarProgresso();
+        await this.progresso.carregar();
+        this.progresso.renderizar();
+    });
 
-    /**
-     * Carrega os dados iniciais
-     */
+    // Botões de navegação
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnVoltar = document.getElementById('btn-voltar');
+        if (btnVoltar) {
+            btnVoltar.addEventListener('click', () => this.mostrarTelaMaterias());
+        }
+    });
+}
+
     async carregarDadosIniciais() {
         try {
-            // Carrega matérias
-            await materias.carregar();
+            await this.materias.carregar();
             console.log('✅ Matérias carregadas');
             
-            // Carrega progresso
-            await progresso.carregar();
+            await this.progresso.carregar();
             console.log('✅ Progresso carregado');
-            
         } catch (error) {
             console.error('❌ Erro ao carregar dados iniciais:', error);
         }
     }
 
-    /**
-     * Verifica a conexão com a API
-     */
     async verificarConexaoAPI() {
         try {
             this.apiDisponivel = await verificarAPI();
@@ -155,9 +123,6 @@ class App {
         }
     }
 
-    /**
-     * Mostra a tela de matérias
-     */
     mostrarTelaMaterias() {
         this.telaAtual = 'materias';
         
@@ -167,17 +132,11 @@ class App {
         if (telaMaterias) telaMaterias.style.display = 'block';
         if (telaEstudo) telaEstudo.style.display = 'none';
         
-        // Recarrega dados ao voltar
         this.carregarDadosIniciais();
-        
-        // Limpa o estudo
-        estudo.mostrarMensagem('');
-        flashcardComponent.limpar();
+        this.estudo.mostrarMensagem('');
+        this.flashcardComponent.limpar();
     }
 
-    /**
-     * Mostra a tela de estudo
-     */
     async mostrarTelaEstudo() {
         if (!this.materiaSelecionada) {
             console.error('❌ Nenhuma matéria selecionada');
@@ -192,82 +151,165 @@ class App {
         if (telaMaterias) telaMaterias.style.display = 'none';
         if (telaEstudo) telaEstudo.style.display = 'block';
         
-        // Inicia o estudo
-        await estudo.iniciar(this.materiaSelecionada);
+        await this.estudo.iniciar(this.materiaSelecionada);
     }
 
-    /**
-     * Alterna entre modo de simulação e API real
-     * @param {boolean} ativo - true para simulação
-     */
     setModoSimulacao(ativo) {
         setModoSimulacao(ativo);
         console.log(`🔄 Modo alterado: ${ativo ? 'SIMULAÇÃO' : 'API REAL'}`);
-        
-        // Recarrega dados
         this.carregarDadosIniciais();
     }
 
-    /**
-     * Teste completo da API
-     */
+    // ============================================================
+    // ⭐ MÉTODO TESTAR INTEGRAÇÃO
+    // ============================================================
+
+    async testarIntegracao() {
+        console.log('🧪 ===== TESTE DE INTEGRAÇÃO =====');
+        console.log('📋 Verificando todos os módulos...\n');
+        
+        try {
+            // 1. Testa matérias
+            console.log('1️⃣ Testando módulo materias');
+            await this.materias.carregar();
+            console.log(`   ✅ ${this.materias.lista.length} matérias carregadas`);
+            console.log(`   📚 ${this.materias.lista.map(m => m.nome).join(', ')}\n`);
+
+            // 2. Testa progresso
+            console.log('2️⃣ Testando módulo progresso');
+            await this.progresso.carregar();
+            console.log(`   ✅ Progresso carregado`);
+            console.log(`   📊 Geral: ${this.progresso.dados?.progresso_geral || 0}%\n`);
+
+            // 3. Testa componente flashcard
+            console.log('3️⃣ Testando componente flashcard');
+            const testFlashcard = {
+                id: 999,
+                pergunta: 'Teste de integração?',
+                resposta: 'Funcionando perfeitamente!'
+            };
+            this.flashcardComponent.renderizar(testFlashcard);
+            console.log('   ✅ Flashcard renderizado\n');
+
+            // 4. Testa componente progresso
+            console.log('4️⃣ Testando componente progresso');
+            this.progressoComponent.criarBarra(75, 'Teste');
+            console.log('   ✅ Componente progresso OK\n');
+
+            // 5. Testa API
+            console.log('5️⃣ Testando API');
+            const apiStatus = await this.verificarConexaoAPI();
+            console.log(`   ✅ API: ${apiStatus ? 'ONLINE' : 'OFFLINE (simulação)'}`);
+            console.log(`   📡 Modo: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}\n`);
+
+            console.log('🎉 ===== TODOS OS MÓDULOS INTEGRADOS! =====');
+            console.log('✅ O sistema está funcionando corretamente.');
+            
+            alert('✅ Teste de integração concluído com sucesso!\n\nVerifique o console para mais detalhes.');
+            
+        } catch (error) {
+            console.error('❌ ===== TESTE DE INTEGRAÇÃO FALHOU =====');
+            console.error('❌ Erro:', error.message);
+            console.error('💡 Detalhes:', error);
+            
+            alert(`❌ Erro no teste de integração:\n\n${error.message}\n\nVerifique o console para mais detalhes.`);
+        }
+    }
+
+    // ============================================================
+    // ⭐ MÉTODO TESTAR API
+    // ============================================================
+
     async testarAPI() {
-        console.log('🧪 TESTE DE API');
-        console.log('📋 Testando todas as rotas...');
+        console.log('🧪 ===== TESTE DE API =====');
+        console.log(`📋 Modo atual: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'}`);
+        console.log('📋 Testando todas as rotas...\n');
         
         try {
             // 1. Testa matérias
             console.log('1️⃣ Testando GET /materias');
-            const materiasData = await materias.carregar();
-            console.log(`   ✅ ${materiasData.length} matérias`);
+            const materiasData = await get('/materias');
+            console.log(`   ✅ ${materiasData.length} matérias encontradas`);
+            console.log(`   📚 ${materiasData.map(m => m.nome).join(', ')}\n`);
             
             // 2. Testa flashcards
             if (materiasData.length > 0) {
                 const materiaId = materiasData[0].id;
                 console.log(`2️⃣ Testando GET /materias/${materiaId}/flashcards`);
                 const flashcards = await get(`/materias/${materiaId}/flashcards`);
-                console.log(`   ✅ ${flashcards.length} flashcards`);
+                console.log(`   ✅ ${flashcards.length} flashcards encontrados`);
+                if (flashcards.length > 0) {
+                    console.log(`   🃏 ${flashcards[0].pergunta} → ${flashcards[0].resposta}\n`);
+                }
             }
             
             // 3. Testa progresso
             console.log('3️⃣ Testando GET /progresso');
-            const progressoData = await progresso.carregar();
+            const progressoData = await get('/progresso');
             console.log(`   ✅ Progresso carregado`);
+            console.log(`   📊 Geral: ${progressoData.progresso_geral || 0}%\n`);
             
             // 4. Testa resposta
             if (materiasData.length > 0) {
                 const materiaId = materiasData[0].id;
                 const flashcards = await get(`/materias/${materiaId}/flashcards`);
                 if (flashcards.length > 0) {
-                    console.log(`4️⃣ Testando POST /flashcards/${flashcards[0].id}/responder`);
-                    const resultado = await post(`/flashcards/${flashcards[0].id}/responder`, {
+                    const flashcardId = flashcards[0].id;
+                    console.log(`4️⃣ Testando POST /flashcards/${flashcardId}/responder`);
+                    const resultado = await post(`/flashcards/${flashcardId}/responder`, {
                         acertou: true
                     });
-                    console.log(`   ✅ Resposta registrada:`, resultado);
+                    console.log(`   ✅ Resposta registrada!`);
+                    console.log(`   📝 ${resultado.mensagem || 'Sucesso!'}\n`);
                 }
             }
             
-            console.log('🎉 TODOS OS TESTES PASSARAM!');
+            console.log('🎉 ===== TODOS OS TESTES PASSARAM! =====');
+            console.log('💡 A API está funcionando corretamente.');
+            
+            alert('✅ Teste concluído com sucesso!\n\nVerifique o console para mais detalhes.');
             
         } catch (error) {
-            console.error('❌ Teste falhou:', error);
+            console.error('❌ ===== TESTE FALHOU =====');
+            console.error('❌ Erro:', error.message);
+            console.error('💡 Detalhes:', error);
+            
+            alert(`❌ Erro no teste:\n\n${error.message}\n\nVerifique o console para mais detalhes.`);
         }
     }
 }
 
-// Cria instância global
+// ============================================================
+// CRIA INSTÂNCIA E EXPÕE GLOBALMENTE
+// ============================================================
+
 const app = new App();
 
-// Torna os módulos acessíveis globalmente para testes
+// ⭐ Torna o app acessível globalmente
 window.app = app;
+
+// ⭐ Torna os módulos acessíveis globalmente (também)
 window.materias = materias;
 window.estudo = estudo;
 window.progresso = progresso;
 window.flashcardComponent = flashcardComponent;
 window.progressoComponent = progressoComponent;
 
+// ⭐ Torna as funções da API acessíveis globalmente
+window.get = get;
+window.post = post;
+window.put = put;
+window.del = del;
+window.setBaseUrl = setBaseUrl;
+window.setModoSimulacao = setModoSimulacao;
+window.isModoSimulacao = isModoSimulacao;
 
-// Exporta funções da API para testes
-export { get, post, put, del, setBaseUrl, setModoSimulacao, isModoSimulacao } from './api.js';
+console.log('✅ ===== APP PRONTO =====');
+console.log('💡 Comandos disponíveis:');
+console.log('  await app.materias.carregar()     - Carregar matérias');
+console.log('  await app.progresso.carregar()    - Carregar progresso');
+console.log('  await app.testarAPI()             - Testar API');
+console.log('  await app.testarIntegracao()      - Testar integração');
+console.log('  app.setModoSimulacao(true/false)  - Alternar modo');
 
 export default app;

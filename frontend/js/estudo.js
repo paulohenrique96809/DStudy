@@ -17,6 +17,7 @@
 
 import { get, post, isModoSimulacao } from './api.js';
 import { flashcardComponent } from './components/flashcard.js';
+import { progresso } from './progresso.js';
 
 /**
  * Classe para gerenciar a sessão de estudo
@@ -218,7 +219,6 @@ async iniciar(materia) {
     async responder(acertou) {
         if (!this.flashcardAtual) return;
 
-        // Desabilita os botões para evitar múltiplos cliques
         const btnAcertou = document.getElementById('btn-acertou');
         const btnErrou = document.getElementById('btn-errou');
         if (btnAcertou) btnAcertou.disabled = true;
@@ -227,33 +227,25 @@ async iniciar(materia) {
         console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
 
         try {
-            // Envia resposta para a API
-            const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
-                acertou: acertou
-            });
+        const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
+            acertou: acertou
+        });
 
-            console.log('✅ [ESTUDO] Resposta registrada:', resultado);
+        console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
-            // Feedback visual
-            flashcardComponent.mostrarFeedback(acertou);
+        // ⭐ ATUALIZA O PROGRESSO
+        await progresso.carregar();  // Recarrega os dados
+        await materias.atualizarProgresso();  // Re-renderiza os cards
+        
+        flashcardComponent.mostrarFeedback(acertou);
+        await this.aguardar(800);
+        this.indiceAtual++;
+        this.mostrarFlashcard();
 
-            // Aguarda um momento para o usuário ver o feedback
-            await this.aguardar(800);
-
-            // Avança para o próximo flashcard
-            this.indiceAtual++;
-            this.mostrarFlashcard();
-
-        } catch (error) {
-            console.error('❌ [ESTUDO] Erro ao enviar resposta:', error);
-            flashcardComponent.mostrarErro('Erro ao registrar resposta. Tente novamente.');
-            
-            // Reabilita os botões
-            if (btnAcertou) btnAcertou.disabled = false;
-            if (btnErrou) btnErrou.disabled = false;
-        }
+    } catch (error) {
+        // ... tratamento de erro ...
     }
-
+}
     /**
      * Conclui o estudo da matéria
      */
