@@ -95,6 +95,7 @@
 	- Adiciona teste completo de todas as rotas
 	- Adiciona controles na interface para alternar modos
 	- Adiciona importação de get e post no main.js
+	
 	- Corrige erro 'get is not defined' no testarAPI()
 	- Melhora mensagens de log do teste
 	- Adiciona alerta visual de sucesso/erro
@@ -103,3 +104,15 @@
 	- Adiciona fallback para campos question/answer
 	- Adiciona método debugFlashcards() para testes
 	- Melhora logs para identificar problemas
+
+28/08/2026 *Paulodev* - Página de matérias com progresso - P04
+	- Adiciona cards com ícones e cores por matéria
+	- Mostra progresso individual em cada card
+	- Adiciona status (concluído/andamento/iniciado)
+	- Melhora design com animações e hover
+	- Atualiza CSS com estilos consistentes
+
+	- Centraliza dados de progresso no módulo progresso.js
+	- Materias.js usa getProgressoParaCard() do progresso
+	- Remove duplicação de dados de progresso
+	- Simplifica atualização após respostas
