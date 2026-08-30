@@ -1,16 +1,7 @@
 // frontend/js/materias.js
 
-/**
- * MATERIAS - Módulo de gerenciamento de matérias
- * 
- * Responsabilidades:
- * - Buscar matérias da API
- * - Renderizar lista de matérias
- * - USAR O PROGRESSO DO MÓDULO progresso.js
- */
-
-import { get, isModoSimulacao } from './api.js';
-import { progresso } from './progresso.js'; // ⭐ Importa o progresso
+import { get } from './api.js';
+import { progresso } from './progresso.js';
 
 const ICONES_MATERIAS = {
     'Back-End': '⚙️',
@@ -46,12 +37,9 @@ export class Materias {
         this.mostrarLoading();
 
         try {
-            console.log(`📚 [MATERIAS] Buscando matérias...`);
-            
-            // Busca matérias
             this.lista = await get('/materias');
             
-            // ⭐ CARREGA O PROGRESSO (se não estiver carregado)
+            // ⭐ GARANTE QUE O PROGRESSO ESTÁ CARREGADO
             if (!progresso.dados) {
                 await progresso.carregar();
             }
@@ -71,22 +59,30 @@ export class Materias {
     }
 
     /**
-     * ⭐ RENDERIZA USANDO OS DADOS DO PROGRESSO
+     * ⭐ RENDERIZA USANDO OS DADOS MAIS RECENTES DO PROGRESSO
      */
     renderizar() {
-        if (!this.container) {
-            console.warn('⚠️ [MATERIAS] Container não encontrado');
-            return;
-        }
+        if (!this.container) return;
 
         if (this.lista.length === 0) {
             this.container.innerHTML = `<div class="empty-state"><p>📭 Nenhuma matéria disponível.</p></div>`;
             return;
         }
 
+        // ⭐ USA OS DADOS MAIS RECENTES DO PROGRESSO
+        const dadosProgresso = progresso.dados;
+
         this.container.innerHTML = this.lista.map(materia => {
-            // ⭐ PEGA O PROGRESSO DO MÓDULO CENTRAL
-            const p = progresso.getProgressoParaCard(materia.id);
+            // ⭐ BUSCA O PROGRESSO DA MATÉRIA
+            let p = { total: 0, dominados: 0, percentual: 0 };
+            
+            if (dadosProgresso && dadosProgresso.por_materia) {
+                const encontrado = dadosProgresso.por_materia.find(m => m.id === materia.id);
+                if (encontrado) {
+                    p = encontrado;
+                }
+            }
+            
             const percentual = Math.round(p.percentual || 0);
             const icone = ICONES_MATERIAS[materia.nome] || '📚';
             const cor = CORES_MATERIAS[materia.nome] || '#667eea';
@@ -120,11 +116,10 @@ export class Materias {
             `;
         }).join('');
 
-        // Eventos dos botões
         this.container.querySelectorAll('.btn-estudar').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
-                this.selecionar(id);
+                await this.selecionar(id);
             });
         });
     }
@@ -136,14 +131,18 @@ export class Materias {
         return { texto: '⏳ Não iniciado', classe: 'status-nao-iniciado' };
     }
 
-    selecionar(id) {
+    async selecionar(id) {
         const materia = this.lista.find(m => m.id === id);
         if (!materia) {
             console.error(`❌ Matéria ${id} não encontrada`);
             return;
         }
-        console.log(`📖 Selecionada: ${materia.nome}`);
-        document.dispatchEvent(new CustomEvent('materiaSelecionada', { detail: { materia } }));
+
+        console.log(`📖 [MATERIAS] Selecionada: ${materia.nome}`);
+        
+        document.dispatchEvent(new CustomEvent('materiaSelecionada', { 
+            detail: { materia } 
+        }));
     }
 
     getPorId(id) {

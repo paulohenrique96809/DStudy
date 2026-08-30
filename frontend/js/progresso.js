@@ -1,15 +1,5 @@
 // frontend/js/progresso.js
 
-/**
- * PROGRESSO - Módulo de gerenciamento de progresso
- * 
- * Responsabilidades:
- * - Buscar progresso do usuário na API
- * - Renderizar barras de progresso
- * - Mostrar estatísticas de domínio
- * - ÚNICA FONTE DE VERDADE para dados de progresso
- */
-
 import { get } from './api.js';
 
 export class Progresso {
@@ -19,9 +9,6 @@ export class Progresso {
         this.loading = false;
     }
 
-    /**
-     * Carrega o progresso do usuário
-     */
     async carregar() {
         if (this.loading) return this.dados;
         
@@ -29,15 +16,14 @@ export class Progresso {
         console.log('📊 [PROGRESSO] Carregando...');
 
         try {
-            // Busca da API
+            // ⭐ SEMPRE BUSCA DA API (QUE MANTÉM O ESTADO PERSISTENTE)
             this.dados = await get('/progresso');
             console.log('✅ [PROGRESSO] Dados carregados:', this.dados);
-            
             this.renderizar();
             return this.dados;
 
         } catch (error) {
-            console.error('❌ [PROGRESSO] Erro ao carregar:', error);
+            console.error('❌ [PROGRESSO] Erro:', error);
             throw error;
 
         } finally {
@@ -45,14 +31,8 @@ export class Progresso {
         }
     }
 
-    /**
-     * Renderiza o progresso na tela
-     */
     renderizar() {
-        if (!this.container) {
-            console.warn('⚠️ [PROGRESSO] Container não encontrado');
-            return;
-        }
+        if (!this.container) return;
 
         if (!this.dados) {
             this.container.innerHTML = '<p>Carregando progresso...</p>';
@@ -96,16 +76,17 @@ export class Progresso {
     }
 
     /**
-     * Retorna o progresso de uma matéria específica
+     * ⭐ ATUALIZA O PROGRESSO (RECARREGA DA API)
      */
+    async atualizar() {
+        await this.carregar();
+    }
+
     getMateriaProgresso(materiaId) {
         if (!this.dados || !this.dados.por_materia) return null;
         return this.dados.por_materia.find(m => m.id === materiaId) || null;
     }
 
-    /**
-     * Obtém o progresso formatado para um card de matéria
-     */
     getProgressoParaCard(materiaId) {
         const p = this.getMateriaProgresso(materiaId);
         if (p) {
