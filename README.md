@@ -37,7 +37,5 @@ Transformar o estudo em uma experiência interativa e gamificada, onde o aluno a
 
 ## 🏗️ Arquitetura
 Front-End (JavaScript)
-↓
 API (Flask)
-↓
 PostgreSQL
