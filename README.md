@@ -1,6 +1,3 @@
-# DStudy
-Site de Estudos interativo para reforço e revisão da matéria do curso técnico de Desenvolvimento de Sistemas
-
 # 📚 DStudy
 
 Sistema de estudos baseado em flashcards com gamificação, desenvolvido como Trabalho de Conclusão de Curso (TCC) para o curso Técnico de Desenvolvimento de Sistemas.
