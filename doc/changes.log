@@ -1,12 +1,124 @@
-30/04/2026 - Definição da paleta de cores
-	   - Criação da documentação
-	   - Concept art da logo
+30/04/2026 *Paulodev* - Definição da paleta de cores
+	- Criação da documentação
+	- Concept art da logo
 
-31/04/2026 - Esboço da logo
-	   - Conceituação do banco de dados
+31/04/2026 *Paulodev* - Esboço da logo
+	- Conceituação do banco de dados
 
-02/05/2026 - Simplificaçao da logo
+02/05/2026 *Paulodev* - Simplificação da logo
 
-05/05/2026 - Criação do repositório
-	   - Criação dos arquivos básicos locais
+05/05/2026 *Paulodev* - Criação do repositório
+	- Criação dos arquivos básicos locais
 
+06/05/2026 *Paulodev* - Adição da imagem da logo
+	- Criação de pasta para documentação e mudanças.
+
+07/05/2026 *Paulodev* - Adição de fontes personalizadas
+	- Teste de fonte
+
+12/05/2026 *Paulodev* - Criação do arquivo das páginas
+	- Teste de adição de um menu vertical
+
+15/05/2026 *Paulodev* - Criação de páginas para o menu vertical
+	- HTML base para páginas do menu vertical.
+	- Teste do menu vertical.
+
+06/08/2026 *Paulodev* - Atualização do arquivo README.md
+	- Mesclagem da branch paulodev
+	- Adição da logo
+	- Adição da fonte personalizada PearSoda
+	- Criação do arquivo base das páginas principais:
+		frontend\pages\ apoia.html
+		frontend\pages\ cadastro.html
+		frontend\pages\ configurações.html
+		frontend\pages\ login.html
+		frontend\pages\ perfil.html
+		frontend\pages\ sobre.html
+		frontend\pages\ study.html
+
+06/08/2026 *Yasdev* - Criação da página no Figma
+
+17/08/2026 *Yasdev* - Adição de ícones, menu e matérias
+
+18/08/2026 *Paulodev* - Renomeação do arquivo scripts.js para main.js.
+	- Criação do arquivo api.js
+	- Criação da variável API_BASE_URL para quando o flask estiver rodando no arquivo api.js.
+	- Adição de uma função para fazer requisições HTTP no arquivo api.js.
+
+20/08/2026 *Paulodev* - Primeiro passo do código api.js
+	- Adição da função apiRequest
+	- Adição da função para requisições GET
+	- Adição da função para requisições PUT
+	- Adição da função para requisições DELETE
+
+20/08/2026 *Yasdev* - Atualização da página principal
+
+24/08/2026 *Yasdev* - Atualização da Home do site.
+
+24/08/2026 *Paulodev* - Adição da função para requisições POST no arquivo api.js
+	- Adição da função para requisições PATCH no arquivo api.js
+	- Adição da função para requisições OPTIONS no arquivo api.js
+	- Adição da função para requisições HEAD no arquivo api.js
+	- Adição da função para requisições TRACE no arquivo api.js
+	- Adição da função para requisições CONNECT no arquivo api.js
+	- Adição da função para requisições customizadas no arquivo api.js
+	- Adição da função para requisições com body no arquivo api.js
+	- Adição da função para requisições com headers no arquivo api.js
+
+25/08/2026 *Paulodev* - Criação da arquitetura inicial da segunda fase da pipeline
+	- Criação do arquivo frontend\js\ estudo.js
+	- Criação do arquivo frontend\js\ materias.js
+	- Criação do arquivo frontend\js\ progresso.js
+	- Criação da pasta components
+	- Criação do arquivo frontend\js\components\ flashcard.js
+	- Criação do arquivo frontend\js\components\ progresso.js
+
+26/08/2026 *Paulodev* - Arquitetura dos módulos - P02
+	- Cria módulo materias.js (listagem e seleção)
+	- Cria módulo estudo.js (sessão de estudo)
+	- Cria módulo progresso.js (progresso do usuário)
+	- Cria componente flashcard.js (renderização de flashcards)
+	- Cria componente progresso.js (componentes visuais)
+	- Atualiza main.js para coordenar os módulos
+	- Atualiza index.html com duas telas (matérias/estudo)
+	- Adiciona navegação entre telas
+	- Adiciona sistema de progresso visual
+
+27/08/2026 *Paulodev* - Comunicação Front-End ↔ Back-End preparada - P03
+	- Implementa apiRequest() central com suporte a GET/POST/PUT/DELETE
+	- Adiciona modo de simulação para testes sem Flask
+	- Cria banco de dados simulado com matérias, flashcards e progresso
+	- Implementa fallback automático para simulação
+	- Atualiza módulos para usar a API (real ou simulada)
+	- Adiciona funções de configuração (setBaseUrl, setModoSimulacao)
+	- Implementa verificação de disponibilidade da API
+	- Adiciona teste completo de todas as rotas
+	- Adiciona controles na interface para alternar modos
+	- Adiciona importação de get e post no main.js
+	
+	- Corrige erro 'get is not defined' no testarAPI()
+	- Melhora mensagens de log do teste
+	- Adiciona alerta visual de sucesso/erro
+	- Corrige extração do ID da matéria na rota /materias/:id/flashcards
+	- Adiciona validação de array na resposta
+	- Adiciona fallback para campos question/answer
+	- Adiciona método debugFlashcards() para testes
+	- Melhora logs para identificar problemas
+
+28/08/2026 *Paulodev* - Página de matérias com progresso - P04
+	- Adiciona cards com ícones e cores por matéria
+	- Mostra progresso individual em cada card
+	- Adiciona status (concluído/andamento/iniciado)
+	- Melhora design com animações e hover
+	- Atualiza CSS com estilos consistentes
+
+	- Centraliza dados de progresso no módulo progresso.js
+	- Materias.js usa getProgressoParaCard() do progresso
+	- Remove duplicação de dados de progresso
+	- Simplifica atualização após respostas
+
+30/08/2026 *Paulodev* - progresso persistente durante toda a sessão
+
+	- Mantém estado do progresso no api.js
+	- Progresso não é resetado ao voltar para matérias
+	- Sincronização correta entre todos os módulos
