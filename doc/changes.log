@@ -116,3 +116,9 @@
 	- Materias.js usa getProgressoParaCard() do progresso
 	- Remove duplicação de dados de progresso
 	- Simplifica atualização após respostas
+
+30/08/2026 *Paulodev* - progresso persistente durante toda a sessão
+
+	- Mantém estado do progresso no api.js
+	- Progresso não é resetado ao voltar para matérias
+	- Sincronização correta entre todos os módulos
