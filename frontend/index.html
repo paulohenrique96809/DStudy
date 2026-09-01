@@ -3,97 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/styles.css"
-    <title>DStudy - P01</title>
+    <link rel="stylesheet" href="styles/styles.css">
+    <title>DStudy - P05</title>
 </head>
 <body>
     <div class="container">
-        <!-- ===== HEADER ===== -->
+        <!-- HEADER -->
         <header class="header">
             <h1>📚 DStudy</h1>
             <p>Sistema de estudos com flashcards - TCC</p>
-            <span class="badge">P04 - Página de matérias</span>
+            <span class="badge">P05 - Seleção de matéria</span>
         </header>
 
-        <!-- ===== CONTROLES DA API ===== -->
-<div class="action-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-    <h2 style="margin-bottom: 10px;">🔧 Controles da API</h2>
-    <div class="actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button class="btn btn-primary" onclick="app.testarAPI()">
-            🧪 Testar API
-        </button>
-        <button class="btn btn-success" onclick="app.setModoSimulacao(true); location.reload();">
-            🔵 Modo Simulação
-        </button>
-        <button class="btn btn-danger" onclick="app.setModoSimulacao(false); location.reload();">
-            🔴 Modo API Real
-        </button>
-        <button class="btn btn-secondary" onclick="console.clear(); console.log('🧹 Console limpo!')">
-            Limpar Console
-        </button>
-    </div>
-    <p style="margin-top: 12px; font-size: 13px; color: #666;">
-        💡 Modo atual: <strong id="modo-atual">${isModoSimulacao() ? 'SIMULAÇÃO' : 'API REAL'}</strong>
-    </p>
-</div>
-
-       <!-- ===== TELA DE MATÉRIAS ===== -->
+        <!-- TELA DE MATÉRIAS -->
         <div id="tela-materias" class="tela ativa">
-            <div class="action-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <h2 style="margin-bottom: 10px;">📚 Matérias</h2>
-                <p style="color: #666; font-size: 14px;">Selecione uma matéria para começar a estudar</p>
-            </div>
             <div id="materias-container">
-                <p class="empty-state">Carregando matérias...</p>
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando matérias...</p>
+                </div>
             </div>
-            
-
-        <!-- ===== PROGRESSO ===== -->
             <div id="progresso-container">
-                <p class="empty-state">Carregando progresso...</p>
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando progresso...</p>
+                </div>
             </div>
         </div>
 
-        <!-- ===== TELA DE ESTUDO ===== -->
+        <!-- TELA DE ESTUDO -->
         <div id="tela-estudo" class="tela">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <button class="btn btn-secondary" id="btn-voltar">
-                    ← Voltar
-                </button>
-                <span style="font-size: 14px; color: #666;">Estudo</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 14px; color: #666;">📚 Estudo</span>
             </div>
-            
             <div id="estudo-info"></div>
-            
             <div id="estudo-container">
                 <p class="empty-state">Selecione uma matéria para começar</p>
             </div>
-            
             <div id="flashcard-container"></div>
-        </div>
-
-        <!-- ===== FOOTER ===== -->
-        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 13px; border-top: 1px solid #ddd; padding-top: 20px;">
-            <p>
-                Desenvolvido por Paulo - TCC Desenvolvimento de Sistemas
-                <br>
-                Pipeline: P02 ✅ | Próximo: P03 - Comunicação com a API
-            </p>
+            <div style="text-align: center; font-size: 13px; color: #999; padding: 20px; border-top: 1px solid #eee; margin-top: 20px;">
+                <span>⬅️ Use o botão de voltar do navegador para retornar</span>
+            </div>
         </div>
     </div>
 
-    <!-- ===== CARREGA O JAVASCRIPT COMO MÓDULO ===== -->
+    <!-- ===== CARREGA O JAVASCRIPT ===== -->
     <script type="module">
         import app from './js/main.js';
-        
-        // Torna a aplicação acessível globalmente
         window.app = app;
-        
-        console.log('✅ Módulo principal carregado!');
+        console.log('✅ App carregado!');
         console.log('💡 Digite "app" no console para interagir');
-        console.log('💡 Exemplos:');
-        console.log('  await app.testarIntegracao()');
-        console.log('  app.mostrarTelaMaterias()');
     </script>
 </body>
 </html>

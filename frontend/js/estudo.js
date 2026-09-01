@@ -14,13 +14,11 @@ export class Estudo {
         this.estaRespondendo = false;
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
-        this.loading = false;
+        console.log('📖 [ESTUDO] Container:', this.container);
     }
 
     async iniciar(materia) {
         this.materia = materia;
-        this.loading = true;
-        
         console.log(`📖 [ESTUDO] Iniciando: ${materia.nome}`);
 
         try {
@@ -28,17 +26,15 @@ export class Estudo {
 
             const resposta = await get(`/materias/${materia.id}/flashcards`);
             
-            if (!Array.isArray(resposta)) {
-                this.mostrarMensagem('❌ Erro: Dados inválidos');
-                this.loading = false;
+            if (!Array.isArray(resposta) || resposta.length === 0) {
+                this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
                 return;
             }
 
             this.flashcards = resposta.filter(f => f && f.pergunta && f.resposta);
 
             if (this.flashcards.length === 0) {
-                this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
-                this.loading = false;
+                this.mostrarMensagem('⚠️ Nenhum flashcard válido.');
                 return;
             }
 
@@ -46,12 +42,10 @@ export class Estudo {
             this.indiceAtual = 0;
             this.estaRespondendo = false;
             this.mostrarFlashcard();
-            this.loading = false;
 
         } catch (error) {
             console.error('❌ [ESTUDO] Erro:', error);
             this.mostrarMensagem('❌ Erro ao carregar flashcards.');
-            this.loading = false;
         }
     }
 
@@ -108,11 +102,7 @@ export class Estudo {
     mostrarResposta() {
         if (this.estaRespondendo) return;
         this.estaRespondendo = true;
-        
         flashcardComponent.mostrarResposta();
-        
-        document.getElementById('btn-acertou').disabled = false;
-        document.getElementById('btn-errou').disabled = false;
     }
 
     async responder(acertou) {
@@ -126,29 +116,24 @@ export class Estudo {
         console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
 
         try {
-            // Envia resposta para a API (atualiza o progresso persistente)
             const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
                 acertou: acertou
             });
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
-            // ⭐ RECARREGA O PROGRESSO DA API (PERSISTENTE)
+            // Recarrega progresso
             await progresso.carregar();
-            
-            // ⭐ RE-RENDERIZA OS CARDS
             materias.renderizar();
 
-            // Feedback visual
             flashcardComponent.mostrarFeedback(acertou);
             await this.aguardar(800);
 
-            // Próximo flashcard
             this.indiceAtual++;
             this.mostrarFlashcard();
 
         } catch (error) {
-            console.error('❌ [ESTUDO] Erro ao enviar resposta:', error);
+            console.error('❌ [ESTUDO] Erro:', error);
             flashcardComponent.mostrarErro('Erro ao registrar resposta.');
             btnAcertou.disabled = false;
             btnErrou.disabled = false;
@@ -164,9 +149,7 @@ export class Estudo {
                 <div class="estudo-concluido">
                     <h3>🎉 Estudo concluído!</h3>
                     <p>Você completou todos os flashcards de ${this.materia.nome}.</p>
-                    <button class="btn btn-primary" onclick="window.location.reload()">
-                        Voltar para matérias
-                    </button>
+                    <p style="font-size: 14px; color: #666; margin-top: 10px;">💡 Use o botão de voltar do navegador para retornar.</p>
                 </div>
             `;
         }
@@ -174,7 +157,7 @@ export class Estudo {
 
     mostrarMensagem(mensagem) {
         if (this.container) {
-            this.container.innerHTML = `<p class="mensagem">${mensagem}</p>`;
+            this.container.innerHTML = `<p class="empty-state">${mensagem}</p>`;
         }
     }
 

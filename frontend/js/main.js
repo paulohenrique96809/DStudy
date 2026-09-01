@@ -4,17 +4,7 @@ import { materias } from './materias.js';
 import { estudo } from './estudo.js';
 import { progresso } from './progresso.js';
 import { flashcardComponent } from './components/flashcard.js';
-import { progressoComponent } from './components/progresso.js';
-// ⭐ REMOVE verificarAPI da importação
-import { 
-    setBaseUrl, 
-    setModoSimulacao, 
-    isModoSimulacao,
-    get,
-    post,
-    put,
-    del
-} from './api.js';
+import { setModoSimulacao, isModoSimulacao, get, post } from './api.js';
 
 class App {
     constructor() {
@@ -22,24 +12,25 @@ class App {
         this.estudo = estudo;
         this.progresso = progresso;
         this.flashcardComponent = flashcardComponent;
-        this.progressoComponent = progressoComponent;
         
         this.telaAtual = 'materias';
         this.materiaSelecionada = null;
-        this.apiDisponivel = false;
         
         this.init();
     }
 
     async init() {
         console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-        console.log('📦 Versão: P04 - Página de matérias');
+        console.log('📦 Versão: P05 - Seleção de matéria');
         
-        this.configurarAPI();
+        setModoSimulacao(true);
+        console.log(`🔧 API: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
+        
         this.setupEventListeners();
         
-        await progresso.carregar();
-        await materias.carregar();
+        // Carrega dados
+        await this.progresso.carregar();
+        await this.materias.carregar();
         
         console.log('🏁 ===== APLICAÇÃO PRONTA =====');
         console.log('💡 Comandos:');
@@ -48,41 +39,48 @@ class App {
         console.log('  await app.testarAPI()');
     }
 
-    configurarAPI() {
-        setBaseUrl('');
-        setModoSimulacao(true);
-        console.log(`🔧 API: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
-    }
-
     setupEventListeners() {
+        // ⭐ ESCUTA SELEÇÃO DE MATÉRIA
         document.addEventListener('materiaSelecionada', (e) => {
             this.materiaSelecionada = e.detail.materia;
             this.mostrarTelaEstudo();
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const btnVoltar = document.getElementById('btn-voltar');
-            if (btnVoltar) {
-                btnVoltar.addEventListener('click', () => this.mostrarTelaMaterias());
-            }
+        // ⭐ ESCUTA O BOTÃO VOLTAR DO NAVEGADOR
+        window.addEventListener('popstate', (e) => {
+            console.log('🔙 [MAIN] Popstate detectado, voltando para matérias...');
+            this.mostrarTelaMaterias();
         });
     }
 
+    /**
+     * ⭐ MOSTRA TELA DE MATÉRIAS
+     */
     mostrarTelaMaterias() {
         this.telaAtual = 'materias';
+        this.materiaSelecionada = null;
         
-        const telaMaterias = document.getElementById('tela-materias');
-        const telaEstudo = document.getElementById('tela-estudo');
+        // Troca as telas
+        document.getElementById('tela-materias').style.display = 'block';
+        document.getElementById('tela-materias').classList.add('ativa');
+        document.getElementById('tela-estudo').style.display = 'none';
+        document.getElementById('tela-estudo').classList.remove('ativa');
         
-        if (telaMaterias) telaMaterias.style.display = 'block';
-        if (telaEstudo) telaEstudo.style.display = 'none';
-        
-        this.materias.renderizar();
+        // Limpa o estudo
         this.estudo.mostrarMensagem('');
         this.flashcardComponent.limpar();
+        
+        // Recarrega dados
+        this.progresso.carregar();
+        this.materias.renderizar();
+        
+        console.log('📊 [MAIN] Voltou para matérias');
     }
 
-    async mostrarTelaEstudo() {
+    /**
+     * ⭐ MOSTRA TELA DE ESTUDO
+     */
+    mostrarTelaEstudo() {
         if (!this.materiaSelecionada) {
             console.error('❌ Nenhuma matéria selecionada');
             return;
@@ -90,24 +88,17 @@ class App {
 
         this.telaAtual = 'estudo';
         
-        const telaMaterias = document.getElementById('tela-materias');
-        const telaEstudo = document.getElementById('tela-estudo');
+        // Troca as telas
+        document.getElementById('tela-materias').style.display = 'none';
+        document.getElementById('tela-materias').classList.remove('ativa');
+        document.getElementById('tela-estudo').style.display = 'block';
+        document.getElementById('tela-estudo').classList.add('ativa');
         
-        if (telaMaterias) telaMaterias.style.display = 'none';
-        if (telaEstudo) telaEstudo.style.display = 'block';
+        // ⭐ ADICIONA AO HISTÓRICO DO NAVEGADOR
+        window.history.pushState({ tela: 'estudo' }, '', '?estudo');
         
-        await this.estudo.iniciar(this.materiaSelecionada);
-    }
-
-    setModoSimulacao(ativo) {
-        setModoSimulacao(ativo);
-        console.log(`🔄 Modo: ${ativo ? 'SIMULAÇÃO' : 'REAL'}`);
-        this.carregarDadosIniciais();
-    }
-
-    async carregarDadosIniciais() {
-        await progresso.carregar();
-        await materias.carregar();
+        // Inicia o estudo
+        this.estudo.iniciar(this.materiaSelecionada);
     }
 
     async testarAPI() {
@@ -115,10 +106,8 @@ class App {
         try {
             const materiasData = await get('/materias');
             console.log('✅ Matérias:', materiasData);
-            
             const progressoData = await get('/progresso');
             console.log('✅ Progresso:', progressoData);
-            
             alert('✅ API funcionando!');
         } catch (error) {
             console.error('❌ Erro:', error);
@@ -128,16 +117,6 @@ class App {
 }
 
 const app = new App();
-
 window.app = app;
-window.materias = materias;
-window.estudo = estudo;
-window.progresso = progresso;
-window.flashcardComponent = flashcardComponent;
-window.progressoComponent = progressoComponent;
-window.get = get;
-window.post = post;
-window.put = put;
-window.del = del;
 
 export default app;

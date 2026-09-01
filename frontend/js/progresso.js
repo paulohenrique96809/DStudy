@@ -6,57 +6,52 @@ export class Progresso {
     constructor() {
         this.dados = null;
         this.container = document.getElementById('progresso-container');
-        this.loading = false;
+        console.log('📊 [PROGRESSO] Container:', this.container);
     }
 
     async carregar() {
-        if (this.loading) return this.dados;
-        
-        this.loading = true;
         console.log('📊 [PROGRESSO] Carregando...');
-
         try {
-            // ⭐ SEMPRE BUSCA DA API (QUE MANTÉM O ESTADO PERSISTENTE)
             this.dados = await get('/progresso');
-            console.log('✅ [PROGRESSO] Dados carregados:', this.dados);
+            console.log('✅ [PROGRESSO] Carregado:', this.dados);
             this.renderizar();
             return this.dados;
-
         } catch (error) {
             console.error('❌ [PROGRESSO] Erro:', error);
+            this.container.innerHTML = `<div class="error-state"><p>❌ Erro ao carregar progresso</p></div>`;
             throw error;
-
-        } finally {
-            this.loading = false;
         }
     }
 
     renderizar() {
-        if (!this.container) return;
+        if (!this.container) {
+            console.warn('⚠️ [PROGRESSO] Container não encontrado');
+            return;
+        }
 
         if (!this.dados) {
             this.container.innerHTML = '<p>Carregando progresso...</p>';
             return;
         }
 
-        const progressoGeral = this.dados.progresso_geral || 0;
-        const materiasConcluidas = this.dados.materias_concluidas || 0;
-        const totalMaterias = this.dados.total_materias || 0;
-        const totalDominados = this.dados.flashcards_dominados || 0;
-        const totalFlashcards = this.dados.total_flashcards || 0;
+        const geral = this.dados.progresso_geral || 0;
+        const concluidas = this.dados.materias_concluidas || 0;
+        const total = this.dados.total_materias || 0;
+        const dominados = this.dados.flashcards_dominados || 0;
+        const totalFlash = this.dados.total_flashcards || 0;
 
         this.container.innerHTML = `
             <div class="progresso-geral">
                 <div class="progresso-header">
                     <span>📊 Progresso Geral</span>
-                    <span class="percentual">${progressoGeral}%</span>
+                    <span class="percentual">${geral}%</span>
                 </div>
                 <div class="progresso-bar-grande">
-                    <div class="progresso-fill" style="width: ${progressoGeral}%"></div>
+                    <div class="progresso-fill" style="width: ${geral}%"></div>
                 </div>
                 <div class="progresso-stats">
-                    <span>📚 ${materiasConcluidas}/${totalMaterias} matérias</span>
-                    <span>🃏 ${totalDominados}/${totalFlashcards} flashcards</span>
+                    <span>📚 ${concluidas}/${total} matérias</span>
+                    <span>🃏 ${dominados}/${totalFlash} flashcards</span>
                 </div>
             </div>
             <div class="progresso-materias">
@@ -75,28 +70,12 @@ export class Progresso {
         `;
     }
 
-    /**
-     * ⭐ ATUALIZA O PROGRESSO (RECARREGA DA API)
-     */
-    async atualizar() {
-        await this.carregar();
-    }
-
-    getMateriaProgresso(materiaId) {
-        if (!this.dados || !this.dados.por_materia) return null;
-        return this.dados.por_materia.find(m => m.id === materiaId) || null;
-    }
-
     getProgressoParaCard(materiaId) {
-        const p = this.getMateriaProgresso(materiaId);
-        if (p) {
-            return {
-                total: p.total || 0,
-                dominados: p.dominados || 0,
-                percentual: p.percentual || 0
-            };
+        if (!this.dados || !this.dados.por_materia) {
+            return { total: 0, dominados: 0, percentual: 0 };
         }
-        return { total: 0, dominados: 0, percentual: 0 };
+        const p = this.dados.por_materia.find(m => m.id === materiaId);
+        return p ? { total: p.total, dominados: p.dominados, percentual: p.percentual } : { total: 0, dominados: 0, percentual: 0 };
     }
 }
 
