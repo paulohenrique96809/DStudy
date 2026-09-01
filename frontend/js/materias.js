@@ -3,89 +3,73 @@
 import { get } from './api.js';
 import { progresso } from './progresso.js';
 
-const ICONES_MATERIAS = {
+const ICONES = {
     'Back-End': '⚙️',
     'Front-End': '🎨',
     'Mobile': '📱',
     'Inteligência Artificial': '🤖',
     'Lógica de Programação': '🧠',
     'Redes': '🌐',
-    'Processos': '📋'
+    'Processos': '📋',
+    // ⭐ NOVOS ÍCONES
+    'Versionamento de Código': '🔧',
+    'Carreiras e Competências': '🌟',
+    'Projeto Multidisciplinar': '🎯'
 };
 
-const CORES_MATERIAS = {
+const CORES = {
     'Back-End': '#6c5ce7',
     'Front-End': '#00b894',
     'Mobile': '#0984e3',
     'Inteligência Artificial': '#e17055',
     'Lógica de Programação': '#fdcb6e',
     'Redes': '#00cec9',
-    'Processos': '#fd79a8'
+    'Processos': '#fd79a8',
+    // ⭐ NOVAS CORES
+    'Versionamento de Código': '#e17055',
+    'Carreiras e Competências': '#6c5ce7',
+    'Projeto Multidisciplinar': '#00b894'
 };
 
 export class Materias {
     constructor() {
         this.lista = [];
         this.container = document.getElementById('materias-container');
-        this.loading = false;
+        console.log('📚 [MATERIAS] Container:', this.container);
     }
 
     async carregar() {
-        if (this.loading) return this.lista;
-        
-        this.loading = true;
-        this.mostrarLoading();
-
+        console.log('📚 [MATERIAS] Carregando...');
         try {
             this.lista = await get('/materias');
-            
-            // ⭐ GARANTE QUE O PROGRESSO ESTÁ CARREGADO
-            if (!progresso.dados) {
-                await progresso.carregar();
-            }
-            
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
             this.renderizar();
             return this.lista;
-
         } catch (error) {
             console.error('❌ [MATERIAS] Erro:', error);
-            this.mostrarErro('Erro ao carregar matérias.');
+            this.container.innerHTML = `<div class="error-state"><p>❌ Erro ao carregar matérias</p><button class="btn btn-primary" onclick="location.reload()">🔄 Tentar novamente</button></div>`;
             throw error;
-
-        } finally {
-            this.loading = false;
         }
     }
 
-    /**
-     * ⭐ RENDERIZA USANDO OS DADOS MAIS RECENTES DO PROGRESSO
-     */
     renderizar() {
-        if (!this.container) return;
+        if (!this.container) {
+            console.warn('⚠️ [MATERIAS] Container não encontrado');
+            return;
+        }
 
-        if (this.lista.length === 0) {
+        if (!this.lista || this.lista.length === 0) {
             this.container.innerHTML = `<div class="empty-state"><p>📭 Nenhuma matéria disponível.</p></div>`;
             return;
         }
 
-        // ⭐ USA OS DADOS MAIS RECENTES DO PROGRESSO
-        const dadosProgresso = progresso.dados;
+        console.log(`📚 [MATERIAS] Renderizando ${this.lista.length} matérias...`);
 
         this.container.innerHTML = this.lista.map(materia => {
-            // ⭐ BUSCA O PROGRESSO DA MATÉRIA
-            let p = { total: 0, dominados: 0, percentual: 0 };
-            
-            if (dadosProgresso && dadosProgresso.por_materia) {
-                const encontrado = dadosProgresso.por_materia.find(m => m.id === materia.id);
-                if (encontrado) {
-                    p = encontrado;
-                }
-            }
-            
+            const p = progresso.getProgressoParaCard(materia.id);
             const percentual = Math.round(p.percentual || 0);
-            const icone = ICONES_MATERIAS[materia.nome] || '📚';
-            const cor = CORES_MATERIAS[materia.nome] || '#667eea';
+            const icone = ICONES[materia.nome] || '📚';
+            const cor = CORES[materia.nome] || '#667eea';
             const status = this.getStatus(percentual);
             
             return `
@@ -116,10 +100,15 @@ export class Materias {
             `;
         }).join('');
 
+        // Eventos dos botões
         this.container.querySelectorAll('.btn-estudar').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
+                btn.disabled = true;
+                btn.textContent = '⏳ Carregando...';
                 await this.selecionar(id);
+                btn.disabled = false;
+                btn.textContent = '📖 Estudar';
             });
         });
     }
@@ -137,48 +126,8 @@ export class Materias {
             console.error(`❌ Matéria ${id} não encontrada`);
             return;
         }
-
         console.log(`📖 [MATERIAS] Selecionada: ${materia.nome}`);
-        
-        document.dispatchEvent(new CustomEvent('materiaSelecionada', { 
-            detail: { materia } 
-        }));
-    }
-
-    getPorId(id) {
-        return this.lista.find(m => m.id === id) || null;
-    }
-
-    /**
-     * ⭐ ATUALIZA O PROGRESSO E RE-RENDERIZA
-     */
-    async atualizarProgresso() {
-        await progresso.carregar();
-        this.renderizar();
-    }
-
-    mostrarLoading() {
-        if (this.container) {
-            this.container.innerHTML = `
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <p>Carregando matérias...</p>
-                </div>
-            `;
-        }
-    }
-
-    mostrarErro(mensagem) {
-        if (this.container) {
-            this.container.innerHTML = `
-                <div class="error-state">
-                    <p>❌ ${mensagem}</p>
-                    <button class="btn btn-primary" onclick="window.location.reload()">
-                        🔄 Tentar novamente
-                    </button>
-                </div>
-            `;
-        }
+        document.dispatchEvent(new CustomEvent('materiaSelecionada', { detail: { materia } }));
     }
 }
 

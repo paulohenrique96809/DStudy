@@ -1,14 +1,11 @@
 // frontend/js/api.js
 
-let API_BASE_URL = '';
-let AUTH_TOKEN = null;
 let MODO_SIMULACAO = true;
 
-// ===== PROGRESSO PERSISTENTE (MANTÉM DURANTE A SESSÃO) =====
+// ===== PROGRESSO PERSISTENTE =====
 let progressoPersistente = null;
 
 // ===== DADOS SIMULADOS =====
-
 const DADOS_SIMULADOS = {
     materias: [
         { id: 1, nome: 'Back-End', descricao: 'APIs, bancos de dados e lógica de servidor' },
@@ -17,7 +14,11 @@ const DADOS_SIMULADOS = {
         { id: 4, nome: 'Inteligência Artificial', descricao: 'Machine Learning e algoritmos' },
         { id: 5, nome: 'Lógica de Programação', descricao: 'Algoritmos e estruturas de dados' },
         { id: 6, nome: 'Redes', descricao: 'TCP/IP, roteamento e segurança' },
-        { id: 7, nome: 'Processos', descricao: 'Metodologias e ciclos de desenvolvimento' }
+        { id: 7, nome: 'Processos', descricao: 'Metodologias e ciclos de desenvolvimento' },
+        // ⭐ NOVAS MATÉRIAS
+        { id: 8, nome: 'Versionamento de Código', descricao: 'Git, GitHub e controle de versão' },
+        { id: 9, nome: 'Carreiras e Competências', descricao: 'Soft skills, mercado de trabalho e desenvolvimento profissional' },
+        { id: 10, nome: 'Projeto Multidisciplinar', descricao: 'Integração de conhecimentos em projetos práticos' }
     ],
 
     flashcards: {
@@ -52,16 +53,33 @@ const DADOS_SIMULADOS = {
         7: [
             { id: 17, pergunta: 'O que é Scrum?', resposta: 'Metodologia ágil' },
             { id: 18, pergunta: 'O que é Kanban?', resposta: 'Método visual' }
+        ],
+        // ⭐ FLASHCARDS DAS NOVAS MATÉRIAS
+        8: [
+            { id: 19, pergunta: 'O que é Git?', resposta: 'Sistema de controle de versão distribuído' },
+            { id: 20, pergunta: 'O que é GitHub?', resposta: 'Plataforma de hospedagem de código' },
+            { id: 21, pergunta: 'O que é um commit?', resposta: 'Registro de alterações no código' },
+            { id: 22, pergunta: 'O que é um branch?', resposta: 'Ramo de desenvolvimento paralelo' },
+            { id: 23, pergunta: 'O que é um merge?', resposta: 'Unificação de branches' }
+        ],
+        9: [
+            { id: 24, pergunta: 'O que são soft skills?', resposta: 'Habilidades comportamentais e interpessoais' },
+            { id: 25, pergunta: 'O que é inteligência emocional?', resposta: 'Capacidade de gerenciar emoções' },
+            { id: 26, pergunta: 'O que é networking?', resposta: 'Construção de uma rede de contatos profissionais' },
+            { id: 27, pergunta: 'O que é um plano de carreira?', resposta: 'Estratégia de desenvolvimento profissional' }
+        ],
+        10: [
+            { id: 28, pergunta: 'O que é um projeto multidisciplinar?', resposta: 'Projeto que integra múltiplas áreas do conhecimento' },
+            { id: 29, pergunta: 'O que é metodologia de projeto?', resposta: 'Abordagem estruturada para desenvolvimento de projetos' },
+            { id: 30, pergunta: 'O que é documentação de projeto?', resposta: 'Registro formal das decisões e etapas do projeto' },
+            { id: 31, pergunta: 'O que é um MVP?', resposta: 'Produto Mínimo Viável para validação' }
         ]
     }
 };
 
-// ===== INICIALIZA O PROGRESSO PERSISTENTE =====
+// ===== INICIALIZA PROGRESSO =====
 function inicializarProgresso() {
-    if (progressoPersistente) {
-        console.log('📊 [API] Progresso já existe, mantendo...');
-        return progressoPersistente;
-    }
+    if (progressoPersistente) return progressoPersistente;
     
     progressoPersistente = {
         total_materias: DADOS_SIMULADOS.materias.length,
@@ -81,189 +99,115 @@ function inicializarProgresso() {
         })
     };
     
-    console.log('📊 [API] Progresso inicializado:', progressoPersistente);
     return progressoPersistente;
 }
 
-// ===== FUNÇÕES DE EXPORTAÇÃO =====
+// ===== EXPORTS =====
+export function setModoSimulacao(ativo) { MODO_SIMULACAO = ativo; }
+export function isModoSimulacao() { return MODO_SIMULACAO; }
 
-export function setBaseUrl(url) {
-    API_BASE_URL = url;
-}
-
-export function setToken(token) {
-    AUTH_TOKEN = token;
-}
-
-export function setModoSimulacao(ativo) {
-    MODO_SIMULACAO = ativo;
-    console.log(`🔄 Modo simulação: ${ativo ? 'ATIVADO' : 'DESATIVADO'}`);
-}
-
-export function isModoSimulacao() {
-    return MODO_SIMULACAO;
-}
-
-// ===== FUNÇÃO CENTRAL =====
-
-export async function apiRequest(endpoint, options = {}) {
-    const method = options.method || 'GET';
-    
+// ===== REQUISIÇÃO =====
+export async function get(endpoint) {
     if (MODO_SIMULACAO) {
-        return simularRequisicao(endpoint, options);
+        return simularGet(endpoint);
     }
-
-    // Requisição real
+    
     try {
-        const config = {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            }
-        };
-
-        if (options.body) {
-            config.body = JSON.stringify(options.body);
-        }
-
-        const url = `${API_BASE_URL}${endpoint}`;
-        const response = await fetch(url, config);
-
-        if (!response.ok) {
-            throw new Error(`Erro ${response.status}: ${response.statusText}`);
-        }
-
+        const response = await fetch(endpoint);
+        if (!response.ok) throw new Error(`Erro ${response.status}`);
         return await response.json();
-
     } catch (error) {
-        console.error(`❌ Erro na requisição:`, error);
+        console.error('❌ Erro na requisição:', error);
         throw error;
     }
 }
 
-export async function get(endpoint, options = {}) {
-    return apiRequest(endpoint, { ...options, method: 'GET' });
-}
-
-export async function post(endpoint, data, options = {}) {
-    return apiRequest(endpoint, { ...options, method: 'POST', body: data });
-}
-
-export async function put(endpoint, data, options = {}) {
-    return apiRequest(endpoint, { ...options, method: 'PUT', body: data });
-}
-
-export async function del(endpoint, options = {}) {
-    return apiRequest(endpoint, { ...options, method: 'DELETE' });
-}
-
-// ===== SIMULAÇÃO =====
-
-async function simularRequisicao(endpoint, options = {}) {
-    const method = options.method || 'GET';
-    console.log(`🔵 [SIMULAÇÃO] ${method} ${endpoint}`);
+export async function post(endpoint, data) {
+    if (MODO_SIMULACAO) {
+        return simularPost(endpoint, data);
+    }
     
-    // Inicializa o progresso se não existir
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error(`Erro ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('❌ Erro na requisição:', error);
+        throw error;
+    }
+}
+
+// ===== SIMULAÇÃO GET =====
+async function simularGet(endpoint) {
+    console.log(`🔵 [GET] ${endpoint}`);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     inicializarProgresso();
 
-    // Simula delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    try {
-        let dados = null;
-
-        // ===== MATÉRIAS =====
-        if (endpoint === '/materias' && method === 'GET') {
-            dados = DADOS_SIMULADOS.materias;
-        }
-
-        // ===== FLASHCARDS =====
-        else if (endpoint.includes('/flashcards') && endpoint.includes('/materias/')) {
-            const partes = endpoint.split('/');
-            const materiaId = parseInt(partes[2]);
-            dados = DADOS_SIMULADOS.flashcards[materiaId] || [];
-        }
-
-        // ===== PROGRESSO =====
-        else if (endpoint === '/progresso' && method === 'GET') {
-            // ⭐ RETORNA O PROGRESSO PERSISTENTE
-            dados = progressoPersistente;
-            console.log(`📊 [SIMULAÇÃO] Progresso retornado: ${dados.progresso_geral}%`);
-        }
-
-        // ===== RESPOSTA =====
-        else if (endpoint.includes('/flashcards/') && endpoint.includes('/responder') && method === 'POST') {
-            const partes = endpoint.split('/');
-            const flashcardId = parseInt(partes[2]);
-            const acertou = options.body?.acertou ?? true;
-            
-            console.log(`📝 [SIMULAÇÃO] Flashcard ${flashcardId}: ${acertou ? 'Acertou' : 'Errou'}`);
-            
-            // Encontra a matéria
-            let materiaId = null;
-            for (const [mId, flashcards] of Object.entries(DADOS_SIMULADOS.flashcards)) {
-                if (flashcards.some(f => f.id === flashcardId)) {
-                    materiaId = parseInt(mId);
-                    break;
-                }
-            }
-            
-            // ⭐ ATUALIZA O PROGRESSO PERSISTENTE
-            if (materiaId && progressoPersistente) {
-                const materiaProgresso = progressoPersistente.por_materia.find(m => m.id === materiaId);
-                if (materiaProgresso) {
-                    if (acertou && materiaProgresso.dominados < materiaProgresso.total) {
-                        materiaProgresso.dominados++;
-                        materiaProgresso.percentual = Math.round((materiaProgresso.dominados / materiaProgresso.total) * 100);
-                        console.log(`📊 [SIMULAÇÃO] Matéria ${materiaId}: ${materiaProgresso.dominados}/${materiaProgresso.total} (${materiaProgresso.percentual}%)`);
-                    }
-                }
-                
-                // Recalcula o progresso geral
-                const total = progressoPersistente.por_materia.reduce((acc, m) => acc + m.total, 0);
-                const dominados = progressoPersistente.por_materia.reduce((acc, m) => acc + m.dominados, 0);
-                progressoPersistente.flashcards_dominados = dominados;
-                progressoPersistente.progresso_geral = Math.round((dominados / total) * 100);
-                progressoPersistente.materias_concluidas = progressoPersistente.por_materia.filter(m => m.percentual >= 100).length;
-                
-                console.log(`📊 [SIMULAÇÃO] Progresso geral: ${dominados}/${total} (${progressoPersistente.progresso_geral}%)`);
-            }
-            
-            dados = {
-                success: true,
-                flashcard_id: flashcardId,
-                acertou: acertou,
-                sequencia: acertou ? 1 : 0,
-                dominado: false,
-                mensagem: acertou ? '✅ Resposta correta!' : '❌ Resposta incorreta.'
-            };
-        }
-
-        // ===== ROTA NÃO ENCONTRADA =====
-        else {
-            console.warn(`⚠️ [SIMULAÇÃO] Rota não mapeada: ${endpoint}`);
-            dados = { error: 'Rota não encontrada' };
-        }
-
-        return dados;
-
-    } catch (error) {
-        console.error(`❌ [SIMULAÇÃO] Erro:`, error);
-        throw error;
+    if (endpoint === '/materias') {
+        return DADOS_SIMULADOS.materias;
     }
+    
+    if (endpoint.includes('/materias/') && endpoint.includes('/flashcards')) {
+        const partes = endpoint.split('/');
+        const materiaId = parseInt(partes[2]);
+        return DADOS_SIMULADOS.flashcards[materiaId] || [];
+    }
+    
+    if (endpoint === '/progresso') {
+        return progressoPersistente;
+    }
+    
+    return { error: 'Rota não encontrada' };
 }
 
-// ===== EXPORTA =====
+// ===== SIMULAÇÃO POST =====
+async function simularPost(endpoint, data) {
+    console.log(`🔵 [POST] ${endpoint}`, data);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    inicializarProgresso();
 
-export default {
-    get,
-    post,
-    put,
-    del,
-    apiRequest,
-    setBaseUrl,
-    setToken,
-    setModoSimulacao,
-    isModoSimulacao
-};
+    if (endpoint.includes('/flashcards/') && endpoint.includes('/responder')) {
+        const partes = endpoint.split('/');
+        const flashcardId = parseInt(partes[2]);
+        const acertou = data?.acertou ?? true;
+        
+        // Encontra a matéria
+        let materiaId = null;
+        for (const [mId, flashcards] of Object.entries(DADOS_SIMULADOS.flashcards)) {
+            if (flashcards.some(f => f.id === flashcardId)) {
+                materiaId = parseInt(mId);
+                break;
+            }
+        }
+        
+        // Atualiza progresso
+        if (materiaId && progressoPersistente) {
+            const materiaProgresso = progressoPersistente.por_materia.find(m => m.id === materiaId);
+            if (materiaProgresso && acertou && materiaProgresso.dominados < materiaProgresso.total) {
+                materiaProgresso.dominados++;
+                materiaProgresso.percentual = Math.round((materiaProgresso.dominados / materiaProgresso.total) * 100);
+            }
+            
+            const total = progressoPersistente.por_materia.reduce((acc, m) => acc + m.total, 0);
+            const dominados = progressoPersistente.por_materia.reduce((acc, m) => acc + m.dominados, 0);
+            progressoPersistente.flashcards_dominados = dominados;
+            progressoPersistente.progresso_geral = Math.round((dominados / total) * 100);
+            progressoPersistente.materias_concluidas = progressoPersistente.por_materia.filter(m => m.percentual >= 100).length;
+        }
+        
+        return {
+            success: true,
+            flashcard_id: flashcardId,
+            acertou: acertou,
+            mensagem: acertou ? '✅ Resposta correta!' : '❌ Resposta incorreta.'
+        };
+    }
+    
+    return { error: 'Rota não encontrada' };
+}

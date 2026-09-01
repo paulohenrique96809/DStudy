@@ -122,3 +122,35 @@
 	- Mantém estado do progresso no api.js
 	- Progresso não é resetado ao voltar para matérias
 	- Sincronização correta entre todos os módulos
+
+01/09/2026 *Paulodev* - seleção de matéria com feedback visual - P05
+
+	- Adiciona destaque no card selecionado
+	- Pré-carrega flashcards antes de navegar
+	- Transição suave entre telas
+	- Botão com estado de loading
+	- Persiste seleção na URL (?materia=id)
+	- Scroll suave para o card selecionado
+
+	- Adiciona flag 'carregado' para prevenir recarregamento desnecessário
+	- Adiciona flag 'loading' para prevenir carregamento simultâneo
+	- Adiciona verificação de inicialização no main.js
+	- Corrige loop entre materias e progresso
+
+	- Adiciona logs para debug
+	- Simplifica lógica de carregamento
+	- Garante containers existem
+	- Remove flags problemáticas
+
+	- Adiciona history.pushState() ao entrar no estudo
+	- Escuta evento popstate para detectar voltar
+	- Adiciona botão Voltar na tela de estudo
+	- Mantém progresso ao voltar
+
+---------------------------------------------------------------
+
+- Matérias são exibidas em cards com ícones e cores
+- Progresso individual por matéria
+- Clique em 'Estudar' navega para tela de estudo
+- Botão voltar do navegador funciona
+- Progresso persistente durante a sessão
