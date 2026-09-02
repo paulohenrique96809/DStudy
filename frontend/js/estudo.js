@@ -59,8 +59,12 @@ export class Estudo {
         this.estaRespondendo = false;
 
         this.atualizarInfo();
-        flashcardComponent.renderizar(this.flashcardAtual);
-        this.configurarEventos();
+        
+        // ⭐ Renderiza o flashcard com callback
+        flashcardComponent.renderizar(
+            this.flashcardAtual,
+            (acertou) => this.responder(acertou)
+        );
     }
 
     atualizarInfo() {
@@ -71,47 +75,29 @@ export class Estudo {
         const progressoEstudo = Math.round((this.indiceAtual / total) * 100);
 
         this.infoContainer.innerHTML = `
-            <div class="estudo-info">
-                <span class="materia-titulo">📚 ${this.materia.nome}</span>
-                <span class="progresso-texto">${atual} / ${total} flashcards</span>
-                <div class="progresso-bar">
+            <div class="estudo-header">
+                <div class="estudo-materia">
+                    <span class="materia-icone">📚</span>
+                    <span class="materia-nome">${this.materia.nome}</span>
+                </div>
+                <div class="estudo-contador">
+                    <span class="contador-atual">${atual}</span>
+                    <span class="contador-separador">/</span>
+                    <span class="contador-total">${total}</span>
+                </div>
+            </div>
+            <div class="estudo-progresso">
+                <div class="progresso-barra">
                     <div class="progresso-fill" style="width: ${progressoEstudo}%"></div>
                 </div>
+                <span class="progresso-texto">${progressoEstudo}%</span>
             </div>
         `;
     }
 
-    configurarEventos() {
-        const btnMostrar = document.getElementById('btn-mostrar-resposta');
-        const btnAcertou = document.getElementById('btn-acertou');
-        const btnErrou = document.getElementById('btn-errou');
-
-        if (btnMostrar) {
-            btnMostrar.onclick = () => this.mostrarResposta();
-        }
-
-        if (btnAcertou) {
-            btnAcertou.onclick = () => this.responder(true);
-        }
-
-        if (btnErrou) {
-            btnErrou.onclick = () => this.responder(false);
-        }
-    }
-
-    mostrarResposta() {
-        if (this.estaRespondendo) return;
-        this.estaRespondendo = true;
-        flashcardComponent.mostrarResposta();
-    }
-
     async responder(acertou) {
-        if (!this.flashcardAtual) return;
-
-        const btnAcertou = document.getElementById('btn-acertou');
-        const btnErrou = document.getElementById('btn-errou');
-        btnAcertou.disabled = true;
-        btnErrou.disabled = true;
+        if (this.estaRespondendo || !this.flashcardAtual) return;
+        this.estaRespondendo = true;
 
         console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
 
@@ -122,34 +108,40 @@ export class Estudo {
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
+            // ⭐ Mostra feedback com informações adicionais
+            flashcardComponent.mostrarFeedback(acertou, resultado);
+
+            // Aguarda um momento para o usuário ver o feedback
+            await this.aguardar(1200);
+
             // Recarrega progresso
             await progresso.carregar();
             materias.renderizar();
 
-            flashcardComponent.mostrarFeedback(acertou);
-            await this.aguardar(800);
+            // Prepara para o próximo
+            flashcardComponent.prepararProximo();
 
+            // Avança
             this.indiceAtual++;
             this.mostrarFlashcard();
 
         } catch (error) {
             console.error('❌ [ESTUDO] Erro:', error);
             flashcardComponent.mostrarErro('Erro ao registrar resposta.');
-            btnAcertou.disabled = false;
-            btnErrou.disabled = false;
+            this.estaRespondendo = false;
         }
     }
 
     concluirEstudo() {
         console.log('🎉 [ESTUDO] Estudo concluído!');
-        flashcardComponent.limpar();
+        
+        // ⭐ Mostra tela de conclusão
+        flashcardComponent.mostrarConclusao(this.materia.nome);
         
         if (this.infoContainer) {
             this.infoContainer.innerHTML = `
-                <div class="estudo-concluido">
-                    <h3>🎉 Estudo concluído!</h3>
-                    <p>Você completou todos os flashcards de ${this.materia.nome}.</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 10px;">💡 Use o botão de voltar do navegador para retornar.</p>
+                <div class="estudo-concluido-info">
+                    <p>🎉 Parabéns! Você completou todos os flashcards de <strong>${this.materia.nome}</strong>!</p>
                 </div>
             `;
         }
@@ -158,6 +150,9 @@ export class Estudo {
     mostrarMensagem(mensagem) {
         if (this.container) {
             this.container.innerHTML = `<p class="empty-state">${mensagem}</p>`;
+        }
+        if (this.infoContainer) {
+            this.infoContainer.innerHTML = '';
         }
     }
 

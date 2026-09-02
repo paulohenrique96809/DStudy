@@ -285,6 +285,83 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             min-height: 400px;
         }
+        /* ===== ESTUDO - HEADER ===== */
+        .estudo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .estudo-materia {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .estudo-materia .materia-icone {
+            font-size: 20px;
+        }
+
+        .estudo-materia .materia-nome {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .estudo-contador {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .estudo-contador .contador-atual {
+            font-weight: 700;
+            color: #2d3436;
+            font-size: 20px;
+        }
+
+        .estudo-contador .contador-separador {
+            color: #b2bec3;
+        }
+
+        .estudo-contador .contador-total {
+            color: #636e72;
+        }
+
+                /* ===== PROGRESSO DO ESTUDO ===== */
+        .estudo-progresso {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .estudo-progresso .progresso-barra {
+            flex: 1;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .estudo-progresso .progresso-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .estudo-progresso .progresso-texto {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 40px;
+            text-align: right;
+        }
+
         
         #estudo-info {
             margin-bottom: 20px;
@@ -349,6 +426,99 @@
             font-weight: 600;
             font-size: 18px;
         }
+
+        /* ===== FLASHCARD 3D ===== */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            margin: 10px 0;
+        }
+
+        .flashcard-3d {
+            position: relative;
+            width: 100%;
+            min-height: 320px;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-3d.virado {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 320px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px solid #f0f0f0;
+        }
+
+        .flashcard-front {
+            transform: rotateY(0deg);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-badge {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+
+        .flashcard-pergunta {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3436;
+            text-align: center;
+            line-height: 1.4;
+            margin: 10px 0;
+        }
+
+        .flashcard-resposta {
+            font-size: 22px;
+            color: #28a745;
+            text-align: center;
+            line-height: 1.4;
+            margin: 10px 0;
+            padding: 16px 20px;
+            background: #d4edda;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .flashcard-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .flashcard-actions .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .flashcard-actions .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         
         .feedback-success {
             background: #d4edda;
@@ -361,6 +531,85 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        /* ===== FEEDBACK ===== */
+        .flashcard-feedback {
+            margin-top: 16px;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .flashcard-feedback .feedback-success,
+        .flashcard-feedback .feedback-error {
+            padding: 16px 20px;
+            border-radius: 12px;
+            text-align: center;
+            animation: feedbackIn 0.4s ease;
+        }
+
+        .flashcard-feedback .feedback-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .flashcard-feedback .feedback-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .flashcard-feedback .feedback-mensagem {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .flashcard-feedback .feedback-dominado {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 16px;
+            background: #ffd700;
+            color: #856404;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .flashcard-feedback .feedback-sequencia {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #667eea;
+        }
+
+        .flashcard-conclusao {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .flashcard-conclusao .conclusao-icone {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .flashcard-conclusao h2 {
+            font-size: 28px;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .flashcard-conclusao p {
+            font-size: 18px;
+            color: #636e72;
+            margin-bottom: 20px;
+        }
+
+        .flashcard-conclusao .btn {
+            padding: 12px 32px;
+            font-size: 16px;
+        }
+
         
         .estudo-concluido {
             text-align: center;
@@ -394,6 +643,12 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        @keyframes feedbackIn {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
         
         .empty-state, .error-state {
             text-align: center;
@@ -418,4 +673,19 @@
             .flashcard-actions .btn {
                 width: 100%;
             }
+            .flashcard-pergunta {
+                font-size: 20px;
+            }
+            .flashcard-resposta {
+                font-size: 18px;
+            }
+            .flashcard-face {
+                padding: 20px;
+                min-height: 260px;
+            }
+            .estudo-header {
+                flex-direction: column;
+                gap: 4px;
+                align-items: flex-start;
+         }
         }
