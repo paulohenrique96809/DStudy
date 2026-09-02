@@ -154,3 +154,14 @@
 - Clique em 'Estudar' navega para tela de estudo
 - Botão voltar do navegador funciona
 - Progresso persistente durante a sessão
+
+02/09/2026 - *Paulodev* - tela de estudo com animação 3D - P06
+
+	- Adiciona efeito de virar flashcard (3D)
+	- Melhora design da tela de estudo
+	- Adiciona barra de progresso da sessão
+	- Feedback visual com animação
+	- Tecla Espaço para virar o cartão
+	- Tela de conclusão ao finalizar
+	- Componente flashcard preparado para P07
+
