@@ -4,7 +4,7 @@ import { materias } from './materias.js';
 import { estudo } from './estudo.js';
 import { progresso } from './progresso.js';
 import { flashcardComponent } from './components/flashcard.js';
-import { setModoSimulacao, isModoSimulacao, get, post } from './api.js';
+import { isModoSimulacao, verificarAPI, get, post } from './api.js';
 
 class App {
     constructor() {
@@ -21,14 +21,14 @@ class App {
 
     async init() {
         console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-        console.log('📦 Versão: P05 - Seleção de matéria');
+        console.log('📦 Versão: P05.5 - Integração com API Real');
         
-        setModoSimulacao(true);
-        console.log(`🔧 API: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
+        // ⭐ VERIFICA SE A API ESTÁ ONLINE
+        const apiOnline = await verificarAPI();
+        console.log(`🔧 Modo: ${apiOnline ? 'API REAL' : 'SIMULAÇÃO'}`);
         
         this.setupEventListeners();
         
-        // Carrega dados
         await this.progresso.carregar();
         await this.materias.carregar();
         
@@ -40,46 +40,34 @@ class App {
     }
 
     setupEventListeners() {
-        // ⭐ ESCUTA SELEÇÃO DE MATÉRIA
         document.addEventListener('materiaSelecionada', (e) => {
             this.materiaSelecionada = e.detail.materia;
             this.mostrarTelaEstudo();
         });
 
-        // ⭐ ESCUTA O BOTÃO VOLTAR DO NAVEGADOR
         window.addEventListener('popstate', (e) => {
-            console.log('🔙 [MAIN] Popstate detectado, voltando para matérias...');
             this.mostrarTelaMaterias();
         });
     }
 
-    /**
-     * ⭐ MOSTRA TELA DE MATÉRIAS
-     */
     mostrarTelaMaterias() {
+        if (this.telaAtual === 'materias') return;
+        
         this.telaAtual = 'materias';
         this.materiaSelecionada = null;
         
-        // Troca as telas
         document.getElementById('tela-materias').style.display = 'block';
         document.getElementById('tela-materias').classList.add('ativa');
         document.getElementById('tela-estudo').style.display = 'none';
         document.getElementById('tela-estudo').classList.remove('ativa');
         
-        // Limpa o estudo
         this.estudo.mostrarMensagem('');
         this.flashcardComponent.limpar();
         
-        // Recarrega dados
         this.progresso.carregar();
         this.materias.renderizar();
-        
-        console.log('📊 [MAIN] Voltou para matérias');
     }
 
-    /**
-     * ⭐ MOSTRA TELA DE ESTUDO
-     */
     mostrarTelaEstudo() {
         if (!this.materiaSelecionada) {
             console.error('❌ Nenhuma matéria selecionada');
@@ -88,26 +76,22 @@ class App {
 
         this.telaAtual = 'estudo';
         
-        // Troca as telas
         document.getElementById('tela-materias').style.display = 'none';
         document.getElementById('tela-materias').classList.remove('ativa');
         document.getElementById('tela-estudo').style.display = 'block';
         document.getElementById('tela-estudo').classList.add('ativa');
         
-        // ⭐ ADICIONA AO HISTÓRICO DO NAVEGADOR
         window.history.pushState({ tela: 'estudo' }, '', '?estudo');
         
-        // Inicia o estudo
         this.estudo.iniciar(this.materiaSelecionada);
     }
 
     async testarAPI() {
         console.log('🧪 Testando API...');
+        console.log(`Modo atual: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
         try {
             const materiasData = await get('/materias');
             console.log('✅ Matérias:', materiasData);
-            const progressoData = await get('/progresso');
-            console.log('✅ Progresso:', progressoData);
             alert('✅ API funcionando!');
         } catch (error) {
             console.error('❌ Erro:', error);
