@@ -165,3 +165,35 @@
 	- Tela de conclusão ao finalizar
 	- Componente flashcard preparado para P07
 
+12/09/2026 - *Paulodev e Ingredydev* - Versionamento do Back-End para a branch Ingredydev
+
+	-Adição de:
+		Pasta database;
+			connection.py
+			seeds.sql
+		Pasta models;
+			flashcard.py
+			materia.py
+			progresso.py
+			usuario.py
+		Pasta routes;
+			auth.py
+			flashcards.py
+			materias.py
+			progresso.py
+		Arquivo .env;
+		Arquivo app.py;
+		Arquivo requirements.txt;
+
+12/09/2026 - *Paulodev* - dados simulados voltam a funcionar, atualiza matérias com nomes oficiais da API
+	- Substitui dados simulados antigos pelos oficiais
+	- Adiciona 'Modelagem e Desenvolvimento de Banco de Dados'
+	- Atualiza ícones e cores para nomes reais
+	- Adiciona flashcard com alternativas
+	- Adiciona fallback automático se API falhar
+
+	- Começa em modo simulação por padrão
+	- Adiciona timeout nas requisições
+	- Fallback automático se API falhar
+	- Corrige exibição das 10 matérias
+	- Mantém dados simulados sincronizados
