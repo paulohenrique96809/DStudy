@@ -197,3 +197,36 @@
 	- Fallback automático se API falhar
 	- Corrige exibição das 10 matérias
 	- Mantém dados simulados sincronizados
+
+15/09/2026 - *Paulodev* - componente de flashcard componentizado - P07
+
+	- Adiciona suporte a flashcards com alternativas
+	- Implementa seleção visual de alternativas
+	- Adiciona atalhos de teclado (Espaço, Esc)
+	- Adiciona acessibilidade (ARIA + role)
+	- Adiciona proteção contra XSS (_escapeHtml)
+	- Define API clara com callbacks (onRevelar, onResponder)
+	- Estudo.js agora usa callbacks do componente
+	- Adiciona CSS para alternativas e feedback
+
+	fix: fallback silencioso para rotas não implementadas
+
+	- Adiciona lista de rotas disponíveis na API real
+	- Rotas não implementadas usam simulação automaticamente
+	- Adiciona lógica de sequência (3 acertos = dominado)
+	- Remove erros visíveis ao responder flashcards
+
+	fix: corrige callback onResponder no estudo.js
+
+	- Adiciona parâmetro respostaSelecionada no callback
+	- Callback agora recebe (acertou, respostaSelecionada)
+	- Remove referência a variável não declarada
+
+	verificação automática de resposta - P07
+
+	- Remove botões Acertei/Errei manuais
+	- Adiciona comparação automática de alternativas
+	- Destaca visualmente alternativa correta/incorreta
+	- Mostra a resposta do aluno vs resposta correta
+	- Adiciona atalhos de teclado 1-4 para alternativas
+	- Avança automaticamente após 2 segundos
