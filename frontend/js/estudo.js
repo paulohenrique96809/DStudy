@@ -31,7 +31,7 @@ export class Estudo {
                 return;
             }
 
-            this.flashcards = resposta.filter(f => f && f.pergunta && f.resposta);
+            this.flashcards = resposta.filter(f => f && f.pergunta);
 
             if (this.flashcards.length === 0) {
                 this.mostrarMensagem('⚠️ Nenhum flashcard válido.');
@@ -60,11 +60,17 @@ export class Estudo {
 
         this.atualizarInfo();
         
-        // ⭐ Renderiza o flashcard com callback
-        flashcardComponent.renderizar(
-            this.flashcardAtual,
-            (acertou) => this.responder(acertou)
-        );
+        // ⭐ Callback simplificado - o flashcard já calcula acertou
+        flashcardComponent.renderizar(this.flashcardAtual, {
+            onRevelar: (flashcard) => this._aoRevelar(flashcard),
+            onResponder: (acertou, respostaSelecionada) => {
+                this.responder(acertou, respostaSelecionada);
+            }
+        });
+    }
+
+    _aoRevelar(flashcard) {
+        console.log(`👁️ [ESTUDO] Resposta revelada: ${flashcard.id}`);
     }
 
     atualizarInfo() {
@@ -95,33 +101,35 @@ export class Estudo {
         `;
     }
 
-    async responder(acertou) {
+    /**
+     * ⭐ RESPONDE
+     */
+    async responder(acertou, respostaSelecionada = null) {
         if (this.estaRespondendo || !this.flashcardAtual) return;
         this.estaRespondendo = true;
 
-        console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
+        console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅' : '❌'}`, respostaSelecionada ? `(${respostaSelecionada})` : '');
 
         try {
             const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
-                acertou: acertou
+                acertou: acertou,
+                resposta_selecionada: respostaSelecionada
             });
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
-            // ⭐ Mostra feedback com informações adicionais
+            // Mostra feedback com informações adicionais
             flashcardComponent.mostrarFeedback(acertou, resultado);
 
-            // Aguarda um momento para o usuário ver o feedback
-            await this.aguardar(1200);
+            // Aguarda antes de avançar
+            await this.aguardar(2000);
 
             // Recarrega progresso
             await progresso.carregar();
             materias.renderizar();
 
-            // Prepara para o próximo
-            flashcardComponent.prepararProximo();
-
             // Avança
+            flashcardComponent.prepararProximo();
             this.indiceAtual++;
             this.mostrarFlashcard();
 
@@ -134,17 +142,7 @@ export class Estudo {
 
     concluirEstudo() {
         console.log('🎉 [ESTUDO] Estudo concluído!');
-        
-        // ⭐ Mostra tela de conclusão
         flashcardComponent.mostrarConclusao(this.materia.nome);
-        
-        if (this.infoContainer) {
-            this.infoContainer.innerHTML = `
-                <div class="estudo-concluido-info">
-                    <p>🎉 Parabéns! Você completou todos os flashcards de <strong>${this.materia.nome}</strong>!</p>
-                </div>
-            `;
-        }
     }
 
     mostrarMensagem(mensagem) {

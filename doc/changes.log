@@ -165,3 +165,68 @@
 	- Tela de conclusão ao finalizar
 	- Componente flashcard preparado para P07
 
+12/09/2026 - *Paulodev e Ingredydev* - Versionamento do Back-End para a branch Ingredydev
+
+	-Adição de:
+		Pasta database;
+			connection.py
+			seeds.sql
+		Pasta models;
+			flashcard.py
+			materia.py
+			progresso.py
+			usuario.py
+		Pasta routes;
+			auth.py
+			flashcards.py
+			materias.py
+			progresso.py
+		Arquivo .env;
+		Arquivo app.py;
+		Arquivo requirements.txt;
+
+12/09/2026 - *Paulodev* - dados simulados voltam a funcionar, atualiza matérias com nomes oficiais da API
+	- Substitui dados simulados antigos pelos oficiais
+	- Adiciona 'Modelagem e Desenvolvimento de Banco de Dados'
+	- Atualiza ícones e cores para nomes reais
+	- Adiciona flashcard com alternativas
+	- Adiciona fallback automático se API falhar
+
+	- Começa em modo simulação por padrão
+	- Adiciona timeout nas requisições
+	- Fallback automático se API falhar
+	- Corrige exibição das 10 matérias
+	- Mantém dados simulados sincronizados
+
+15/09/2026 - *Paulodev* - componente de flashcard componentizado - P07
+
+	- Adiciona suporte a flashcards com alternativas
+	- Implementa seleção visual de alternativas
+	- Adiciona atalhos de teclado (Espaço, Esc)
+	- Adiciona acessibilidade (ARIA + role)
+	- Adiciona proteção contra XSS (_escapeHtml)
+	- Define API clara com callbacks (onRevelar, onResponder)
+	- Estudo.js agora usa callbacks do componente
+	- Adiciona CSS para alternativas e feedback
+
+	fix: fallback silencioso para rotas não implementadas
+
+	- Adiciona lista de rotas disponíveis na API real
+	- Rotas não implementadas usam simulação automaticamente
+	- Adiciona lógica de sequência (3 acertos = dominado)
+	- Remove erros visíveis ao responder flashcards
+
+	fix: corrige callback onResponder no estudo.js
+
+	- Adiciona parâmetro respostaSelecionada no callback
+	- Callback agora recebe (acertou, respostaSelecionada)
+	- Remove referência a variável não declarada
+
+	verificação automática de resposta - P07
+
+	- Remove botões Acertei/Errei manuais
+	- Adiciona comparação automática de alternativas
+	- Destaca visualmente alternativa correta/incorreta
+	- Mostra a resposta do aluno vs resposta correta
+	- Adiciona atalhos de teclado 1-4 para alternativas
+	- Avança automaticamente após 2 segundos

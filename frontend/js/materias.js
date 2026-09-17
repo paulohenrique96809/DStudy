@@ -3,32 +3,31 @@
 import { get } from './api.js';
 import { progresso } from './progresso.js';
 
+// ⭐ NOMES OFICIAIS DA API
 const ICONES = {
-    'Back-End': '⚙️',
-    'Front-End': '🎨',
-    'Mobile': '📱',
+    'Modelagem e Desenvolvimento de Banco de Dados': '🗄️',
     'Inteligência Artificial': '🤖',
+    'Programação Back-End': '⚙️',
+    'Programação Front-End': '🎨',
+    'Programação Mobile': '📱',
+    'Projeto Multidisciplinar em Desenvolvimento de Sistemas': '🎯',
+    'Versionamento de Código e Sistemas de Mensageria': '🔧',
     'Lógica de Programação': '🧠',
-    'Redes': '🌐',
-    'Processos': '📋',
-    // ⭐ NOVOS ÍCONES
-    'Versionamento de Código': '🔧',
-    'Carreiras e Competências': '🌟',
-    'Projeto Multidisciplinar': '🎯'
+    'Processos de Desenvolvimento de Software': '📋',
+    'Redes e Segurança': '🌐'
 };
 
 const CORES = {
-    'Back-End': '#6c5ce7',
-    'Front-End': '#00b894',
-    'Mobile': '#0984e3',
+    'Modelagem e Desenvolvimento de Banco de Dados': '#6c5ce7',
     'Inteligência Artificial': '#e17055',
-    'Lógica de Programação': '#fdcb6e',
-    'Redes': '#00cec9',
-    'Processos': '#fd79a8',
-    // ⭐ NOVAS CORES
-    'Versionamento de Código': '#e17055',
-    'Carreiras e Competências': '#6c5ce7',
-    'Projeto Multidisciplinar': '#00b894'
+    'Programação Back-End': '#0984e3',
+    'Programação Front-End': '#00b894',
+    'Programação Mobile': '#fd79a8',
+    'Projeto Multidisciplinar em Desenvolvimento de Sistemas': '#fdcb6e',
+    'Versionamento de Código e Sistemas de Mensageria': '#a29bfe',
+    'Lógica de Programação': '#fab1a0',
+    'Processos de Desenvolvimento de Software': '#00cec9',
+    'Redes e Segurança': '#d63031'
 };
 
 export class Materias {
@@ -53,10 +52,7 @@ export class Materias {
     }
 
     renderizar() {
-        if (!this.container) {
-            console.warn('⚠️ [MATERIAS] Container não encontrado');
-            return;
-        }
+        if (!this.container) return;
 
         if (!this.lista || this.lista.length === 0) {
             this.container.innerHTML = `<div class="empty-state"><p>📭 Nenhuma matéria disponível.</p></div>`;
@@ -71,7 +67,7 @@ export class Materias {
             const icone = ICONES[materia.nome] || '📚';
             const cor = CORES[materia.nome] || '#667eea';
             const status = this.getStatus(percentual);
-            
+
             return `
                 <div class="materia-card" data-id="${materia.id}" style="border-left-color: ${cor};">
                     <div class="materia-header">
@@ -82,7 +78,7 @@ export class Materias {
                     </div>
                     <h3 class="materia-nome">${materia.nome}</h3>
                     <p class="materia-descricao">${materia.descricao || 'Sem descrição'}</p>
-                    
+
                     <div class="materia-progresso">
                         <div class="progresso-info">
                             <span class="progresso-texto">${p.dominados}/${p.total} flashcards</span>
@@ -92,7 +88,7 @@ export class Materias {
                             <div class="progresso-fill" style="width: ${percentual}%; background: ${cor};"></div>
                         </div>
                     </div>
-                    
+
                     <button class="btn btn-primary btn-estudar" data-id="${materia.id}">
                         📖 Estudar
                     </button>
@@ -100,7 +96,6 @@ export class Materias {
             `;
         }).join('');
 
-        // Eventos dos botões
         this.container.querySelectorAll('.btn-estudar').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = parseInt(e.target.dataset.id);
