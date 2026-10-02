@@ -14,6 +14,10 @@ export class Estudo {
         this.estaRespondendo = false;
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
+        
+        // ⭐ USUÁRIO FIXO (temporário até ter login)
+        this.usuarioId = 1;
+        
         console.log('📖 [ESTUDO] Container:', this.container);
     }
 
@@ -24,7 +28,7 @@ export class Estudo {
         try {
             this.mostrarLoading();
 
-            const resposta = await get(`/materias/${materia.id}/flashcards`);
+            const resposta = await get(`/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
                 this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
@@ -60,12 +64,10 @@ export class Estudo {
 
         this.atualizarInfo();
         
-        // ⭐ Callback simplificado - o flashcard já calcula acertou
+        // ⭐ RENDERIZA COM CALLBACK
         flashcardComponent.renderizar(this.flashcardAtual, {
             onRevelar: (flashcard) => this._aoRevelar(flashcard),
-            onResponder: (acertou, respostaSelecionada) => {
-                this.responder(acertou, respostaSelecionada);
-            }
+            onResponder: (letraEscolhida) => this.responder(letraEscolhida)
         });
     }
 
@@ -102,40 +104,61 @@ export class Estudo {
     }
 
     /**
-     * ⭐ RESPONDE
+     * ⭐ RESPONDE - ENVIA A LETRA ESCOLHIDA PARA O BACK-END
+     * 
+     * @param {string} letraEscolhida - 'a', 'b', 'c' ou 'd'
      */
-    async responder(acertou, respostaSelecionada = null) {
+    async responder(letraEscolhida) {
         if (this.estaRespondendo || !this.flashcardAtual) return;
         this.estaRespondendo = true;
 
-        console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅' : '❌'}`, respostaSelecionada ? `(${respostaSelecionada})` : '');
+        console.log(`📝 [ESTUDO] Resposta: letra "${letraEscolhida}"`);
 
         try {
-            const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
-                acertou: acertou,
-                resposta_selecionada: respostaSelecionada
-            });
+            // ⭐ MONTA O PAYLOAD NO FORMATO DA INGREDY
+            const payload = {
+                usuario_id: this.usuarioId,
+                flashcard_id: this.flashcardAtual.id,
+                resposta: letraEscolhida  // ⭐ Só a letra!
+            };
+
+            console.log('📤 [ESTUDO] Enviando para /responder:', payload);
+
+            const resultado = await post('/responder', payload);
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
+            // resultado esperado: { acertou, correta, dominado, acertos_consecutivos }
 
-            // Mostra feedback com informações adicionais
-            flashcardComponent.mostrarFeedback(acertou, resultado);
+            // ⭐ MOSTRA O RESULTADO NO VERSO DO CARD
+            flashcardComponent.mostrarResultado(resultado.acertou, {
+                correta: resultado.correta || '?',
+                dominado: resultado.dominado,
+                sequencia: resultado.acertos_consecutivos
+            });
 
-            // Aguarda antes de avançar
-            await this.aguardar(2000);
+            // ⭐ MOSTRA O FEEDBACK
+            flashcardComponent.mostrarFeedback(resultado.acertou, {
+                dominado: resultado.dominado,
+                sequencia: resultado.acertos_consecutivos
+            });
+
+            // Aguarda o usuário ver o feedback
+            await this.aguardar(2500);
 
             // Recarrega progresso
             await progresso.carregar();
             materias.renderizar();
 
-            // Avança
+            // Prepara para o próximo
             flashcardComponent.prepararProximo();
+
+            // Avança
             this.indiceAtual++;
             this.mostrarFlashcard();
 
         } catch (error) {
-            console.error('❌ [ESTUDO] Erro:', error);
-            flashcardComponent.mostrarErro('Erro ao registrar resposta.');
+            console.error('❌ [ESTUDO] Erro ao registrar:', error);
+            flashcardComponent.mostrarErro(`Erro: ${error.message || 'Não foi possível registrar'}`);
             this.estaRespondendo = false;
         }
     }
