@@ -42,6 +42,41 @@ export class FlashcardComponent {
         console.log('🃏 [FLASHCARD] Container:', this.container);
     }
 
+    _configurarTeclado() {
+        document.addEventListener('keydown', (e) => {
+            if (!this.flashcard) return;
+
+            // Espaço: virar o cartão (só se ainda não virou)
+            if (e.key === ' ' && !this.mostrandoResposta && !this.animando) {
+                e.preventDefault();
+                this.mostrarResposta();
+            }
+
+            // Enter: seleciona a alternativa destacada
+            if (e.key === 'Enter' && !this.mostrandoResposta) {
+                const selecionada = this.container.querySelector('.alternativa-item.selected');
+                if (selecionada) {
+                    e.preventDefault();
+                    this.mostrarResposta();
+                }
+            }
+
+            // Teclas 1-4: seleciona alternativa por número
+            if (['1', '2', '3', '4'].includes(e.key) && !this.mostrandoResposta) {
+                const index = parseInt(e.key) - 1;
+                const alternativas = this.container.querySelectorAll('.alternativa-item');
+                if (alternativas[index]) {
+                    e.preventDefault();
+                    this._selecionarAlternativa(alternativas[index]);
+                }
+            }
+
+            if (e.key === 'Escape') {
+                this.limparFeedback();
+            }
+        });
+    }
+
     /**
      * ⭐ CONFIGURA ATALHOS DE TECLADO
      */
