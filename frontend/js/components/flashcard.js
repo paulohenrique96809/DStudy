@@ -4,10 +4,25 @@
  * FLASHCARD - Componente visual de flashcard
  * 
  * Responsabilidades:
- * - Renderizar o flashcard (pergunta + alternativas)
+ * - Renderizar o flashcard (pergunta + alternativas alt_a/b/c/d)
  * - Controlar o estado (frente/verso) com animação 3D
+ * - Mostrar badge de dificuldade (⭐ a ⭐⭐⭐⭐)
  * - Comparar a resposta do aluno automaticamente
  * - Mostrar feedback visual (acerto/erro)
+ * 
+ * Estrutura esperada do flashcard:
+ * {
+ *   id: 1,
+ *   pergunta: "O que significa SQL?",
+ *   alt_a: "Structured Query Language",
+ *   alt_b: "Simple Question Language",
+ *   alt_c: "System Query Logic",
+ *   alt_d: "Standard Quality Language",
+ *   dificuldade: 1
+ * }
+ * 
+ * ⚠️ O campo "correta" NÃO vem da API (segurança). 
+ * Ele só chega no retorno do POST /responder.
  */
 
 export class FlashcardComponent {
@@ -16,8 +31,7 @@ export class FlashcardComponent {
         this.flashcard = null;
         this.mostrandoResposta = false;
         this.animando = false;
-        this.respostaSelecionada = null;
-        this.respostaCorreta = null;
+        this.respostaSelecionada = null; // 'a', 'b', 'c' ou 'd'
         this.callbacks = {
             onRevelar: null,
             onResponder: null
@@ -64,6 +78,43 @@ export class FlashcardComponent {
     }
 
     /**
+     * ⭐ CONFIGURA ATALHOS DE TECLADO
+     */
+    _configurarTeclado() {
+        document.addEventListener('keydown', (e) => {
+            if (!this.flashcard) return;
+
+            // Espaço: virar o cartão (só se ainda não virou)
+            if (e.key === ' ' && !this.mostrandoResposta && !this.animando) {
+                e.preventDefault();
+                this.mostrarResposta();
+            }
+
+            // Enter: revelar resposta (só se alternativa selecionada)
+            if (e.key === 'Enter' && !this.mostrandoResposta && this.respostaSelecionada) {
+                e.preventDefault();
+                this.mostrarResposta();
+            }
+
+            // Teclas 1-4 ou A-D: selecionar alternativa
+            const teclas = {
+                '1': 'a', '2': 'b', '3': 'c', '4': 'd',
+                'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd'
+            };
+            
+            if (teclas[e.key.toLowerCase()] && !this.mostrandoResposta) {
+                e.preventDefault();
+                this._selecionarPorLetra(teclas[e.key.toLowerCase()]);
+            }
+
+            // Esc: limpar feedback
+            if (e.key === 'Escape') {
+                this.limparFeedback();
+            }
+        });
+    }
+
+    /**
      * ⭐ RENDERIZA O FLASHCARD
      */
     renderizar(flashcard, callbacks = {}) {
@@ -82,30 +133,32 @@ export class FlashcardComponent {
         this.mostrandoResposta = false;
         this.animando = false;
         this.respostaSelecionada = null;
-        this.respostaCorreta = null;
         this.callbacks = {
             onRevelar: callbacks.onRevelar || null,
             onResponder: callbacks.onResponder || null
         };
 
-        const temAlternativas = Array.isArray(flashcard.alternativas) && flashcard.alternativas.length > 0;
         const pergunta = this._escapeHtml(flashcard.pergunta);
         
-        // ⭐ VERIFICA SE É MÚLTIPLA ESCOLHA
-        if (!temAlternativas) {
-            // Modo clássico (sem alternativas) - mantém botões Acertei/Errei
-            this._renderizarModoClassico(pergunta);
+        // ⭐ GERA O BADGE DE DIFICULDADE
+        const badgeDificuldade = this._renderizarBadgeDificuldade(flashcard.dificuldade);
+        
+        // ⭐ CONVERTE alt_a/b/c/d em array de alternativas
+        const alternativas = this._extrairAlternativas(flashcard);
+        
+        if (alternativas.length === 0) {
+            this._mostrarMensagemErro('Flashcard sem alternativas');
             return;
         }
 
-        // Modo múltipla escolha
-        const conteudoAlternativas = this._renderizarAlternativas(flashcard.alternativas);
+        const conteudoAlternativas = this._renderizarAlternativas(alternativas);
 
         this.container.innerHTML = `
             <div class="flashcard-wrapper">
                 <div class="flashcard-3d" id="flashcard-3d">
                     <!-- FRENTE: PERGUNTA + ALTERNATIVAS -->
                     <div class="flashcard-face flashcard-front">
+                        ${badgeDificuldade}
                         <div class="flashcard-badge">📝 Escolha uma alternativa</div>
                         <div class="flashcard-pergunta">${pergunta}</div>
                         ${conteudoAlternativas}
@@ -123,68 +176,57 @@ export class FlashcardComponent {
             <div class="flashcard-feedback" id="flashcard-feedback" role="alert" aria-live="polite"></div>
         `;
 
-        this._configurarEventosMultiplaEscolha();
+        this._configurarEventos();
 
-        console.log(`🃏 [FLASHCARD] Renderizado (múltipla escolha): "${flashcard.pergunta}"`);
+        console.log(`🃏 [FLASHCARD] Renderizado: "${flashcard.pergunta}" (dificuldade: ${flashcard.dificuldade})`);
     }
 
     /**
-     * ⭐ MODO CLÁSSICO (sem alternativas)
+     * ⭐ EXTRAI ALTERNATIVAS DO FLASHCARD
+     * 
+     * Suporta dois formatos:
+     * 1. Formato atual (da API): alt_a, alt_b, alt_c, alt_d
+     * 2. Formato antigo (fallback): alternativas: [...]
      */
-    _renderizarModoClassico(pergunta) {
-        this.container.innerHTML = `
-            <div class="flashcard-wrapper">
-                <div class="flashcard-3d" id="flashcard-3d">
-                    <div class="flashcard-face flashcard-front">
-                        <div class="flashcard-badge">📝 Pergunta</div>
-                        <div class="flashcard-pergunta">${pergunta}</div>
-                        <button class="btn btn-primary btn-revelar" id="btn-revelar" type="button">
-                            👁️ Ver resposta
-                        </button>
-                    </div>
-                    
-                    <div class="flashcard-face flashcard-back">
-                        <div class="flashcard-badge">✅ Resposta</div>
-                        <div class="flashcard-resposta">
-                            ${this._obterTextoResposta()}
-                        </div>
-                        <div class="flashcard-actions">
-                            <button class="btn btn-danger btn-errou" id="btn-errou" disabled type="button">
-                                ❌ Errei
-                            </button>
-                            <button class="btn btn-success btn-acertou" id="btn-acertou" disabled type="button">
-                                ✅ Acertei
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flashcard-feedback" id="flashcard-feedback" role="alert" aria-live="polite"></div>
-        `;
+    _extrairAlternativas(flashcard) {
+        // Formato atual (API da Ingredy)
+        if (flashcard.alt_a !== undefined) {
+            const alternativas = [];
+            if (flashcard.alt_a) alternativas.push({ letra: 'a', texto: flashcard.alt_a });
+            if (flashcard.alt_b) alternativas.push({ letra: 'b', texto: flashcard.alt_b });
+            if (flashcard.alt_c) alternativas.push({ letra: 'c', texto: flashcard.alt_c });
+            if (flashcard.alt_d) alternativas.push({ letra: 'd', texto: flashcard.alt_d });
+            return alternativas;
+        }
 
-        this._configurarEventosClassico();
+        // Formato antigo (fallback)
+        if (Array.isArray(flashcard.alternativas)) {
+            return flashcard.alternativas.map((texto, i) => ({
+                letra: String.fromCharCode(97 + i),
+                texto: texto
+            }));
+        }
+
+        return [];
     }
 
     /**
      * ⭐ RENDERIZA AS ALTERNATIVAS
      */
     _renderizarAlternativas(alternativas) {
-        const letras = ['A', 'B', 'C', 'D', 'E', 'F'];
-        
         return `
             <div class="flashcard-alternativas" role="radiogroup" aria-label="Alternativas">
-                ${alternativas.map((alt, index) => `
+                ${alternativas.map((alt) => `
                     <button 
                         class="alternativa-item" 
-                        data-index="${index}"
-                        data-valor="${this._escapeHtml(alt)}"
+                        data-letra="${alt.letra}"
                         type="button"
                         role="radio"
                         aria-checked="false"
-                        aria-label="Alternativa ${letras[index]}: ${this._escapeHtml(alt)}"
+                        aria-label="Alternativa ${alt.letra.toUpperCase()}: ${this._escapeHtml(alt.texto)}"
                     >
-                        <span class="alternativa-letra">${letras[index]}</span>
-                        <span class="alternativa-texto">${this._escapeHtml(alt)}</span>
+                        <span class="alternativa-letra">${alt.letra.toUpperCase()}</span>
+                        <span class="alternativa-texto">${this._escapeHtml(alt.texto)}</span>
                     </button>
                 `).join('')}
             </div>
@@ -192,30 +234,9 @@ export class FlashcardComponent {
     }
 
     /**
-     * ⭐ OBTÉM A RESPOSTA CORRETA
+     * ⭐ CONFIGURA OS EVENTOS
      */
-    _obterRespostaCorreta() {
-        // Prioridade: resposta > primeira alternativa
-        if (this.flashcard.resposta) {
-            return this.flashcard.resposta;
-        }
-        
-        if (this.flashcard.alternativas && this.flashcard.alternativas.length > 0) {
-            return this.flashcard.alternativas[0];
-        }
-        
-        return null;
-    }
-
-    _obterTextoResposta() {
-        const correta = this._obterRespostaCorreta();
-        return correta ? this._escapeHtml(correta) : 'Resposta não disponível';
-    }
-
-    /**
-     * ⭐ CONFIGURA EVENTOS - MÚLTIPLA ESCOLHA
-     */
-    _configurarEventosMultiplaEscolha() {
+    _configurarEventos() {
         const btnRevelar = document.getElementById('btn-revelar');
         const alternativas = this.container.querySelectorAll('.alternativa-item');
 
@@ -225,31 +246,18 @@ export class FlashcardComponent {
 
         alternativas.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                if (this.mostrandoResposta) return; // Não permite mudar depois de revelar
+                if (this.mostrandoResposta) return;
                 this._selecionarAlternativa(e.currentTarget);
             });
         });
     }
 
     /**
-     * ⭐ CONFIGURA EVENTOS - MODO CLÁSSICO
+     * ⭐ SELECIONA UMA ALTERNATIVA POR LETRA
      */
-    _configurarEventosClassico() {
-        const btnRevelar = document.getElementById('btn-revelar');
-        const btnAcertou = document.getElementById('btn-acertou');
-        const btnErrou = document.getElementById('btn-errou');
-
-        if (btnRevelar) {
-            btnRevelar.addEventListener('click', () => this.mostrarResposta());
-        }
-
-        if (btnAcertou) {
-            btnAcertou.addEventListener('click', () => this._responder(true));
-        }
-
-        if (btnErrou) {
-            btnErrou.addEventListener('click', () => this._responder(false));
-        }
+    _selecionarPorLetra(letra) {
+        const btn = this.container.querySelector(`.alternativa-item[data-letra="${letra}"]`);
+        if (btn) this._selecionarAlternativa(btn);
     }
 
     /**
@@ -263,9 +271,9 @@ export class FlashcardComponent {
 
         elemento.classList.add('selected');
         elemento.setAttribute('aria-checked', 'true');
-        this.respostaSelecionada = elemento.dataset.valor;
+        this.respostaSelecionada = elemento.dataset.letra;
 
-        // ⭐ HABILITA O BOTÃO "VER RESPOSTA" APÓS SELECIONAR
+        // Habilita o botão "Ver resposta"
         const btnRevelar = document.getElementById('btn-revelar');
         if (btnRevelar) btnRevelar.disabled = false;
 
@@ -273,15 +281,12 @@ export class FlashcardComponent {
     }
 
     /**
-     * ⭐ VIRA O CARTÃO E COMPARA RESPOSTAS AUTOMATICAMENTE
+     * ⭐ VIRA O CARTÃO E DISPARA CALLBACK
      */
     mostrarResposta() {
         if (this.animando || this.mostrandoResposta) return;
 
-        // ⭐ VERIFICA SE TEM ALTERNATIVA SELECIONADA (só para múltipla escolha)
-        const temAlternativas = this.flashcard.alternativas && this.flashcard.alternativas.length > 0;
-        
-        if (temAlternativas && !this.respostaSelecionada) {
+        if (!this.respostaSelecionada) {
             this.mostrarErro('Escolha uma alternativa antes de ver a resposta.');
             return;
         }
@@ -289,108 +294,69 @@ export class FlashcardComponent {
         this.animando = true;
         this.mostrandoResposta = true;
 
-        // Vira o cartão
         const card = document.getElementById('flashcard-3d');
-        if (card) {
-            card.classList.add('virado');
-        }
+        if (card) card.classList.add('virado');
 
-        // Callback de revelação
         if (this.callbacks.onRevelar) {
             this.callbacks.onRevelar(this.flashcard);
         }
 
-        // ⭐ SE FOR MÚLTIPLA ESCOLHA, COMPARA AUTOMATICAMENTE
-        if (temAlternativas) {
-            setTimeout(() => {
-                this._processarRespostaAutomatica();
-            }, 500); // Aguarda a animação terminar
-        } else {
-            // Modo clássico: habilita botões Acertei/Errei
-            setTimeout(() => {
-                const btnAcertou = document.getElementById('btn-acertou');
-                const btnErrou = document.getElementById('btn-errou');
-                if (btnAcertou) btnAcertou.disabled = false;
-                if (btnErrou) btnErrou.disabled = false;
-                this.animando = false;
-            }, 400);
-        }
+        // ⭐ DISPARA O CALLBACK DE RESPOSTA
+        setTimeout(() => {
+            this.animando = false;
+            if (this.callbacks.onResponder) {
+                this.callbacks.onResponder(this.respostaSelecionada);
+            }
+        }, 500);
 
-        console.log('👁️ [FLASHCARD] Resposta revelada');
+        console.log(`👁️ [FLASHCARD] Resposta revelada (letra: ${this.respostaSelecionada})`);
     }
 
     /**
-     * ⭐ PROCESSA A RESPOSTA AUTOMATICAMENTE (múltipla escolha)
+     * ⭐ MOSTRA RESULTADO (chamado pelo estudo.js após receber do Back-End)
      */
-    _processarRespostaAutomatica() {
-        const respostaCorreta = this._obterRespostaCorreta();
-        const acertou = this.respostaSelecionada === respostaCorreta;
-
-        // ⭐ MARCA VISUALMENTE AS ALTERNATIVAS
-        this._destacarAlternativas(respostaCorreta);
-
-        // ⭐ MONTA O RESULTADO NO VERSO
+    mostrarResultado(acertou, info = {}) {
         const resultado = document.getElementById('flashcard-resultado');
-        if (resultado) {
-            resultado.innerHTML = `
-                <div class="resultado-icone">${acertou ? '✅' : '❌'}</div>
-                <div class="resultado-titulo ${acertou ? 'acerto' : 'erro'}">
-                    ${acertou ? 'Você acertou!' : 'Você errou!'}
-                </div>
-                <div class="resultado-resposta">
-                    <strong>Resposta correta:</strong>
-                    <span>${this._escapeHtml(respostaCorreta)}</span>
-                </div>
-                ${!acertou ? `
-                    <div class="resultado-sua-resposta">
-                        <strong>Sua resposta:</strong>
-                        <span>${this._escapeHtml(this.respostaSelecionada)}</span>
-                    </div>
-                ` : ''}
-            `;
-        }
+        if (!resultado) return;
 
-        // ⭐ DISPARA O CALLBACK DE RESPOSTA
-        if (this.callbacks.onResponder) {
-            this.callbacks.onResponder(acertou, this.respostaSelecionada);
-        }
+        const correta = info.correta || '';
 
-        console.log(`📝 [FLASHCARD] Resultado automático: ${acertou ? '✅ Acertou' : '❌ Errou'}`);
+        resultado.innerHTML = `
+            <div class="resultado-icone">${acertou ? '✅' : '❌'}</div>
+            <div class="resultado-titulo ${acertou ? 'acerto' : 'erro'}">
+                ${acertou ? 'Você acertou!' : 'Você errou!'}
+            </div>
+            <div class="resultado-resposta">
+                <strong>Resposta correta:</strong>
+                <span>Alternativa ${correta.toUpperCase()}</span>
+            </div>
+            ${!acertou ? `
+                <div class="resultado-sua-resposta">
+                    <strong>Sua resposta:</strong>
+                    <span>Alternativa ${this.respostaSelecionada.toUpperCase()}</span>
+                </div>
+            ` : ''}
+        `;
+
+        this._destacarAlternativas(correta);
     }
 
     /**
      * ⭐ DESTACA VISUALMENTE AS ALTERNATIVAS (certa/errada)
      */
-    _destacarAlternativas(respostaCorreta) {
+    _destacarAlternativas(letraCorreta) {
         this.container.querySelectorAll('.alternativa-item').forEach(btn => {
-            const valor = btn.dataset.valor;
+            const letra = btn.dataset.letra;
             
-            // Remove estados anteriores
             btn.classList.remove('selected', 'correta', 'incorreta');
-            btn.disabled = true; // Desabilita após revelar
+            btn.disabled = true;
             
-            if (valor === respostaCorreta) {
+            if (letra === letraCorreta) {
                 btn.classList.add('correta');
-            } else if (valor === this.respostaSelecionada) {
+            } else if (letra === this.respostaSelecionada) {
                 btn.classList.add('incorreta');
             }
         });
-    }
-
-    /**
-     * ⭐ RESPONDE (modo clássico)
-     */
-    _responder(acertou) {
-        const btnAcertou = document.getElementById('btn-acertou');
-        const btnErrou = document.getElementById('btn-errou');
-        if (btnAcertou) btnAcertou.disabled = true;
-        if (btnErrou) btnErrou.disabled = true;
-
-        if (this.callbacks.onResponder) {
-            this.callbacks.onResponder(acertou, this.respostaSelecionada);
-        }
-
-        console.log(`📝 [FLASHCARD] Resposta manual: ${acertou ? '✅' : '❌'}`);
     }
 
     /**
@@ -435,10 +401,9 @@ export class FlashcardComponent {
         `;
         feedback.style.display = 'block';
 
-        // Remove o erro após 2 segundos
         setTimeout(() => {
             feedback.style.display = 'none';
-        }, 2000);
+        }, 3000);
     }
 
     limparFeedback() {
@@ -454,21 +419,13 @@ export class FlashcardComponent {
      */
     prepararProximo() {
         const card = document.getElementById('flashcard-3d');
-        if (card) {
-            card.classList.remove('virado');
-        }
+        if (card) card.classList.remove('virado');
 
         this.mostrandoResposta = false;
         this.animando = false;
         this.respostaSelecionada = null;
         
         this.limparFeedback();
-
-        // Desabilita botões (modo clássico)
-        const btnAcertou = document.getElementById('btn-acertou');
-        const btnErrou = document.getElementById('btn-errou');
-        if (btnAcertou) btnAcertou.disabled = true;
-        if (btnErrou) btnErrou.disabled = true;
     }
 
     limpar() {
@@ -501,8 +458,13 @@ export class FlashcardComponent {
         `;
     }
 
-    // ===== UTILITÁRIOS =====
+    // ============================================================
+    // ⭐ UTILITÁRIOS
+    // ============================================================
 
+    /**
+     * ⭐ ESCAPA HTML PARA EVITAR XSS
+     */
     _escapeHtml(texto) {
         if (typeof texto !== 'string') return '';
         const div = document.createElement('div');
@@ -510,6 +472,9 @@ export class FlashcardComponent {
         return div.innerHTML;
     }
 
+    /**
+     * ⭐ MOSTRA MENSAGEM DE ERRO NO CONTAINER
+     */
     _mostrarMensagemErro(mensagem) {
         this.container.innerHTML = `
             <div class="flashcard-erro">
@@ -517,6 +482,40 @@ export class FlashcardComponent {
             </div>
         `;
     }
+
+    /**
+     * ⭐ RETORNA O LABEL DA DIFICULDADE
+     * @param {number} nivel - 1, 2, 3 ou 4
+     * @returns {string} - Label formatada
+     */
+    _getLabelDificuldade(nivel) {
+        const labels = {
+            1: '⭐ Fácil',
+            2: '⭐⭐ Médio',
+            3: '⭐⭐⭐ Difícil',
+            4: '⭐⭐⭐⭐ Muito Difícil'
+        };
+        return labels[nivel] || '';
+    }
+
+    /**
+     * ⭐ RENDERIZA O BADGE DE DIFICULDADE
+     * @param {number} nivel - Nível da dificuldade (1 a 4)
+     * @returns {string} - HTML do badge (ou vazio se não tiver dificuldade)
+     */
+    _renderizarBadgeDificuldade(nivel) {
+        if (!nivel || nivel < 1 || nivel > 4) return '';
+        
+        return `
+            <div class="dificuldade-badge dificuldade-${nivel}">
+                ${this._getLabelDificuldade(nivel)}
+            </div>
+        `;
+    }
+
+    // ============================================================
+    // ⭐ GETTERS
+    // ============================================================
 
     getFlashcardAtual() { return this.flashcard; }
     estaMostrandoResposta() { return this.mostrandoResposta; }

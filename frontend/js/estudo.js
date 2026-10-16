@@ -14,6 +14,10 @@ export class Estudo {
         this.estaRespondendo = false;
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
+        
+        // ⭐ USUÁRIO FIXO (temporário até ter login)
+        this.usuarioId = 1;
+        
         console.log('📖 [ESTUDO] Container:', this.container);
     }
 
@@ -21,10 +25,21 @@ export class Estudo {
         this.materia = materia;
         console.log(`📖 [ESTUDO] Iniciando: ${materia.nome}`);
 
+        // ⭐ LIMPA O COMPONENTE DE FLASHCARD ANTES DE INICIAR
+        flashcardComponent.limpar();
+
+        // ⭐ RESETA O ESTADO
+        this.flashcards = [];
+        this.flashcardAtual = null;
+        this.indiceAtual = 0;
+        this.estaRespondendo = false;
+
         try {
+            // Mostra o loading
             this.mostrarLoading();
 
-            const resposta = await get(`/materias/${materia.id}/flashcards`);
+            const url = `/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`;
+            const resposta = await get(url);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
                 this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
@@ -39,8 +54,11 @@ export class Estudo {
             }
 
             console.log(`✅ [ESTUDO] ${this.flashcards.length} flashcards carregados`);
-            this.indiceAtual = 0;
-            this.estaRespondendo = false;
+            
+            // Esconde o container de loading
+            this.esconderContainer();
+            
+            // Mostra o primeiro flashcard
             this.mostrarFlashcard();
 
         } catch (error) {
@@ -60,12 +78,9 @@ export class Estudo {
 
         this.atualizarInfo();
         
-        // ⭐ Callback simplificado - o flashcard já calcula acertou
         flashcardComponent.renderizar(this.flashcardAtual, {
             onRevelar: (flashcard) => this._aoRevelar(flashcard),
-            onResponder: (acertou, respostaSelecionada) => {
-                this.responder(acertou, respostaSelecionada);
-            }
+            onResponder: (letraEscolhida) => this.responder(letraEscolhida)
         });
     }
 
@@ -101,41 +116,50 @@ export class Estudo {
         `;
     }
 
-    /**
-     * ⭐ RESPONDE
-     */
-    async responder(acertou, respostaSelecionada = null) {
+    async responder(letraEscolhida) {
         if (this.estaRespondendo || !this.flashcardAtual) return;
         this.estaRespondendo = true;
 
-        console.log(`📝 [ESTUDO] Resposta: ${acertou ? '✅' : '❌'}`, respostaSelecionada ? `(${respostaSelecionada})` : '');
+        console.log(`📝 [ESTUDO] Resposta: letra "${letraEscolhida}"`);
 
         try {
-            const resultado = await post(`/flashcards/${this.flashcardAtual.id}/responder`, {
-                acertou: acertou,
-                resposta_selecionada: respostaSelecionada
-            });
+            const payload = {
+                usuario_id: this.usuarioId,
+                flashcard_id: this.flashcardAtual.id,
+                resposta: letraEscolhida
+            };
+
+            console.log('📤 [ESTUDO] Enviando para /responder:', payload);
+
+            const resultado = await post('/responder', payload);
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
-            // Mostra feedback com informações adicionais
-            flashcardComponent.mostrarFeedback(acertou, resultado);
+            flashcardComponent.mostrarResultado(resultado.acertou, {
+                correta: resultado.correta || null,
+                dominado: resultado.dominado,
+                sequencia: resultado.acertos_consecutivos
+            });
 
-            // Aguarda antes de avançar
-            await this.aguardar(2000);
+            flashcardComponent.mostrarFeedback(resultado.acertou, {
+                dominado: resultado.dominado,
+                sequencia: resultado.acertos_consecutivos
+            });
 
-            // Recarrega progresso
+            await this.aguardar(2500);
+
             await progresso.carregar();
             materias.renderizar();
 
-            // Avança
+            // ⭐ PREPARA O PRÓXIMO FLASHCARD (reseta o estado do componente)
             flashcardComponent.prepararProximo();
+
             this.indiceAtual++;
             this.mostrarFlashcard();
 
         } catch (error) {
-            console.error('❌ [ESTUDO] Erro:', error);
-            flashcardComponent.mostrarErro('Erro ao registrar resposta.');
+            console.error('❌ [ESTUDO] Erro ao registrar:', error);
+            flashcardComponent.mostrarErro(`Erro: ${error.message || 'Não foi possível registrar'}`);
             this.estaRespondendo = false;
         }
     }
@@ -143,9 +167,28 @@ export class Estudo {
     concluirEstudo() {
         console.log('🎉 [ESTUDO] Estudo concluído!');
         flashcardComponent.mostrarConclusao(this.materia.nome);
+        this.esconderContainer();
+    }
+
+    // ============================================================
+    // ⭐ MÉTODOS DE VISIBILIDADE
+    // ============================================================
+
+    esconderContainer() {
+        if (this.container) {
+            this.container.style.display = 'none';
+            this.container.innerHTML = '';
+        }
+    }
+
+    mostrarContainer() {
+        if (this.container) {
+            this.container.style.display = 'block';
+        }
     }
 
     mostrarMensagem(mensagem) {
+        this.mostrarContainer();
         if (this.container) {
             this.container.innerHTML = `<p class="empty-state">${mensagem}</p>`;
         }
@@ -155,6 +198,7 @@ export class Estudo {
     }
 
     mostrarLoading() {
+        this.mostrarContainer();
         if (this.container) {
             this.container.innerHTML = `
                 <div class="loading-state">
