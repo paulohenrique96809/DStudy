@@ -57,21 +57,20 @@ export async function verificarAPI() {
 /**
  * ⭐ VERIFICA SE A ROTA ESTÁ DISPONÍVEL NA API REAL
  */
+// frontend/js/api.js
+
 function rotaDisponivel(endpoint) {
-   // Remove query string para análise
+    // ⭐ Remove a query string para análise
     const endpointLimpo = endpoint.split('?')[0];
     
-    // Se está na lista de indisponíveis, usa simulação
     for (const rota of ROTAS_INDISPONIVEIS) {
         if (endpointLimpo.startsWith(rota)) {
             return false;
         }
     }
 
-    // Rotas exatas
     if (ROTAS_DISPONIVEIS.includes(endpointLimpo)) return true;
     
-    // Rotas com padrão (/materias/{id}/flashcards)
     if (endpointLimpo.match(/^\/materias\/\d+\/flashcards$/)) return true;
     
     return false;

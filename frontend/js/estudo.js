@@ -25,10 +25,21 @@ export class Estudo {
         this.materia = materia;
         console.log(`📖 [ESTUDO] Iniciando: ${materia.nome}`);
 
+        // ⭐ LIMPA O COMPONENTE DE FLASHCARD ANTES DE INICIAR
+        flashcardComponent.limpar();
+
+        // ⭐ RESETA O ESTADO
+        this.flashcards = [];
+        this.flashcardAtual = null;
+        this.indiceAtual = 0;
+        this.estaRespondendo = false;
+
         try {
+            // Mostra o loading
             this.mostrarLoading();
 
-            const resposta = await get(`/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`);
+            const url = `/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`;
+            const resposta = await get(url);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
                 this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
@@ -43,8 +54,11 @@ export class Estudo {
             }
 
             console.log(`✅ [ESTUDO] ${this.flashcards.length} flashcards carregados`);
-            this.indiceAtual = 0;
-            this.estaRespondendo = false;
+            
+            // Esconde o container de loading
+            this.esconderContainer();
+            
+            // Mostra o primeiro flashcard
             this.mostrarFlashcard();
 
         } catch (error) {
@@ -64,7 +78,6 @@ export class Estudo {
 
         this.atualizarInfo();
         
-        // ⭐ RENDERIZA COM CALLBACK
         flashcardComponent.renderizar(this.flashcardAtual, {
             onRevelar: (flashcard) => this._aoRevelar(flashcard),
             onResponder: (letraEscolhida) => this.responder(letraEscolhida)
@@ -103,11 +116,6 @@ export class Estudo {
         `;
     }
 
-    /**
-     * ⭐ RESPONDE - ENVIA A LETRA ESCOLHIDA PARA O BACK-END
-     * 
-     * @param {string} letraEscolhida - 'a', 'b', 'c' ou 'd'
-     */
     async responder(letraEscolhida) {
         if (this.estaRespondendo || !this.flashcardAtual) return;
         this.estaRespondendo = true;
@@ -115,11 +123,10 @@ export class Estudo {
         console.log(`📝 [ESTUDO] Resposta: letra "${letraEscolhida}"`);
 
         try {
-            // ⭐ MONTA O PAYLOAD NO FORMATO DA INGREDY
             const payload = {
                 usuario_id: this.usuarioId,
                 flashcard_id: this.flashcardAtual.id,
-                resposta: letraEscolhida  // ⭐ Só a letra!
+                resposta: letraEscolhida
             };
 
             console.log('📤 [ESTUDO] Enviando para /responder:', payload);
@@ -127,32 +134,26 @@ export class Estudo {
             const resultado = await post('/responder', payload);
 
             console.log('✅ [ESTUDO] Resposta registrada:', resultado);
-            // resultado esperado: { acertou, correta, dominado, acertos_consecutivos }
 
-            // ⭐ MOSTRA O RESULTADO NO VERSO DO CARD
             flashcardComponent.mostrarResultado(resultado.acertou, {
-                correta: resultado.correta || '?',
+                correta: resultado.correta || null,
                 dominado: resultado.dominado,
                 sequencia: resultado.acertos_consecutivos
             });
 
-            // ⭐ MOSTRA O FEEDBACK
             flashcardComponent.mostrarFeedback(resultado.acertou, {
                 dominado: resultado.dominado,
                 sequencia: resultado.acertos_consecutivos
             });
 
-            // Aguarda o usuário ver o feedback
             await this.aguardar(2500);
 
-            // Recarrega progresso
             await progresso.carregar();
             materias.renderizar();
 
-            // Prepara para o próximo
+            // ⭐ PREPARA O PRÓXIMO FLASHCARD (reseta o estado do componente)
             flashcardComponent.prepararProximo();
 
-            // Avança
             this.indiceAtual++;
             this.mostrarFlashcard();
 
@@ -166,9 +167,28 @@ export class Estudo {
     concluirEstudo() {
         console.log('🎉 [ESTUDO] Estudo concluído!');
         flashcardComponent.mostrarConclusao(this.materia.nome);
+        this.esconderContainer();
+    }
+
+    // ============================================================
+    // ⭐ MÉTODOS DE VISIBILIDADE
+    // ============================================================
+
+    esconderContainer() {
+        if (this.container) {
+            this.container.style.display = 'none';
+            this.container.innerHTML = '';
+        }
+    }
+
+    mostrarContainer() {
+        if (this.container) {
+            this.container.style.display = 'block';
+        }
     }
 
     mostrarMensagem(mensagem) {
+        this.mostrarContainer();
         if (this.container) {
             this.container.innerHTML = `<p class="empty-state">${mensagem}</p>`;
         }
@@ -178,6 +198,7 @@ export class Estudo {
     }
 
     mostrarLoading() {
+        this.mostrarContainer();
         if (this.container) {
             this.container.innerHTML = `
                 <div class="loading-state">

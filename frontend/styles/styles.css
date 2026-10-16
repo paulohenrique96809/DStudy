@@ -881,3 +881,31 @@ body {
         font-size: 20px;
     }
 }
+    .dificuldade-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.dificuldade-1 {
+    background: #d4edda;
+    color: #155724;
+}
+
+.dificuldade-2 {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.dificuldade-3 {
+    background: #ffe5cc;
+    color: #a0522d;
+}
+
+.dificuldade-4 {
+    background: #f8d7da;
+    color: #721c24;
+}

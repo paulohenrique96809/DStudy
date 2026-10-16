@@ -6,6 +6,7 @@
  * Responsabilidades:
  * - Renderizar o flashcard (pergunta + alternativas alt_a/b/c/d)
  * - Controlar o estado (frente/verso) com animação 3D
+ * - Mostrar badge de dificuldade (⭐ a ⭐⭐⭐⭐)
  * - Comparar a resposta do aluno automaticamente
  * - Mostrar feedback visual (acerto/erro)
  * 
@@ -104,6 +105,9 @@ export class FlashcardComponent {
 
         const pergunta = this._escapeHtml(flashcard.pergunta);
         
+        // ⭐ GERA O BADGE DE DIFICULDADE
+        const badgeDificuldade = this._renderizarBadgeDificuldade(flashcard.dificuldade);
+        
         // ⭐ CONVERTE alt_a/b/c/d em array de alternativas
         const alternativas = this._extrairAlternativas(flashcard);
         
@@ -119,6 +123,7 @@ export class FlashcardComponent {
                 <div class="flashcard-3d" id="flashcard-3d">
                     <!-- FRENTE: PERGUNTA + ALTERNATIVAS -->
                     <div class="flashcard-face flashcard-front">
+                        ${badgeDificuldade}
                         <div class="flashcard-badge">📝 Escolha uma alternativa</div>
                         <div class="flashcard-pergunta">${pergunta}</div>
                         ${conteudoAlternativas}
@@ -138,7 +143,7 @@ export class FlashcardComponent {
 
         this._configurarEventos();
 
-        console.log(`🃏 [FLASHCARD] Renderizado: "${flashcard.pergunta}"`);
+        console.log(`🃏 [FLASHCARD] Renderizado: "${flashcard.pergunta}" (dificuldade: ${flashcard.dificuldade})`);
     }
 
     /**
@@ -162,7 +167,7 @@ export class FlashcardComponent {
         // Formato antigo (fallback)
         if (Array.isArray(flashcard.alternativas)) {
             return flashcard.alternativas.map((texto, i) => ({
-                letra: String.fromCharCode(97 + i), // a, b, c, d
+                letra: String.fromCharCode(97 + i),
                 texto: texto
             }));
         }
@@ -262,7 +267,6 @@ export class FlashcardComponent {
         }
 
         // ⭐ DISPARA O CALLBACK DE RESPOSTA
-        // O Back-End vai verificar se acertou
         setTimeout(() => {
             this.animando = false;
             if (this.callbacks.onResponder) {
@@ -275,9 +279,6 @@ export class FlashcardComponent {
 
     /**
      * ⭐ MOSTRA RESULTADO (chamado pelo estudo.js após receber do Back-End)
-     * 
-     * @param {boolean} acertou - Se acertou
-     * @param {object} info - { correta, dominado, sequencia }
      */
     mostrarResultado(acertou, info = {}) {
         const resultado = document.getElementById('flashcard-resultado');
@@ -285,7 +286,6 @@ export class FlashcardComponent {
 
         const correta = info.correta || '';
 
-        // ⭐ MONTA O RESULTADO NO VERSO
         resultado.innerHTML = `
             <div class="resultado-icone">${acertou ? '✅' : '❌'}</div>
             <div class="resultado-titulo ${acertou ? 'acerto' : 'erro'}">
@@ -303,7 +303,6 @@ export class FlashcardComponent {
             ` : ''}
         `;
 
-        // ⭐ DESTACA VISUALMENTE AS ALTERNATIVAS
         this._destacarAlternativas(correta);
     }
 
@@ -424,8 +423,13 @@ export class FlashcardComponent {
         `;
     }
 
-    // ===== UTILITÁRIOS =====
+    // ============================================================
+    // ⭐ UTILITÁRIOS
+    // ============================================================
 
+    /**
+     * ⭐ ESCAPA HTML PARA EVITAR XSS
+     */
     _escapeHtml(texto) {
         if (typeof texto !== 'string') return '';
         const div = document.createElement('div');
@@ -433,6 +437,9 @@ export class FlashcardComponent {
         return div.innerHTML;
     }
 
+    /**
+     * ⭐ MOSTRA MENSAGEM DE ERRO NO CONTAINER
+     */
     _mostrarMensagemErro(mensagem) {
         this.container.innerHTML = `
             <div class="flashcard-erro">
@@ -440,6 +447,40 @@ export class FlashcardComponent {
             </div>
         `;
     }
+
+    /**
+     * ⭐ RETORNA O LABEL DA DIFICULDADE
+     * @param {number} nivel - 1, 2, 3 ou 4
+     * @returns {string} - Label formatada
+     */
+    _getLabelDificuldade(nivel) {
+        const labels = {
+            1: '⭐ Fácil',
+            2: '⭐⭐ Médio',
+            3: '⭐⭐⭐ Difícil',
+            4: '⭐⭐⭐⭐ Muito Difícil'
+        };
+        return labels[nivel] || '';
+    }
+
+    /**
+     * ⭐ RENDERIZA O BADGE DE DIFICULDADE
+     * @param {number} nivel - Nível da dificuldade (1 a 4)
+     * @returns {string} - HTML do badge (ou vazio se não tiver dificuldade)
+     */
+    _renderizarBadgeDificuldade(nivel) {
+        if (!nivel || nivel < 1 || nivel > 4) return '';
+        
+        return `
+            <div class="dificuldade-badge dificuldade-${nivel}">
+                ${this._getLabelDificuldade(nivel)}
+            </div>
+        `;
+    }
+
+    // ============================================================
+    // ⭐ GETTERS
+    // ============================================================
 
     getFlashcardAtual() { return this.flashcard; }
     estaMostrandoResposta() { return this.mostrandoResposta; }
