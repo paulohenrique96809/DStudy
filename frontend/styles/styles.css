@@ -436,12 +436,16 @@ body {
 .flashcard-wrapper {
     perspective: 1000px;
     margin: 10px 0;
+    /* ⭐ Garante que o container acompanhe a altura do cartão */
+    width: 100%;
 }
+
 
 .flashcard-3d {
     position: relative;
     width: 100%;
-    min-height: 320px;
+    /* ⭐ Removemos a altura mínima fixa e deixamos o conteúdo definir */
+    min-height: 320px; 
     transition: transform 0.5s ease;
     transform-style: preserve-3d;
 }
@@ -451,11 +455,13 @@ body {
 }
 
 .flashcard-face {
+    /* ⭐ A mágica acontece aqui: as faces ficam absolutas, mas o container 
+       precisa ter a altura da maior face para não cortar o conteúdo */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    min-height: 320px;
+    height: 100%; /* ⭐ Ocupa toda a altura do container */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     border-radius: 16px;
@@ -467,10 +473,24 @@ body {
     background: white;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border: 2px solid #f0f0f0;
+    overflow-y: auto; /* ⭐ Se o conteúdo for muito grande, rola em vez de cortar */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
 }
+
+
+/* ⭐ Esconde a barra de rolagem no Chrome/Safari/Edge */
+.flashcard-face::-webkit-scrollbar {
+    display: none;
+}
+
 
 .flashcard-front {
     transform: rotateY(0deg);
+    /* ⭐ A frente define a altura do cartão */
+    position: relative; 
+    height: auto; 
+    min-height: 320px;
 }
 
 .flashcard-back {
@@ -619,8 +639,11 @@ body {
    ============================================================ */
 .flashcard-resultado {
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaçamento entre os elementos do resultado */
 }
 
 .resultado-icone {
@@ -849,11 +872,6 @@ body {
     
     .flashcard-actions .btn {
         width: 100%;
-    }
-    
-    .flashcard-face {
-        padding: 20px;
-        min-height: 280px;
     }
     
     .alternativa-item {

@@ -42,11 +42,14 @@ export class Materias {
         try {
             this.lista = await get('/materias');
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
-            this.renderizar();
+            
+            // ⭐ REMOVA OU COMENTE A LINHA ABAIXO:
+            // this.renderizar(); 
+            
             return this.lista;
         } catch (error) {
             console.error('❌ [MATERIAS] Erro:', error);
-            this.container.innerHTML = `<div class="error-state"><p>❌ Erro ao carregar matérias</p><button class="btn btn-primary" onclick="location.reload()">🔄 Tentar novamente</button></div>`;
+            this.mostrarErro('Erro ao carregar matérias.');
             throw error;
         }
     }
@@ -59,15 +62,19 @@ export class Materias {
             return;
         }
 
-        console.log(`📚 [MATERIAS] Renderizando ${this.lista.length} matérias...`);
-
         this.container.innerHTML = this.lista.map(materia => {
+            // ⭐ Pega o progresso específico desta matéria
             const p = progresso.getProgressoParaCard(materia.id);
+            
+            // Garantindo que os valores sejam números
+            const dominados = p.dominados || 0;
+            const total = p.total || 0;
             const percentual = Math.round(p.percentual || 0);
+            
             const icone = ICONES[materia.nome] || '📚';
             const cor = CORES[materia.nome] || '#667eea';
             const status = this.getStatus(percentual);
-
+            
             return `
                 <div class="materia-card" data-id="${materia.id}" style="border-left-color: ${cor};">
                     <div class="materia-header">
@@ -78,17 +85,18 @@ export class Materias {
                     </div>
                     <h3 class="materia-nome">${materia.nome}</h3>
                     <p class="materia-descricao">${materia.descricao || 'Sem descrição'}</p>
-
+                    
                     <div class="materia-progresso">
                         <div class="progresso-info">
-                            <span class="progresso-texto">${p.dominados}/${p.total} flashcards</span>
+                            <!-- ⭐ Exibe dominados / total de flashcards -->
+                            <span class="progresso-texto">${dominados}/${total} flashcards</span>
                             <span class="progresso-percentual">${percentual}%</span>
                         </div>
                         <div class="progresso-bar">
                             <div class="progresso-fill" style="width: ${percentual}%; background: ${cor};"></div>
                         </div>
                     </div>
-
+                    
                     <button class="btn btn-primary btn-estudar" data-id="${materia.id}">
                         📖 Estudar
                     </button>

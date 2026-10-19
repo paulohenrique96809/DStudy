@@ -4,7 +4,8 @@ import { materias } from './materias.js';
 import { estudo } from './estudo.js';
 import { progresso } from './progresso.js';
 import { flashcardComponent } from './components/flashcard.js';
-import { isModoSimulacao, verificarAPI, get, post } from './api.js';
+import { progressoComponent } from './components/progresso.js';
+import { setModoSimulacao, isModoSimulacao, verificarAPI, get, post } from './api.js';
 
 class App {
     constructor() {
@@ -12,6 +13,7 @@ class App {
         this.estudo = estudo;
         this.progresso = progresso;
         this.flashcardComponent = flashcardComponent;
+        this.progressoComponent = progressoComponent;
         
         this.telaAtual = 'materias';
         this.materiaSelecionada = null;
@@ -21,26 +23,26 @@ class App {
 
     async init() {
         console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-        console.log('📦 Versão: P05.5 - Integração com API Real');
-        
-        // ⭐ VERIFICA SE A API ESTÁ ONLINE
-        const apiOnline = await verificarAPI();
-        console.log(`🔧 Modo: ${apiOnline ? 'API REAL' : 'SIMULAÇÃO'}`);
         
         this.setupEventListeners();
         
-        await this.progresso.carregar();
-        await this.materias.carregar();
+        // ⭐ ORDEM CORRETA:
+        // 1. Carrega a lista de matérias (sem renderizar)
+        await materias.carregar(); 
+        
+        // 2. Busca o progresso de TODAS as matérias
+        await this.progresso.carregarTudo(materias.lista);
+        
+        // 3. Agora sim, renderiza os cards com os dados do progresso prontos
+        materias.renderizar();
         
         console.log('🏁 ===== APLICAÇÃO PRONTA =====');
-        console.log('💡 Comandos:');
-        console.log('  await app.materias.carregar()');
-        console.log('  await app.progresso.carregar()');
-        console.log('  await app.testarAPI()');
     }
+
 
     setupEventListeners() {
         document.addEventListener('materiaSelecionada', (e) => {
+            console.log('📖 [MAIN] Evento materiaSelecionada recebido!');
             this.materiaSelecionada = e.detail.materia;
             this.mostrarTelaEstudo();
         });
@@ -50,7 +52,7 @@ class App {
         });
     }
 
-    mostrarTelaMaterias() {
+    async mostrarTelaMaterias() {
         if (this.telaAtual === 'materias') return;
         
         this.telaAtual = 'materias';
@@ -64,15 +66,13 @@ class App {
         this.estudo.mostrarMensagem('');
         this.flashcardComponent.limpar();
         
-        this.progresso.carregar();
-        this.materias.renderizar();
+        // Atualiza o progresso e só depois renderiza
+        await this.progresso.carregarTudo(materias.lista);
+        materias.renderizar();
     }
 
     mostrarTelaEstudo() {
-        if (!this.materiaSelecionada) {
-            console.error('❌ Nenhuma matéria selecionada');
-            return;
-        }
+        if (!this.materiaSelecionada) return;
 
         this.telaAtual = 'estudo';
         
@@ -84,19 +84,6 @@ class App {
         window.history.pushState({ tela: 'estudo' }, '', '?estudo');
         
         this.estudo.iniciar(this.materiaSelecionada);
-    }
-
-    async testarAPI() {
-        console.log('🧪 Testando API...');
-        console.log(`Modo atual: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
-        try {
-            const materiasData = await get('/materias');
-            console.log('✅ Matérias:', materiasData);
-            alert('✅ API funcionando!');
-        } catch (error) {
-            console.error('❌ Erro:', error);
-            alert('❌ Erro na API!');
-        }
     }
 }
 
