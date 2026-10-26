@@ -6,28 +6,81 @@ export class Progresso {
     constructor() {
         this.dados = null;
         this.container = document.getElementById('progresso-container');
-        console.log('📊 [PROGRESSO] Container:', this.container);
     }
 
-    async carregar() {
-        console.log('📊 [PROGRESSO] Carregando...');
+    /**
+     * ⭐ BUSCA O PROGRESSO DE UMA MATÉRIA ESPECÍFICA
+     * @param {number} materiaId 
+     * @param {number} usuarioId 
+     */
+    async carregarMateria(materiaId, usuarioId = 1) {
         try {
-            this.dados = await get('/progresso');
-            console.log('✅ [PROGRESSO] Carregado:', this.dados);
+            const resposta = await get(`/materias/${materiaId}/progresso?usuario_id=${usuarioId}`);
+            return resposta; // { materia, total_flashcards, dominados, percentual }
+        } catch (error) {
+            console.error(`❌ [PROGRESSO] Erro ao buscar matéria ${materiaId}:`, error);
+            return { total_flashcards: 0, dominados: 0, percentual: 0 };
+        }
+    }
+
+    /**
+     * ⭐ BUSCA O PROGRESSO DE TODAS AS MATÉRIAS
+     * (Faz uma chamada para cada matéria e soma)
+     */
+    async carregarTudo(materias, usuarioId = 1) {
+        console.log('📊 [PROGRESSO] Buscando progresso de todas as matérias...');
+        
+        try {
+            let totalFlashcards = 0;
+            let totalDominados = 0;
+            const porMateria = [];
+
+            for (const materia of materias) {
+                const p = await this.carregarMateria(materia.id, usuarioId);
+                
+                // ⭐ Soma os totais gerais
+                totalFlashcards += p.total_flashcards || 0;
+                totalDominados += p.dominados || 0;
+
+                // ⭐ Salva os dados por matéria para os cards usarem
+                porMateria.push({
+                    id: materia.id,
+                    nome: materia.nome,
+                    total: p.total_flashcards || 0, // Total real de flashcards da matéria
+                    dominados: p.dominados || 0,    // Quantos o usuário dominou
+                    percentual: p.percentual || 0
+                });
+            }
+
+            // Calcula progresso geral
+            const progressoGeral = totalFlashcards > 0 
+                ? Math.round((totalDominados / totalFlashcards) * 100) 
+                : 0;
+
+            // Conta matérias concluídas (100%)
+            const materiasConcluidas = porMateria.filter(m => m.percentual >= 100).length;
+
+            this.dados = {
+                total_materias: materias.length,
+                materias_concluidas: materiasConcluidas,
+                total_flashcards: totalFlashcards,
+                flashcards_dominados: totalDominados,
+                progresso_geral: progressoGeral,
+                por_materia: porMateria // ⭐ Array com os dados de cada card
+            };
+
+            console.log('✅ [PROGRESSO] Calculado:', this.dados);
             this.renderizar();
             return this.dados;
+
         } catch (error) {
-            console.error('❌ [PROGRESSO] Erro:', error);
-            this.container.innerHTML = `<div class="error-state"><p>❌ Erro ao carregar progresso</p></div>`;
+            console.error('❌ [PROGRESSO] Erro ao carregar tudo:', error);
             throw error;
         }
     }
 
     renderizar() {
-        if (!this.container) {
-            console.warn('⚠️ [PROGRESSO] Container não encontrado');
-            return;
-        }
+        if (!this.container) return;
 
         if (!this.dados) {
             this.container.innerHTML = '<p>Carregando progresso...</p>';
@@ -70,12 +123,23 @@ export class Progresso {
         `;
     }
 
-    getProgressoParaCard(materiaId) {
+     getProgressoParaCard(materiaId) {
+        // Se ainda não carregou, retorna zerado sem encher o console de avisos
         if (!this.dados || !this.dados.por_materia) {
             return { total: 0, dominados: 0, percentual: 0 };
         }
+        
         const p = this.dados.por_materia.find(m => m.id === materiaId);
-        return p ? { total: p.total, dominados: p.dominados, percentual: p.percentual } : { total: 0, dominados: 0, percentual: 0 };
+        
+        if (!p) {
+            return { total: 0, dominados: 0, percentual: 0 };
+        }
+
+        return { 
+            total: p.total, 
+            dominados: p.dominados, 
+            percentual: p.percentual 
+        };
     }
 }
 

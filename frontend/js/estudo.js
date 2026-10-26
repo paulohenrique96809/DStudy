@@ -148,7 +148,7 @@ export class Estudo {
 
             await this.aguardar(2500);
 
-            await progresso.carregar();
+            await progresso.carregarTudo(materias.lista);
             materias.renderizar();
 
             // ⭐ PREPARA O PRÓXIMO FLASHCARD (reseta o estado do componente)

@@ -16,8 +16,9 @@ const ROTAS_DISPONIVEIS = [
 
 // ⭐ ROTAS QUE AINDA NÃO EXISTEM
 const ROTAS_INDISPONIVEIS = [
-    '/progresso'
+    // '/progresso'  ← ⭐ REMOVA (ou comente)
 ];
+
 
 // ===== EXPORTS =====
 export function setBaseUrl(url) {
@@ -60,7 +61,7 @@ export async function verificarAPI() {
 // frontend/js/api.js
 
 function rotaDisponivel(endpoint) {
-    // ⭐ Remove a query string para análise
+    // Remove a query string para análise
     const endpointLimpo = endpoint.split('?')[0];
     
     for (const rota of ROTAS_INDISPONIVEIS) {
@@ -71,7 +72,11 @@ function rotaDisponivel(endpoint) {
 
     if (ROTAS_DISPONIVEIS.includes(endpointLimpo)) return true;
     
+    // ⭐ Rotas de flashcards
     if (endpointLimpo.match(/^\/materias\/\d+\/flashcards$/)) return true;
+    
+    // ⭐ NOVA ROTA: progresso por matéria
+    if (endpointLimpo.match(/^\/materias\/\d+\/progresso$/)) return true;
     
     return false;
 }
