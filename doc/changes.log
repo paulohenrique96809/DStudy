@@ -1,169 +1,196 @@
-30/04/2026 *Paulodev* - Definição da paleta de cores
-	- Criação da documentação
-	- Concept art da logo
+30/04/2026 *Yasmindev* - Primeira etapa de arte e conceituação
+	- Definição da paleta de cores provisória do projeto.
+	- Arte conceitual da logo do site.
 
-31/04/2026 *Paulodev* - Esboço da logo
-	- Conceituação do banco de dados
+30/04/2026 *Paulodev* - Primeira etapa de documentação e apresentação do projeto
+	- Criação da documentação do projeto.
 
-02/05/2026 *Paulodev* - Simplificação da logo
+31/04/2026 *Paulodev* - Rascunho inicial do banco de dados
+	- Conceituação do banco de dados em modelo DER.
+
+31/04/2026 *Yasmindev* - Desenvolvimento da arte da logo do site P1
+	- Esboço e rascunhos da logo do site.
+	
+  
+02/05/2026 *Yasmindev* - Desenvolvimento da arte da logo do site P2
+	- Simplificação da logo.
 
 05/05/2026 *Paulodev* - Criação do repositório
-	- Criação dos arquivos básicos locais
+	- Criação dos arquivos básicos locais:
+		index.html
+		\js
+		├──scripts.js
+		\styles
+		├──styles.css
 
-06/05/2026 *Paulodev* - Adição da imagem da logo
-	- Criação de pasta para documentação e mudanças.
+06/05/2026 *Yasmindev* - Adição da imagem da logo
+	- Testes envolvendo a adição da imagem da logo do site.
+	
+06/05/2026 *Paulodev* - Criação de pasta para documentação e mudanças.
+	- Criação da pasta /doc e do arquivo changes.log para registrar e documentar alterações.
 
 07/05/2026 *Paulodev* - Adição de fontes personalizadas
-	- Teste de fonte
+	- Teste das fontes personalizadas KiwiSoda.ttf e PearSoda.ttf como fonte padrão do site.
+	- Remoção da KiwiSoda.ttf por escolha estética.
 
-12/05/2026 *Paulodev* - Criação do arquivo das páginas
-	- Teste de adição de um menu vertical
+12/05/2026 *Paulodev* - Primeiros passos do HTML
+	- Criação do arquivo provisório das páginas:
+		\pages
+		├──cadastro.html
+		├──login.html
+		├──perfil.html
+		├──study.html
+	- Teste de adição de um menu vertical.
 
-15/05/2026 *Paulodev* - Criação de páginas para o menu vertical
-	- HTML base para páginas do menu vertical.
-	- Teste do menu vertical.
+15/05/2026 *Paulodev* - Testes do menu vertical
+	- Testes das proporções e funcionalidades do menu vertical.
 
-06/08/2026 *Paulodev* - Atualização do arquivo README.md
-	- Mesclagem da branch paulodev
-	- Adição da logo
-	- Adição da fonte personalizada PearSoda
+06/08/2026 *Paulodev* - Organização do ambiente de programação e integridade com as branches principais
+	- Atualização do arquivo README.md.
+	- Organização das pastas.
+	- Adição da pasta \frontend.
+	- Mesclagem da branch paulodev com a branch main.
 	- Criação do arquivo base das páginas principais:
-		frontend\pages\ apoia.html
-		frontend\pages\ cadastro.html
-		frontend\pages\ configurações.html
-		frontend\pages\ login.html
-		frontend\pages\ perfil.html
-		frontend\pages\ sobre.html
-		frontend\pages\ study.html
+		\pages
+		├──apoia.html
+		├──cadastro.html
+		├──configurações.html
+		├──perfil.html
+		├──sobre.html
 
 06/08/2026 *Yasdev* - Criação da página no Figma
+	- Desenvolvimento conceitual do design das páginas do site.
 
 17/08/2026 *Yasdev* - Adição de ícones, menu e matérias
+	- Adição dos ícones iniciais, menu e matérias no site conceitual.
+	- Testes acerca do site conceitual.
 
-18/08/2026 *Paulodev* - Renomeação do arquivo scripts.js para main.js.
-	- Criação do arquivo api.js
+18/08/2026 *Paulodev* - Primeira etapa do JavaScript do site
+	- Renomeação do arquivo scripts.js para main.js.
+	- Criação do arquivo api.js.
 	- Criação da variável API_BASE_URL para quando o flask estiver rodando no arquivo api.js.
 	- Adição de uma função para fazer requisições HTTP no arquivo api.js.
 
 20/08/2026 *Paulodev* - Primeiro passo do código api.js
-	- Adição da função apiRequest
-	- Adição da função para requisições GET
-	- Adição da função para requisições PUT
-	- Adição da função para requisições DELETE
+	- Adição da função apiRequest.
+	- Adição da função para requisições GET.
+	- Adição da função para requisições PUT.
+	- Adição da função para requisições DELETE.
 
-20/08/2026 *Yasdev* - Atualização da página principal
+20/08/2026 *Yasdev* - Desenvolvimento da página principal P1
+	- Atualizações e alterações da página principal de estudo.
 
-24/08/2026 *Yasdev* - Atualização da Home do site.
+
+24/08/2026 *Yasdev* - Desenvolvimento da página principal P2
+	- Atualizações e alterações da página principal do site.
 
 24/08/2026 *Paulodev* - Adição da função para requisições POST no arquivo api.js
-	- Adição da função para requisições PATCH no arquivo api.js
-	- Adição da função para requisições OPTIONS no arquivo api.js
-	- Adição da função para requisições HEAD no arquivo api.js
-	- Adição da função para requisições TRACE no arquivo api.js
-	- Adição da função para requisições CONNECT no arquivo api.js
-	- Adição da função para requisições customizadas no arquivo api.js
-	- Adição da função para requisições com body no arquivo api.js
-	- Adição da função para requisições com headers no arquivo api.js
+	- Adição da função para requisições PATCH no arquivo api.js.
+	- Adição da função para requisições OPTIONS no arquivo api.js.
+	- Adição da função para requisições HEAD no arquivo api.js.
+	- Adição da função para requisições TRACE no arquivo api.js.
+	- Adição da função para requisições CONNECT no arquivo api.js.
+	- Adição da função para requisições customizadas no arquivo api.js.
+	- Adição da função para requisições com body no arquivo api.js.
+	- Adição da função para requisições com headers no arquivo api.js.
 
 25/08/2026 *Paulodev* - Criação da arquitetura inicial da segunda fase da pipeline
-	- Criação do arquivo frontend\js\ estudo.js
-	- Criação do arquivo frontend\js\ materias.js
-	- Criação do arquivo frontend\js\ progresso.js
-	- Criação da pasta components
-	- Criação do arquivo frontend\js\components\ flashcard.js
-	- Criação do arquivo frontend\js\components\ progresso.js
+	- Criação do arquivo frontend\js\ estudo.js.
+	- Criação do arquivo frontend\js\ materias.js.
+	- Criação do arquivo frontend\js\ progresso.js.
+	- Criação da pasta components.
+	- Criação do arquivo frontend\js\components\ flashcard.js.
+	- Criação do arquivo frontend\js\components\ progresso.js.
 
 26/08/2026 *Paulodev* - Arquitetura dos módulos - P02
-	- Cria módulo materias.js (listagem e seleção)
-	- Cria módulo estudo.js (sessão de estudo)
-	- Cria módulo progresso.js (progresso do usuário)
-	- Cria componente flashcard.js (renderização de flashcards)
-	- Cria componente progresso.js (componentes visuais)
-	- Atualiza main.js para coordenar os módulos
-	- Atualiza index.html com duas telas (matérias/estudo)
-	- Adiciona navegação entre telas
-	- Adiciona sistema de progresso visual
+	- Cria módulo materias.js (listagem e seleção).
+	- Cria módulo estudo.js (sessão de estudo).
+	- Cria módulo progresso.js (progresso do usuário).
+	- Cria componente flashcard.js (renderização de flashcards).
+	- Cria componente progresso.js (componentes visuais).
+	- Atualiza main.js para coordenar os módulos.
+	- Atualiza index.html com duas telas (matérias/estudo).
+	- Adiciona navegação entre telas.
+	- Adiciona sistema de progresso visual.
 
 27/08/2026 *Paulodev* - Comunicação Front-End ↔ Back-End preparada - P03
-	- Implementa apiRequest() central com suporte a GET/POST/PUT/DELETE
-	- Adiciona modo de simulação para testes sem Flask
-	- Cria banco de dados simulado com matérias, flashcards e progresso
-	- Implementa fallback automático para simulação
-	- Atualiza módulos para usar a API (real ou simulada)
-	- Adiciona funções de configuração (setBaseUrl, setModoSimulacao)
-	- Implementa verificação de disponibilidade da API
-	- Adiciona teste completo de todas as rotas
-	- Adiciona controles na interface para alternar modos
-	- Adiciona importação de get e post no main.js
+	- Implementa apiRequest() central com suporte a GET/POST/PUT/DELETE.
+	- Adiciona modo de simulação para testes sem Flask.
+	- Cria banco de dados simulado com matérias, flashcards e progresso.
+	- Implementa fallback automático para simulação.
+	- Atualiza módulos para usar a API (real ou simulada).
+	- Adiciona funções de configuração (setBaseUrl, setModoSimulacao).
+	- Implementa verificação de disponibilidade da API.
+	- Adiciona teste completo de todas as rotas.
+	- Adiciona controles na interface para alternar modos.
+	- Adiciona importação de get e post no main.js.
 	
-	- Corrige erro 'get is not defined' no testarAPI()
-	- Melhora mensagens de log do teste
+	- Corrige erro 'get is not defined' no testarAPI().
+	- Melhora mensagens de log do teste.
 	- Adiciona alerta visual de sucesso/erro
-	- Corrige extração do ID da matéria na rota /materias/:id/flashcards
-	- Adiciona validação de array na resposta
-	- Adiciona fallback para campos question/answer
-	- Adiciona método debugFlashcards() para testes
-	- Melhora logs para identificar problemas
+	- Corrige extração do ID da matéria na rota /materias/:id/flashcards.
+	- Adiciona validação de array na resposta.
+	- Adiciona fallback para campos question/answer.
+	- Adiciona método debugFlashcards() para testes.
+	- Melhora logs para identificar problemas.
 
 28/08/2026 *Paulodev* - Página de matérias com progresso - P04
-	- Adiciona cards com ícones e cores por matéria
-	- Mostra progresso individual em cada card
-	- Adiciona status (concluído/andamento/iniciado)
-	- Melhora design com animações e hover
-	- Atualiza CSS com estilos consistentes
+	- Adiciona cards com ícones e cores por matéria.
+	- Mostra progresso individual em cada card.
+	- Adiciona status (concluído/andamento/iniciado).
+	- Melhora design com animações e hover.
+	- Atualiza CSS com estilos consistentes.
 
-	- Centraliza dados de progresso no módulo progresso.js
-	- Materias.js usa getProgressoParaCard() do progresso
-	- Remove duplicação de dados de progresso
-	- Simplifica atualização após respostas
+	- Centraliza dados de progresso no módulo progresso.js.
+	- Materias.js usa getProgressoParaCard() do progresso.
+	- Remove duplicação de dados de progresso.
+	- Simplifica atualização após respostas.
 
-30/08/2026 *Paulodev* - progresso persistente durante toda a sessão
+30/08/2026 *Paulodev* - Progresso persistente durante toda a sessão
 
-	- Mantém estado do progresso no api.js
-	- Progresso não é resetado ao voltar para matérias
-	- Sincronização correta entre todos os módulos
+	- Mantém estado do progresso no api.js.
+	- Progresso não é resetado ao voltar para matérias.
+	- Sincronização correta entre todos os módulos.
 
-01/09/2026 *Paulodev* - seleção de matéria com feedback visual - P05
+01/09/2026 *Paulodev* - Seleção de matéria com feedback visual - P05
 
-	- Adiciona destaque no card selecionado
-	- Pré-carrega flashcards antes de navegar
-	- Transição suave entre telas
-	- Botão com estado de loading
-	- Persiste seleção na URL (?materia=id)
-	- Scroll suave para o card selecionado
+	- Adiciona destaque no card selecionado.
+	- Pré-carrega flashcards antes de navegar.
+	- Transição suave entre telas.
+	- Botão com estado de loading.
+	- Persiste seleção na URL (?materia=id).
+	- Scroll suave para o card selecionado.
 
-	- Adiciona flag 'carregado' para prevenir recarregamento desnecessário
-	- Adiciona flag 'loading' para prevenir carregamento simultâneo
-	- Adiciona verificação de inicialização no main.js
-	- Corrige loop entre materias e progresso
+	- Adiciona flag 'carregado' para prevenir recarregamento desnecessário.
+	- Adiciona flag 'loading' para prevenir carregamento simultâneo.
+	- Adiciona verificação de inicialização no main.js.
+	- Corrige loop entre materias e progresso.
 
-	- Adiciona logs para debug
-	- Simplifica lógica de carregamento
-	- Garante containers existem
-	- Remove flags problemáticas
+	- Adiciona logs para debug.
+	- Simplifica lógica de carregamento.
+	- Garante containers existem.
+	- Remove flags problemáticas.
 
-	- Adiciona history.pushState() ao entrar no estudo
-	- Escuta evento popstate para detectar voltar
-	- Adiciona botão Voltar na tela de estudo
-	- Mantém progresso ao voltar
+	- Adiciona history.pushState() ao entrar no estudo.
+	- Escuta evento popstate para detectar voltar.
+	- Adiciona botão Voltar na tela de estudo.
+	- Mantém progresso ao voltar.
 
----------------------------------------------------------------
+	- Matérias são exibidas em cards com ícones e cores.
+	- Progresso individual por matéria.
+	- Clique em 'Estudar' navega para tela de estudo.
+	- Botão voltar do navegador funciona.
+	- Progresso persistente durante a sessão.
 
-- Matérias são exibidas em cards com ícones e cores
-- Progresso individual por matéria
-- Clique em 'Estudar' navega para tela de estudo
-- Botão voltar do navegador funciona
-- Progresso persistente durante a sessão
+02/09/2026 - *Paulodev* - Tela de estudo com animação 3D - P06
 
-02/09/2026 - *Paulodev* - tela de estudo com animação 3D - P06
-
-	- Adiciona efeito de virar flashcard (3D)
-	- Melhora design da tela de estudo
-	- Adiciona barra de progresso da sessão
-	- Feedback visual com animação
-	- Tecla Espaço para virar o cartão
-	- Tela de conclusão ao finalizar
-	- Componente flashcard preparado para P07
+	- Adiciona efeito de virar flashcard (3D).
+	- Melhora design da tela de estudo.
+	- Adiciona barra de progresso da sessão.
+	- Feedback visual com animação.
+	- Tecla Espaço para virar o cartão.
+	- Tela de conclusão ao finalizar.
+	- Componente flashcard preparado para P07.
 
 12/09/2026 - *Paulodev e Ingredydev* - Versionamento do Back-End para a branch Ingredydev
 
@@ -186,47 +213,104 @@
 		Arquivo requirements.txt;
 
 12/09/2026 - *Paulodev* - dados simulados voltam a funcionar, atualiza matérias com nomes oficiais da API
-	- Substitui dados simulados antigos pelos oficiais
-	- Adiciona 'Modelagem e Desenvolvimento de Banco de Dados'
-	- Atualiza ícones e cores para nomes reais
-	- Adiciona flashcard com alternativas
-	- Adiciona fallback automático se API falhar
+	- Substitui dados simulados antigos pelos oficiais.
+	- Adiciona 'Modelagem e Desenvolvimento de Banco de Dados'.
+	- Atualiza ícones e cores para nomes reais.
+	- Adiciona flashcard com alternativas.
+	- Adiciona fallback automático se API falhar.
 
-	- Começa em modo simulação por padrão
-	- Adiciona timeout nas requisições
-	- Fallback automático se API falhar
-	- Corrige exibição das 10 matérias
-	- Mantém dados simulados sincronizados
+	- Começa em modo simulação por padrão.
+	- Adiciona timeout nas requisições.
+	- Fallback automático se API falhar.
+	- Corrige exibição das 10 matérias.
+	- Mantém dados simulados sincronizados.
 
 15/09/2026 - *Paulodev* - componente de flashcard componentizado - P07
 
-	- Adiciona suporte a flashcards com alternativas
-	- Implementa seleção visual de alternativas
-	- Adiciona atalhos de teclado (Espaço, Esc)
-	- Adiciona acessibilidade (ARIA + role)
-	- Adiciona proteção contra XSS (_escapeHtml)
-	- Define API clara com callbacks (onRevelar, onResponder)
-	- Estudo.js agora usa callbacks do componente
-	- Adiciona CSS para alternativas e feedback
+	- Adiciona suporte a flashcards com alternativas.
+	- Implementa seleção visual de alternativas.
+	- Adiciona atalhos de teclado (Espaço, Esc).
+	- Adiciona acessibilidade (ARIA + role).
+	- Adiciona proteção contra XSS (_escapeHtml).
+	- Define API clara com callbacks (onRevelar, onResponder).
+	- Estudo.js agora usa callbacks do componente.
+	- Adiciona CSS para alternativas e feedback.
 
-	fix: fallback silencioso para rotas não implementadas
+	Fix: fallback silencioso para rotas não implementadas
 
-	- Adiciona lista de rotas disponíveis na API real
-	- Rotas não implementadas usam simulação automaticamente
-	- Adiciona lógica de sequência (3 acertos = dominado)
-	- Remove erros visíveis ao responder flashcards
+	- Adiciona lista de rotas disponíveis na API real.
+	- Rotas não implementadas usam simulação automaticamente.
+	- Adiciona lógica de sequência (3 acertos = dominado).
+	- Remove erros visíveis ao responder flashcards.
 
-	fix: corrige callback onResponder no estudo.js
+	Fix: corrige callback onResponder no estudo.js
 
-	- Adiciona parâmetro respostaSelecionada no callback
-	- Callback agora recebe (acertou, respostaSelecionada)
-	- Remove referência a variável não declarada
+	- Adiciona parâmetro respostaSelecionada no callback.
+	- Callback agora recebe (acertou, respostaSelecionada).
+	- Remove referência a variável não declarada.
 
-	verificação automática de resposta - P07
+	Verificação automática de resposta - P07
 
-	- Remove botões Acertei/Errei manuais
-	- Adiciona comparação automática de alternativas
-	- Destaca visualmente alternativa correta/incorreta
-	- Mostra a resposta do aluno vs resposta correta
-	- Adiciona atalhos de teclado 1-4 para alternativas
-	- Avança automaticamente após 2 segundos
+	- Remove botões Acertei/Errei manuais.
+	- Adiciona comparação automática de alternativas.
+	- Destaca visualmente alternativa correta/incorreta.
+	- Mostra a resposta do aluno vs resposta correta.
+	- Adiciona atalhos de teclado 1-4 para alternativas.
+	- Avança automaticamente após 2 segundos.
+
+02/10/2026 - *Paulodev* Fix: adiciona /responder na lista de rotas disponíveis
+
+	- Adiciona /responder em ROTAS_DISPONIVEIS.
+	- Remove forçar modo simulação no main.js.
+	- Corrige envio para a URL correta.
+	- Adiciona /login na lista.
+
+15/10/2026 - *Paulodev* Finaliza componente de flashcard com badge de dificuldade - P07
+
+	- Adiciona badge de dificuldade (⭐ a ⭐⭐⭐⭐).
+	- Corrige envio de usuario_id na URL.
+	- Limpa o loading após carregar flashcards.
+	- Suporta formato alt_a/b/c/d da API.
+	- Atalhos de teclado A-D e 1-4.
+	- Destaca alternativa correta/incorreta após resposta.
+
+19/10/2026 *Paulodev* finaliza integração de respostas com a API - P08
+
+	- Envia letra escolhida ('a', 'b', 'c', 'd') para POST /responder.
+	- Recebe e exibe resultado (acertou/errou).
+	- Destaca alternativa correta visualmente.
+	- Adiciona badge de dificuldade no flashcard.
+	- Corrige envio de usuario_id na URL.
+	- Esconde container de loading após carregar.
+	- Reseta estado ao trocar de matéria (evita pular 1º flashcard).
+	- Adiciona proteção contra chamadas duplicadas.
+
+	Implementa progresso por matéria - P09
+
+	- Atualiza progresso.js para calcular o progresso total a partir das matérias.
+	- Atualiza main.js e estudo.js para usar carregarTudo().
+	- Corrige layout do flashcard para não cortar o conteúdo de erro.
+	- Ajusta altura e overflow das faces do cartão 3D.
+
+	Finaliza progresso e corrige layout do flashcard - P09
+
+	- Calcula progresso real por matéria via API.
+	- Atualiza barras de progresso geral e por matéria.
+	- Esconde barra de rolagem no verso do flashcard durante animação 3D.
+	- Ajusta altura e overflow das faces do cartão.
+	- Resolve bug de corte de conteúdo no verso.
+
+	Finaliza P08 e P09 (Integração e Progresso)
+
+	P08 - Respostas e Integração:
+	- Envia a letra escolhida para a API e recebe o resultado.
+	- Destaca visualmente a alternativa correta e a errada.
+	- Resolve o bug do primeiro flashcard pulado ao trocar de matéria.
+	- Adiciona proteção contra duplo clique e chamadas duplicadas.
+
+	P09 - Progresso e Layout:
+	- Integra o cálculo de progresso real por matéria usando a rota /materias/{id}/progresso.
+	- Sincroniza o progresso geral com os cards individuais.
+	- Corrige o layout do flashcard (cartão 3D) para não cortar o conteúdo no verso.
+	- Esconde a barra de rolagem durante a animação de virar o cartão.
+	- Corrige o erro 'progresso.carregar is not a function'."
