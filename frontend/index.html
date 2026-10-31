@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/styles.css">
-    <title>DStudy - P07</title>
+    <title>DStudy - Sistema de estudos com flashcards</title>
 </head>
 <body>
     <div class="container">
@@ -12,11 +12,71 @@
         <header class="header">
             <h1>📚 DStudy</h1>
             <p>Sistema de estudos com flashcards - TCC</p>
-            <span class="badge">P07 - Seleção de matéria</span>
+            <span class="badge">Seu melhor amigo para estudar desenvolvimento de sistemas!</span>
         </header>
 
+<!-- ===== TELA DE LOGIN ===== -->
+<div id="tela-login" class="tela ativa">
+    <div class="login-container">
+        <h2>BEM VINDO AO DSTUDY!</h2>
+        <p>Faça login para continuar</p>
+        
+        <form id="form-login">
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" id="login-email" placeholder="seu@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="login-senha" placeholder="Sua senha" required>
+            </div>
+            
+            <div id="login-erro" class="erro-msg" style="display: none;"></div>
+            
+            <button type="submit" class="btn-pixel" style="width: 100%;">ENTRAR</button>
+        </form>
+        
+        <p class="trocar-tela">
+            Não tem conta? <a href="#" id="link-cadastro">Cadastre-se</a>
+        </p>
+    </div>
+</div>
+
+<!-- ===== TELA DE CADASTRO ===== -->
+<div id="tela-cadastro" class="tela">
+    <div class="login-container">
+        <h2>CRIAR CONTA</h2>
+        <p>Junte-se à tripulação do DStudy!</p>
+        
+        <form id="form-cadastro">
+            <div class="input-group">
+                <label>Nome</label>
+                <input type="text" id="cadastro-nome" placeholder="Seu nome" required>
+            </div>
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" id="cadastro-email" placeholder="seu@email.com" required>
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" id="cadastro-senha" placeholder="Mínimo 6 caracteres" required>
+            </div>
+            
+            <!-- Mensagens de feedback -->
+            <div id="cadastro-erro" class="erro-msg" style="display: none;"></div>
+            <div id="cadastro-sucesso" class="erro-msg" style="display: none; color: #7aff7a; border-color: #28a745;"></div>
+            
+            <button type="submit" class="btn-pixel" style="width: 100%;">CADASTRAR</button>
+        </form>
+        
+        <p class="trocar-tela">
+            Já tem conta? <a href="#" id="link-login">Faça login</a>
+        </p>
+    </div>
+</div>
+
         <!-- TELA DE MATÉRIAS -->
-        <div id="tela-materias" class="tela ativa">
+        <div id="tela-materias" class="tela">
             <div id="materias-container">
                 <div class="loading-state">
                     <div class="spinner"></div>

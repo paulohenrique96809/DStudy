@@ -927,3 +927,94 @@ body {
     background: #f8d7da;
     color: #721c24;
 }
+
+/* ============================================================
+   TELAS DE AUTENTICAÇÃO (LOGIN E CADASTRO)
+   ============================================================ */
+.login-container {
+    background: var(--roxo-escuro);
+    border: 3px solid var(--lavanda);
+    padding: 40px 30px;
+    max-width: 400px;
+    margin: 10vh auto;
+    text-align: center;
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.login-container h2 {
+    font-size: 38px;
+    color: var(--amarelo-progresso);
+    margin-bottom: 10px;
+}
+
+.login-container p {
+    font-size: 20px;
+    color: var(--lavanda);
+    margin-bottom: 30px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 20px;
+    color: var(--texto-principal);
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-principal);
+    border: 2px solid var(--roxo-medio);
+    color: var(--texto-principal);
+    font-family: 'Segoe UI', monospace;
+    font-size: 18px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--rosa-magenta);
+}
+
+.btn-pixel {
+    background: var(--rosa-magenta);
+    color: purple;
+    border: 2px solid var(--lavanda);
+    padding: 12px;
+    font-family: inherit;
+    font-size: 10px;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.btn-pixel:hover {
+    background: #a8326d;
+}
+
+.erro-msg {
+    background: #571044;
+    color: #ffb8b8;
+    padding: 10px;
+    font-size: 8px;
+    border: 1px solid #dc3545;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.trocar-tela {
+    margin-top: 20px;
+    font-size: 8px;
+}
+
+.trocar-tela a {
+    color: var(--amarelo-progresso);
+    text-decoration: none;
+}
+
+.trocar-tela a:hover {
+    text-decoration: underline;
+}

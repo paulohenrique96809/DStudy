@@ -13,9 +13,9 @@ export class Progresso {
      * @param {number} materiaId 
      * @param {number} usuarioId 
      */
-    async carregarMateria(materiaId, usuarioId = 1) {
+    async carregarMateria(materiaId) {
         try {
-            const resposta = await get(`/materias/${materiaId}/progresso?usuario_id=${usuarioId}`);
+            const resposta = await get(`/materias/${materiaId}/progresso`);
             return resposta; // { materia, total_flashcards, dominados, percentual }
         } catch (error) {
             console.error(`❌ [PROGRESSO] Erro ao buscar matéria ${materiaId}:`, error);
@@ -27,7 +27,7 @@ export class Progresso {
      * ⭐ BUSCA O PROGRESSO DE TODAS AS MATÉRIAS
      * (Faz uma chamada para cada matéria e soma)
      */
-    async carregarTudo(materias, usuarioId = 1) {
+    async carregarTudo(materias) {
         console.log('📊 [PROGRESSO] Buscando progresso de todas as matérias...');
         
         try {
@@ -36,7 +36,7 @@ export class Progresso {
             const porMateria = [];
 
             for (const materia of materias) {
-                const p = await this.carregarMateria(materia.id, usuarioId);
+                const p = await this.carregarMateria(materia.id);
                 
                 // ⭐ Soma os totais gerais
                 totalFlashcards += p.total_flashcards || 0;

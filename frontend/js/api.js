@@ -85,30 +85,31 @@ function rotaDisponivel(endpoint) {
 export async function apiRequest(endpoint, options = {}) {
     const method = options.method || 'GET';
 
-    // ⭐ VERIFICA SE A ROTA ESTÁ DISPONÍVEL NA API REAL
-    if (!rotaDisponivel(endpoint)) {
-        console.log(`⚠️ [API] Rota "${endpoint}" indisponível, usando simulação`);
-        return simularRequisicao(endpoint, options);
-    }
-
-    // ⭐ SE ESTIVER EM MODO SIMULAÇÃO, USA DADOS SIMULADOS
+    // 1. Se estiver em modo simulação, nem tenta chamar a API
     if (MODO_SIMULACAO) {
-        console.log(`🔵 [API] Modo simulação ativo`);
         return simularRequisicao(endpoint, options);
     }
 
     const url = `${API_BASE_URL}${endpoint}`;
 
     try {
-        console.log(`📡 [API] ${method} ${url}`, options.body || '');
-        const inicio = Date.now();
+        console.log(`📡 [API] ${method} ${url}`);
+        
+        // 2. Prepara os headers
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        // ⭐ 3. AQUI ESTÁ A MÁGICA: Pega o token e adiciona no header
+        const token = localStorage.getItem('dstudy_token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
         const config = {
             method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
+            headers: headers, // Usa os headers montados acima
             signal: AbortSignal.timeout(TIMEOUT_MS)
         };
 
@@ -118,34 +119,24 @@ export async function apiRequest(endpoint, options = {}) {
 
         const response = await fetch(url, config);
         
-        const tempo = Date.now() - inicio;
-        console.log(`⏱️ [API] Resposta em ${tempo}ms`);
-
-        let data;
-        try {
-            data = await response.json();
-        } catch (e) {
-            data = { erro: 'Resposta não é JSON' };
+        // 4. Se o token expirou ou é inválido (401), desloga o usuário
+        if (response.status === 401) {
+            localStorage.removeItem('dstudy_token');
+            localStorage.removeItem('dstudy_usuario');
+            window.location.reload(); // Recarrega para voltar à tela de login
+            throw new Error('Sessão expirada. Faça login novamente.');
         }
 
-        // ⭐ SE DER ERRO, MOSTRA A MENSAGEM
+        const data = await response.json();
+
         if (!response.ok) {
-            console.warn(`⚠️ [API] Erro ${response.status}:`, data);
             throw new Error(data.erro || data.mensagem || `Erro ${response.status}`);
         }
 
-        console.log(`✅ [API] Resposta:`, data);
         return data;
 
     } catch (error) {
         console.error(`❌ [API] Erro em ${endpoint}:`, error.message);
-        
-        // ⭐ SE FOR TIMEOUT, TENTA SIMULAÇÃO
-        if (error.name === 'TimeoutError' || error.message.includes('timeout')) {
-            console.warn('⏱️ [API] Timeout, usando simulação');
-            return simularRequisicao(endpoint, options);
-        }
-        
         throw error;
     }
 }

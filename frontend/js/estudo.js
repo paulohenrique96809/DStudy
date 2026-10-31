@@ -16,7 +16,6 @@ export class Estudo {
         this.infoContainer = document.getElementById('estudo-info');
         
         // ⭐ USUÁRIO FIXO (temporário até ter login)
-        this.usuarioId = 1;
         
         console.log('📖 [ESTUDO] Container:', this.container);
     }
@@ -38,7 +37,7 @@ export class Estudo {
             // Mostra o loading
             this.mostrarLoading();
 
-            const url = `/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`;
+            const url = `/materias/${materia.id}/flashcards`;
             const resposta = await get(url);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
