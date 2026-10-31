@@ -80,7 +80,6 @@
 20/08/2026 *Yasdev* - Desenvolvimento da página principal P1
 	- Atualizações e alterações da página principal de estudo.
 
-
 24/08/2026 *Yasdev* - Desenvolvimento da página principal P2
 	- Atualizações e alterações da página principal do site.
 
@@ -95,12 +94,18 @@
 	- Adição da função para requisições com headers no arquivo api.js.
 
 25/08/2026 *Paulodev* - Criação da arquitetura inicial da segunda fase da pipeline
-	- Criação do arquivo frontend\js\ estudo.js.
-	- Criação do arquivo frontend\js\ materias.js.
-	- Criação do arquivo frontend\js\ progresso.js.
+	- Criação dos arquivos estudo.js, materias.js e progresso.js:
+		\frontend
+			├──\js
+				├──estudo.js
+				├──materias.js
+				├──progresso.js
 	- Criação da pasta components.
-	- Criação do arquivo frontend\js\components\ flashcard.js.
-	- Criação do arquivo frontend\js\components\ progresso.js.
+			├──\components
+	- Criação dos arquivos flashcard.js e progresso.js:
+			├──\components
+					├──flashcard.js
+					├──progresso.js
 
 26/08/2026 *Paulodev* - Arquitetura dos módulos - P02
 	- Cria módulo materias.js (listagem e seleção).
@@ -147,13 +152,11 @@
 	- Simplifica atualização após respostas.
 
 30/08/2026 *Paulodev* - Progresso persistente durante toda a sessão
-
 	- Mantém estado do progresso no api.js.
 	- Progresso não é resetado ao voltar para matérias.
 	- Sincronização correta entre todos os módulos.
 
 01/09/2026 *Paulodev* - Seleção de matéria com feedback visual - P05
-
 	- Adiciona destaque no card selecionado.
 	- Pré-carrega flashcards antes de navegar.
 	- Transição suave entre telas.
@@ -183,7 +186,6 @@
 	- Progresso persistente durante a sessão.
 
 02/09/2026 - *Paulodev* - Tela de estudo com animação 3D - P06
-
 	- Adiciona efeito de virar flashcard (3D).
 	- Melhora design da tela de estudo.
 	- Adiciona barra de progresso da sessão.
@@ -193,25 +195,27 @@
 	- Componente flashcard preparado para P07.
 
 12/09/2026 - *Paulodev e Ingredydev* - Versionamento do Back-End para a branch Ingredydev
-
 	-Adição de:
-		Pasta database;
-			connection.py
-			seeds.sql
-		Pasta models;
-			flashcard.py
-			materia.py
-			progresso.py
-			usuario.py
-		Pasta routes;
-			auth.py
-			flashcards.py
-			materias.py
-			progresso.py
-		Arquivo .env;
-		Arquivo app.py;
-		Arquivo requirements.txt;
-
+		Pasta principal \backend;
+		Pasta \database;
+				├──connection.py
+				├──seeds.sql
+		Pasta \models;
+				├──flashcard.py
+				├──materia.py
+				├──progresso.py
+				├──usuario.py
+		Pasta \routes;
+				├──auth.py
+				├──flashcards.py
+				├──materias.py
+				├──progresso.py
+		Adição dos arquivos .env, app.py e requirements.txt;
+			\backend
+				├──.env
+				├──app.py
+				├──requirements.txt;
+			
 12/09/2026 - *Paulodev* - dados simulados voltam a funcionar, atualiza matérias com nomes oficiais da API
 	- Substitui dados simulados antigos pelos oficiais.
 	- Adiciona 'Modelagem e Desenvolvimento de Banco de Dados'.
