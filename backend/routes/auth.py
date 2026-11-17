@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models.usuario import Usuario
 from database.connection import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -29,6 +30,7 @@ def cadastro():
 
     return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
 
+
 @auth_bp.route("/login", methods=["POST"])
 def login():
     dados = request.get_json()
@@ -44,4 +46,30 @@ def login():
     if not usuario or not check_password_hash(usuario.senha_hash, senha):
         return jsonify({"erro": "Credenciais inválidas."}), 401
 
-    return jsonify({"mensagem": "Login realizado com sucesso!"}), 200
+    token = create_access_token(identity=str(usuario.id))
+
+    return jsonify({
+        "mensagem": "Login realizado com sucesso!",
+        "access_token": token,
+        "usuario": {
+            "id": usuario.id,
+            "nome": usuario.nome,
+            "email": usuario.email
+        }
+    }), 200
+
+
+@auth_bp.route("/perfil", methods=["GET"])
+@jwt_required()
+def perfil():
+    usuario_id = get_jwt_identity()
+    usuario = Usuario.query.get(int(usuario_id))
+
+    if not usuario:
+        return jsonify({"erro": "Usuário não encontrado."}), 404
+
+    return jsonify({
+        "id": usuario.id,
+        "nome": usuario.nome,
+        "email": usuario.email
+    }), 200

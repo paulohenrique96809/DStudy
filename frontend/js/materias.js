@@ -42,10 +42,13 @@ export class Materias {
         try {
             this.lista = await get('/materias');
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
+<<<<<<< Updated upstream
             
             // ⭐ REMOVA OU COMENTE A LINHA ABAIXO:
             // this.renderizar(); 
             
+=======
+>>>>>>> Stashed changes
             return this.lista;
         } catch (error) {
             console.error('❌ [MATERIAS] Erro:', error);

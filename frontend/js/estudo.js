@@ -15,33 +15,39 @@ export class Estudo {
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
         
+<<<<<<< Updated upstream
         // ⭐ USUÁRIO FIXO (temporário até ter login)
         
         console.log('📖 [ESTUDO] Container:', this.container);
+=======
+        // ⭐ Usuário fixo temporário (1)
+        this.usuarioId = 1;
+>>>>>>> Stashed changes
     }
 
     async iniciar(materia) {
         this.materia = materia;
         console.log(`📖 [ESTUDO] Iniciando: ${materia.nome}`);
 
-        // ⭐ LIMPA O COMPONENTE DE FLASHCARD ANTES DE INICIAR
         flashcardComponent.limpar();
-
-        // ⭐ RESETA O ESTADO
         this.flashcards = [];
         this.flashcardAtual = null;
         this.indiceAtual = 0;
         this.estaRespondendo = false;
 
         try {
-            // Mostra o loading
             this.mostrarLoading();
 
+<<<<<<< Updated upstream
             const url = `/materias/${materia.id}/flashcards`;
+=======
+            // ⭐ Busca a fila de flashcards disponíveis no Back-End
+            const url = `/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`;
+>>>>>>> Stashed changes
             const resposta = await get(url);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
-                this.mostrarMensagem('⚠️ Nenhum flashcard disponível.');
+                this.mostrarMensagem('🎉 Você já dominou todos os flashcards desta matéria!');
                 return;
             }
 
@@ -54,10 +60,7 @@ export class Estudo {
 
             console.log(`✅ [ESTUDO] ${this.flashcards.length} flashcards carregados`);
             
-            // Esconde o container de loading
             this.esconderContainer();
-            
-            // Mostra o primeiro flashcard
             this.mostrarFlashcard();
 
         } catch (error) {
@@ -67,8 +70,9 @@ export class Estudo {
     }
 
     mostrarFlashcard() {
+        // Se chegou ao fim da fila atual
         if (this.indiceAtual >= this.flashcards.length) {
-            this.concluirEstudo();
+            this.fimDaFila();
             return;
         }
 
@@ -119,8 +123,6 @@ export class Estudo {
         if (this.estaRespondendo || !this.flashcardAtual) return;
         this.estaRespondendo = true;
 
-        console.log(`📝 [ESTUDO] Resposta: letra "${letraEscolhida}"`);
-
         try {
             const payload = {
                 usuario_id: this.usuarioId,
@@ -128,11 +130,7 @@ export class Estudo {
                 resposta: letraEscolhida
             };
 
-            console.log('📤 [ESTUDO] Enviando para /responder:', payload);
-
             const resultado = await post('/responder', payload);
-
-            console.log('✅ [ESTUDO] Resposta registrada:', resultado);
 
             flashcardComponent.mostrarResultado(resultado.acertou, {
                 correta: resultado.correta || null,
@@ -145,34 +143,118 @@ export class Estudo {
                 sequencia: resultado.acertos_consecutivos
             });
 
-            await this.aguardar(2500);
+            // Aguarda um tempo para o usuário ler o feedback
+            await this.aguardar(2000);
 
+<<<<<<< Updated upstream
+=======
+            // Atualiza o progresso geral
+>>>>>>> Stashed changes
             await progresso.carregarTudo(materias.lista);
             materias.renderizar();
 
-            // ⭐ PREPARA O PRÓXIMO FLASHCARD (reseta o estado do componente)
             flashcardComponent.prepararProximo();
 
+            // Avança para o próximo
             this.indiceAtual++;
             this.mostrarFlashcard();
 
         } catch (error) {
             console.error('❌ [ESTUDO] Erro ao registrar:', error);
-            flashcardComponent.mostrarErro(`Erro: ${error.message || 'Não foi possível registrar'}`);
+            flashcardComponent.mostrarErro(`Erro: ${error.message}`);
             this.estaRespondendo = false;
         }
     }
 
-    concluirEstudo() {
-        console.log('🎉 [ESTUDO] Estudo concluído!');
-        flashcardComponent.mostrarConclusao(this.materia.nome);
-        this.esconderContainer();
+    /**
+     * ⭐ NOVO MÉTODO (P10): Fim da fila
+     * Chamado quando o usuário termina os flashcards da sessão atual.
+     * Em vez de "Concluir" e travar, verifica se tem mais no Back-End.
+     */
+    async fimDaFila() {
+        console.log('🏁 [ESTUDO] Fim da fila atual. Verificando se há mais flashcards...');
+
+        // Esconde o flashcard
+        flashcardComponent.limpar();
+
+        // Verifica no Back-End se existem mais flashcards disponíveis
+        try {
+            const url = `/materias/${this.materia.id}/flashcards?usuario_id=${this.usuarioId}`;
+            const proximosFlashcards = await get(url);
+
+            // Se o Back-End retornar uma lista vazia, significa que o usuário dominou tudo
+            if (!Array.isArray(proximosFlashcards) || proximosFlashcards.length === 0) {
+                this.concluirMateria();
+                return;
+            }
+
+            // Se ainda existem flashcards em espera, mostra a tela de "Rodada concluída"
+            this.mostrarTelaRodadaConcluida(proximosFlashcards.length);
+
+        } catch (error) {
+            console.error('❌ [ESTUDO] Erro ao verificar novos flashcards:', error);
+            this.mostrarMensagem('❌ Erro ao verificar a fila de estudos.');
+        }
     }
 
-    // ============================================================
-    // ⭐ MÉTODOS DE VISIBILIDADE
-    // ============================================================
+    /**
+     * ⭐ NOVO MÉTODO (P10): Tela de rodada concluída
+     */
+    mostrarTelaRodadaConcluida(restantes) {
+        this.mostrarContainer();
+        
+        if (this.infoContainer) {
+            this.infoContainer.innerHTML = '';
+        }
 
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="estudo-concluido">
+                    <h3>🎉 Rodada concluída!</h3>
+                    <p>Você respondeu todos os flashcards disponíveis agora.</p>
+                    <p>Ainda faltam <strong>${restantes}</strong> flashcards para você dominar esta matéria.</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 20px;">
+                        💡 Os flashcards que você errou ou ainda não dominou voltarão a aparecer em breve.
+                    </p>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="window.location.reload()">
+                            🔄 Recomeçar
+                        </button>
+                        <button class="btn btn-secondary" onclick="window.history.back()">
+                            📚 Voltar para matérias
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * ⭐ NOVO MÉTODO (P10): Matéria 100% concluída
+     */
+    concluirMateria() {
+        console.log('🏆 [ESTUDO] Matéria 100% dominada!');
+        this.mostrarContainer();
+        
+        if (this.infoContainer) {
+            this.infoContainer.innerHTML = '';
+        }
+
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="estudo-concluido">
+                    <h3>🏆 Parabéns!</h3>
+                    <p>Você dominou <strong>todos</strong> os flashcards desta matéria!</p>
+                    <button class="btn btn-primary" onclick="window.history.back()">
+                        📚 Voltar para matérias
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // ===== CONTROLE DE VISIBILIDADE =====
+    
     esconderContainer() {
         if (this.container) {
             this.container.style.display = 'none';
