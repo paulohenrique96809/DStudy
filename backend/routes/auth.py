@@ -27,6 +27,7 @@ def cadastro():
 
     return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
 
+
 @auth_bp.route("/login", methods=["POST"])
 def login():
     dados = request.get_json()
@@ -41,6 +42,7 @@ def login():
     if not usuario or not check_password_hash(usuario.senha_hash, senha):
         return jsonify({"erro": "Credenciais inválidas."}), 401
 
+<<<<<<< HEAD
     # ⭐ CRIA O TOKEN AQUI
     access_token = create_access_token(identity=str(usuario.id))
 
@@ -48,9 +50,35 @@ def login():
     return jsonify({
         "mensagem": "Login realizado com sucesso!",
         "access_token": access_token,
+=======
+    token = create_access_token(identity=str(usuario.id))
+
+    return jsonify({
+        "mensagem": "Login realizado com sucesso!",
+        "access_token": token,
+>>>>>>> 6f9e8baeca8f2e1423a345eaf56c2abe298154ce
         "usuario": {
             "id": usuario.id,
             "nome": usuario.nome,
             "email": usuario.email
         }
+<<<<<<< HEAD
+=======
+    }), 200
+
+
+@auth_bp.route("/perfil", methods=["GET"])
+@jwt_required()
+def perfil():
+    usuario_id = get_jwt_identity()
+    usuario = Usuario.query.get(int(usuario_id))
+
+    if not usuario:
+        return jsonify({"erro": "Usuário não encontrado."}), 404
+
+    return jsonify({
+        "id": usuario.id,
+        "nome": usuario.nome,
+        "email": usuario.email
+>>>>>>> 6f9e8baeca8f2e1423a345eaf56c2abe298154ce
     }), 200
