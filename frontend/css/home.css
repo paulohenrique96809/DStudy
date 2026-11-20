@@ -1,0 +1,168 @@
+/* ============================================================
+   DSTUDY — HOME INICIAL
+   ============================================================ */
+
+/* ---------- Bolhas ---------- */
+.bolhas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bolha {
+    position: absolute;
+    height: auto;
+    opacity: 0.9;
+    image-rendering: pixelated;
+}
+
+/* ---------- Tamanhos das bolhas (proporcionais ao novo layout) ---------- */
+.bolhapequena { width: 22px; }
+.bolhamedia   { width: 48px; }
+.bolhagrande  { width: 84px; }
+
+/* Pequenas */
+.bolha-1  { top: 10%;  left: 10%;   }
+.bolha-2  { top: 15%;  left: 88%;  }
+.bolha-3  { top: 35%;  left: 3%;   }
+.bolha-4  { top: 30%;  left: 95%;  }
+.bolha-5  { top: 85%;  left: 12%;  }
+.bolha-6  { top: 80%;  left: 85%;  }
+
+/* Médias */
+.bolha-7  { top: 8%;   left: 40%;  }
+.bolha-8  { top: 45%;  left: 50%;  }
+.bolha-9  { top: 70%;  left: 8%;   }
+.bolha-10 { top: 90%;  left: 45%;  }
+
+/* Grandes */
+.bolha-11 { top: 5%;   left: 92%;  }
+.bolha-12 { top: 85%;  left: 92%;  }
+.bolha-13 { top: 18%;  left: 25%;  }
+
+/* ---------- Logo ---------- */
+.topo {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    z-index: 10;
+}
+
+.logo {
+    height: 72px; /* Ajustado para notebook */
+    width: auto;
+    image-rendering: pixelated;
+}
+
+/* ---------- Conteúdo Central ---------- */
+.home-conteudo {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px; /* Reduzido para notebook */
+    padding: 80px 40px 40px;
+}
+
+.axolote-area {
+    flex-shrink: 0;
+    margin-top: -20px; /* Compensa assimetria */
+}
+
+.axolote {
+    width: 100%;
+    max-width: 480px; /* Reduzido de 650px para caber no notebook */
+    height: auto;
+    image-rendering: pixelated;
+}
+
+.apresentacao {
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.frase {
+    font-size: 24px; /* Reduzido de 28px */
+    line-height: 1.6;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #FFF8F0;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Botões ---------- */
+.botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 300px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'PearSoda', monospace;
+    font-size: 20px; /* Reduzido de 24px */
+    line-height: 1.6;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    padding: 16px 24px; /* Reduzido */
+    width: 100%;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+
+.btn-rosa { background-image: url('../assets/img/botaorosa.png'); }
+.btn-roxo { background-image: url('../assets/img/botaoroxo.png'); }
+
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: translateY(4px); }
+
+/* ---------- Responsividade ---------- */
+@media (max-width: 1024px) {
+    .home-conteudo {
+        gap: 30px;
+        padding: 80px 20px 30px;
+    }
+    .axolote { max-width: 380px; }
+    .frase { font-size: 20px; }
+    .btn { font-size: 18px; padding: 14px 20px; }
+    .logo { height: 60px; }
+}
+
+@media (max-width: 768px) {
+    .home-conteudo {
+        flex-direction: column;
+        gap: 24px;
+        padding: 100px 20px 40px;
+        min-height: auto;
+        text-align: center;
+    }
+    .axolote-area { margin-top: 0; }
+    .apresentacao { align-items: center; }
+    .frase { font-size: 18px; text-align: center; line-height: 2; }
+    .botoes { width: 100%; align-items: center; }
+    .btn { width: 100%; max-width: 280px; font-size: 16px; padding: 14px 20px; }
+    .axolote { max-width: 280px; }
+    .logo { height: 48px; }
+
+    .bolhapequena { width: 20px; }
+    .bolhamedia   { width: 40px; }
+    .bolhagrande  { width: 70px; }
+    .bolha { opacity: 0.5; }
+    .bolha-7, .bolha-10, .bolha-13 { display: none; }
+}
