@@ -1,6 +1,9 @@
 @font-face {
-    font-family: Pixel1;
-    src: url(PearSoda.ttf)
+    font-family: 'PearSoda';
+    src: url('../fonts/PearSoda.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 
 /* ============================================================
@@ -15,10 +18,11 @@
 }
 
 body {
-    font-family: Pixel1,'Segoe UI', Arial, sans-serif;
-    background: #f0f2f5;
+    font-family: 'PearSoda', 'Segoe UI', Arial, sans-serif;
+    background: #1A1234;
     min-height: 100vh;
-    padding: 20px;
+    padding: 0 !important;
+    margin: 0 !important;
     color: #2d3436;
 }
 
@@ -150,6 +154,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    position:relative;
+    z-index: 2;
 }
 
 .materia-card:hover {
@@ -1003,18 +1009,4 @@ body {
     border: 1px solid #dc3545;
     margin-bottom: 20px;
     text-align: center;
-}
-
-.trocar-tela {
-    margin-top: 20px;
-    font-size: 8px;
-}
-
-.trocar-tela a {
-    color: var(--amarelo-progresso);
-    text-decoration: none;
-}
-
-.trocar-tela a:hover {
-    text-decoration: underline;
 }
