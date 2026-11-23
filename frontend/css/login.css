@@ -1,0 +1,236 @@
+/* ============================================================
+   DSTUDY — PÁGINA DE LOGIN
+   ============================================================ */
+
+/* ---------- Bolhas ---------- */
+.bolhas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bolha {
+    position: absolute;
+    height: auto;
+    opacity: 0.9;
+    image-rendering: pixelated;
+}
+
+/* ---------- Tamanhos das bolhas (proporcionais) ---------- */
+.bolhapequena { width: 22px; }
+.bolhamedia   { width: 48px; }
+.bolhagrande  { width: 84px; }
+
+/* Pequenas */
+.bolha-1  { top: 5%;   left: 15%;  }
+.bolha-2  { top: 20%;  left: 95%;  }
+.bolha-3  { top: 35%;  left: 5%;   }
+.bolha-4  { top: 45%;  left: 95%;  }
+.bolha-5  { top: 85%;  left: 10%;  }
+.bolha-6  { top: 92%;  left: 80%;  }
+
+/* Médias */
+.bolha-7  { top: 12%;  left: 25%;  }
+.bolha-8  { top: 50%;  left: 25%;  }
+.bolha-9  { top: 30%;  left: 75%;  }
+.bolha-10 { top: 90%;  left: 50%;  }
+
+/* Grandes */
+.bolha-11 { top: 15%;  left: 85%;  }
+.bolha-12 { top: 80%;  left: 85%;  }
+.bolha-13 { top: 70%;  left: 12%;  }
+
+/* Novas médias */
+.bolha-15 { top: 20%;  left: 45%;  }
+.bolha-16 { top: 75%;  left: 65%;  }
+
+/* ---------- Logo ---------- */
+.topo {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icone {
+    height: 72px;
+    width: auto;
+    image-rendering: pixelated;
+}
+
+.logo-texto {
+    font-family: 'PearSoda', monospace;
+    font-size: 52px;
+    color: var(--texto-principal, #FFF8F0);
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+/* ---------- Conteúdo e Formulário ---------- */
+.login-conteudo {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 40px;
+}
+
+.form-login {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.grupo-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 20px;
+    color: var(--texto-principal, #FFF8F0);
+    letter-spacing: 1px;
+    padding-left: 4px;
+}
+
+.input-wrapper {
+    width: 100%;
+    height: 60px;
+    /* A bolha vai aqui! */
+    background-image: url('../assets/img/caixabolha.png') !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.input-pixel {
+    width: 100%;
+    height: 100%; /* Ocupa toda a div wrapper */
+    padding: 0 20px;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none;
+    outline: none;
+    font-family: 'PearSoda', monospace;
+    font-size: 24px;
+    color: var(--texto-principal, #FFF8F0) !important; /* Força o texto a ser claro */
+    box-sizing: border-box;
+}
+
+.input-pixel,
+.input-pixel:-webkit-autofill,
+.input-pixel:-webkit-autofill:hover,
+.input-pixel:-webkit-autofill:focus,
+.input-pixel:-webkit-autofill:active {
+    background-color: transparent !important;
+    background-image: none !important;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    -webkit-text-fill-color: var(--texto-principal, #FFF8F0) !important;
+    color: var(--texto-principal, #FFF8F0) !important;
+    font-family: 'PearSoda', monospace !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.input-pixel:hover,
+.input-pixel:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+#tela-login .trocar-tela {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 22px;
+    color: var(--texto-principal, #FFF8F0);
+    font-family: 'PearSoda', monospace;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+#tela-login .trocar-tela a {
+    color: var(--rosa-magenta, #FF4D94);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+#tela-login .trocar-tela a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+/* Botão */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'PearSoda', monospace;
+    font-size: 24px;
+    line-height: 1.6;
+    color: var(--texto-principal, #FFF8F0);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    padding: 16px 28px;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto 0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+
+.btn-rosa { background-image: url('../assets/img/botaorosa.png'); }
+
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: translateY(4px); }
+
+/* ---------- Responsividade ---------- */
+@media (max-width: 1024px) {
+    .form-login { max-width: 450px; }
+    .input-pixel { height: 56px; font-size: 22px; }
+    .btn { font-size: 22px; padding: 14px 24px; max-width: 280px; }
+    .logo-icone { height: 64px; }
+    .logo-texto { font-size: 44px; }
+}
+
+@media (max-width: 768px) {
+    .login-conteudo {
+        padding: 100px 20px 40px;
+        min-height: auto;
+    }
+    .form-login { gap: 16px; max-width: 100%; }
+    label { font-size: 16px; }
+    .input-pixel { height: 48px; font-size: 18px; padding: 0 14px; }
+    .btn { font-size: 18px; padding: 12px 20px; max-width: 100%; margin-top: 16px; }
+    .logo-icone { height: 40px; }
+    .logo-texto { font-size: 30px; }
+
+    .bolhapequena { width: 20px; }
+    .bolhamedia   { width: 40px; }
+    .bolhagrande  { width: 70px; }
+    .bolha-7, .bolha-9, .bolha-11, .bolha-13 { display: none; }
+}

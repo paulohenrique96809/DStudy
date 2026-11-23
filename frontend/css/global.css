@@ -1,0 +1,83 @@
+/* ============================================================
+   DSTUDY — ESTILOS GLOBAIS (Fonte, Paleta, Reset)
+   ============================================================ */
+
+@font-face {
+    font-family: 'PearSoda';
+    src: url('../fonts/PearSoda.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --roxo-escuro: #1A1234;
+    --lavanda: #b8a4d4;
+    --amarelo-progresso: #ffd700;
+    --texto-principal: #FFF8F0;
+    --bg-principal: #1A1234;
+    --roxo-medio: #4B3B72;
+    --rosa-magenta: #FF4D94;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--bg-principal);
+    font-family: 'PearSoda', monospace;
+    color: var(--texto-principal);
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Bolhas de fundo */
+.bolhas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Todo conteúdo de tela fica na frente */
+.tela {
+    position: relative;
+    z-index: 1;
+    padding-top: 120px; /* Empurra o conteúdo para baixo da logo */
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Header global (faixa da logo no topo) */
+.topo-global {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    margin: 0;
+    background-color: var(--roxo-escuro, #1A1234); 
+    border-bottom: 2px solid var(--lavanda, #b8a4d4);
+}
+
+/* Container de matérias */
+#tela-materias .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}

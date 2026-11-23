@@ -3,135 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DStudy - Aprenda Jogando</title> 
-    <link rel="stylesheet" href="/frontend/styles/styles.css">
+    <title>DStudy — Sistema de estudos com flashcards</title>
+
+    <!-- CSS Global e da Yasmin -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/cadastro.css">
+    
+    <!-- CSS do App (Paulo) -->
+    <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
-    
-    <!-- Elementos Espaciais de Fundo -->
-    <div class="planeta p1"></div>
-    <div class="planeta p2"></div>
-    <div class="estrela e1"></div>
-    <div class="estrela e2"></div>
-    <div class="estrela e3"></div>
 
-    <div class="container">
-        
-        <!-- HEADER (Topo) -->
-        <header class="top-bar">
-            <div class="icon-box">👾</div>
-            <h1 class="logo">DSTUDY</h1>
-            <!-- ⭐ Botão de Logout -->
-            <button class="icon-box btn-logout" id="btn-logout" title="Sair">🚪</button>
-        </header>
+    <!-- ============================================================ -->
+    <!-- FUNDO DECORATIVO (BOLHAS)                                     -->
+    <!-- ============================================================ -->
+    <div class="bolhas" aria-hidden="true">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-1">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-2">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-3">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-4">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-5">
+        <img src="assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-6">
 
-        <!-- TELA DE LOGIN -->
-        <div id="tela-login" class="tela ativa">
-            <div class="login-container">
-                <h2>BEM VINDO AO DSTUDY!</h2>
-                <p>Faça login para continuar</p>
-                
-                <form id="form-login">
-                    <div class="input-group">
-                        <label>E-mail</label>
-                        <input type="email" id="login-email" placeholder="seu@email.com" required>
+        <img src="assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-7">
+        <img src="assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-8">
+        <img src="assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-9">
+        <img src="assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-10">
+
+        <img src="assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-11">
+        <img src="assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-12">
+        <img src="assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-13">
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- HEADER GLOBAL (FIXO NO TOPO)                                  -->
+    <!-- ============================================================ -->
+    <header class="topo topo-global" id="btn-voltar-home-global">
+        <div class="logo-container">
+            <img src="assets/img/logo.png" alt="Cavecinha DStudy" class="logo-icone">
+            <span class="logo-texto">DStudy</span>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- TELA 0: HOME                                                  -->
+    <!-- ============================================================ -->
+    <div id="tela-home" class="tela ativa">
+        <main class="home-conteudo">
+            <div class="axolote-area">
+                <img src="assets/img/axolotecorpo.png" alt="Axolote mascote do DStudy" class="axolote">
+            </div>
+
+            <section class="apresentacao">
+                <h1 class="frase">
+                    a forma mais divertida<br>
+                    de memorizar as materias<br>
+                    de Desenvolvimento de Sistemas!
+                </h1>
+
+                <div class="botoes">
+                    <button type="button" class="btn btn-rosa" id="btn-comece-agora">
+                        COMECE AGORA
+                    </button>
+                    <button type="button" class="btn btn-roxo" id="btn-ja-tenho-conta">
+                        JÁ TENHO UMA CONTA
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TELA 1: LOGIN                                                 -->
+    <!-- ============================================================ -->
+    <div id="tela-login" class="tela">
+        <main class="login-conteudo">
+            <form class="form-login" id="form-login">
+                <div class="grupo-campo">
+                    <label for="login-email">E-MAIL:</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="login-email" name="email" class="input-pixel" autocomplete="off">
                     </div>
-                    <div class="input-group">
-                        <label>Senha</label>
-                        <input type="password" id="login-senha" placeholder="Sua senha" required>
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="login-senha">SENHA:</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="login-senha" name="senha" class="input-pixel" autocomplete="off">
                     </div>
-                    
-                    <div id="login-erro" class="erro-msg" style="display: none;"></div>
-                    
-                    <button type="submit" class="btn-pixel" style="width: 100%;">ENTRAR</button>
-                </form>
-                
+                </div>
+
+                <div id="login-erro" class="erro-msg" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-rosa" id="btn-login-confirmar">
+                    CONFIRMAR
+                </button>
+
                 <p class="trocar-tela">
                     Não tem conta? <a href="#" id="link-cadastro">Cadastre-se</a>
                 </p>
-            </div>
-        </div>
+            </form>
+        </main>
+    </div>
 
-        <!-- TELA DE CADASTRO -->
-        <div id="tela-cadastro" class="tela">
-            <div class="login-container">
-                <h2>CRIAR CONTA</h2>
-                <p>Junte-se à tripulação do DStudy!</p>
-                
-                <form id="form-cadastro">
-                    <div class="input-group">
-                        <label>Nome</label>
-                        <input type="text" id="cadastro-nome" placeholder="Seu nome" required>
+    <!-- ============================================================ -->
+    <!-- TELA 2: CADASTRO                                              -->
+    <!-- ============================================================ -->
+    <div id="tela-cadastro" class="tela">
+        <main class="cadastro-conteudo">
+            <form class="form-cadastro" id="form-cadastro">
+                <div class="grupo-campo">
+                    <label for="cadastro-nome">NOME:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="cadastro-nome" name="nome" class="input-pixel" autocomplete="off">
                     </div>
-                    <div class="input-group">
-                        <label>E-mail</label>
-                        <input type="email" id="cadastro-email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="cadastro-email">E-MAIL:</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="cadastro-email" name="email" class="input-pixel" autocomplete="off">
                     </div>
-                    <div class="input-group">
-                        <label>Senha</label>
-                        <input type="password" id="cadastro-senha" placeholder="Mínimo 6 caracteres" required>
+                </div>
+
+                <div class="grupo-campo espaco-extra">
+                    <label for="cadastro-senha">SENHA:</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="cadastro-senha" name="senha" class="input-pixel" autocomplete="off">
                     </div>
-                    
-                    <div id="cadastro-erro" class="erro-msg" style="display: none;"></div>
-                    <div id="cadastro-sucesso" class="erro-msg" style="display: none; color: #7aff7a; border-color: #28a745;"></div>
-                    
-                    <button type="submit" class="btn-pixel" style="width: 100%;">CADASTRAR</button>
-                </form>
-                
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="cadastro-confirmar-senha">CONFIRMAR SENHA:</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="cadastro-confirmar-senha" name="confirmar-senha" class="input-pixel" autocomplete="off">
+                    </div>
+                </div>
+
+                <div id="cadastro-erro" class="erro-msg" style="display: none;"></div>
+                <div id="cadastro-sucesso" class="erro-msg" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-rosa" id="btn-cadastro-confirmar">
+                    CONFIRMAR
+                </button>
+
                 <p class="trocar-tela">
                     Já tem conta? <a href="#" id="link-login">Faça login</a>
                 </p>
-            </div>
-        </div>
-
-        <!-- TELA DE MATÉRIAS -->
-        <div id="tela-materias" class="tela">
-            <!-- Destaque Superior -->
-            <section class="hero-section">
-                <div class="mascote-container">
-                    <div class="mascote-box">🦎</div>
-                </div>
-                <div class="hero-texto">
-                    <h2>O JEITO MAIS DIVERTIDO<br>DE APRENDER!</h2>
-                    <p>Escolha uma matéria e comece sua jornada.</p>
-                </div>
-            </section>
-
-            <!-- Grid de Matérias -->
-            <div id="materias-container" class="grid-materias">
-                <!-- O JS vai injetar os cartões aqui -->
-            </div>
-
-            <!-- ⭐ BARRA DE PROGRESSO GERAL (Trazida de volta) -->
-            <div id="progresso-container">
-                <!-- O JS do progresso.js vai preencher isso -->
-            </div>
+            </form>
+        </main>
     </div>
 
-     <!-- ===== TELA DE ESTUDO ===== -->
-        <div id="tela-estudo" class="tela">
-            <!-- Botão de voltar -->
-            <div class="estudo-top">
-                <button class="btn-pixel" onclick="window.history.back()">← VOLTAR</button>
+    <!-- ============================================================ -->
+    <!-- TELA 3: MATÉRIAS                                              -->
+    <!-- ============================================================ -->
+    <div id="tela-materias" class="tela">
+        <div class="container">
+            <!-- Layout de duas colunas (Segundo e Terceiro Ano) -->
+            <div class="colunas-materias">
+                <div class="coluna">
+                    <h2 class="titulo-ano">SEGUNDO ANO</h2>
+                    <div id="materias-segundo-ano">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Carregando...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="coluna">
+                    <h2 class="titulo-ano">TERCEIRO ANO</h2>
+                    <div id="materias-terceiro-ano">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Carregando...</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Cabeçalho (Matéria, Contador e Barra de Progresso da Sessão) -->
-            <div id="estudo-info"></div>
+            <!-- Barra de Progresso Geral -->
+            <div id="progresso-container">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Carregando progresso...</p>
+                </div>
+            </div>
 
-            <!-- Container de loading (Carregando flashcards...) -->
+            <!-- Botão de Logout -->
+            <button type="button" class="btn btn-roxo" id="btn-logout" style="margin-top: 20px;">
+                SAIR
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TELA 4: ESTUDO                                                -->
+    <!-- ============================================================ -->
+    <div id="tela-estudo" class="tela">
+        <div class="container">
+            <div id="estudo-info"></div>
             <div id="estudo-container">
                 <p class="empty-state">Selecione uma matéria para começar</p>
             </div>
-
-            <!-- Onde o flashcard em si (pergunta + alternativas) vai aparecer -->
             <div id="flashcard-container"></div>
+            <div style="text-align: center; font-size: 13px; color: #999; padding: 20px; border-top: 1px solid #eee; margin-top: 20px;">
+                <span>⬅️ Use o botão de voltar do navegador ou clique na logo para retornar</span>
+            </div>
         </div>
+    </div>
 
-
+    <!-- ============================================================ -->
+    <!-- CARREGA O JAVASCRIPT                                          -->
+    <!-- ============================================================ -->
     <script type="module">
         import app from './js/main.js';
         window.app = app;
-        console.log('✅ DStudy carregado!');
+        console.log('✅ App carregado!');
+        console.log('💡 Digite "app" no console para interagir');
     </script>
 </body>
 </html>
