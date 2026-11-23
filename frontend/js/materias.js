@@ -30,6 +30,13 @@ const CORES = {
     'Redes e Segurança': '#d63031'
 };
 
+const MATERIAS_SEGUNDO_ANO = [
+    'Lógica de Programação',
+    'Processos de Desenvolvimento de Software',
+    'Redes e Segurança',
+    'Carreiras e Competência'
+];
+
 export class Materias {
     constructor() {
         this.lista = [];
@@ -42,13 +49,6 @@ export class Materias {
         try {
             this.lista = await get('/materias');
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
-<<<<<<< Updated upstream
-            
-            // ⭐ REMOVA OU COMENTE A LINHA ABAIXO:
-            // this.renderizar(); 
-            
-=======
->>>>>>> Stashed changes
             return this.lista;
         } catch (error) {
             console.error('❌ [MATERIAS] Erro:', error);
@@ -100,7 +100,7 @@ export class Materias {
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary btn-estudar" data-id="${materia.id}">
+                    <button class="btn btn-roxo btn-estudar" data-id="${materia.id}">
                         📖 Estudar
                     </button>
                 </div>

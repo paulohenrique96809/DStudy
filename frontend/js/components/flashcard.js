@@ -126,7 +126,7 @@ export class FlashcardComponent {
                         <div class="flashcard-badge">📝 Escolha uma alternativa</div>
                         <div class="flashcard-pergunta">${pergunta}</div>
                         ${conteudoAlternativas}
-                        <button class="btn btn-primary btn-revelar" id="btn-revelar" type="button" disabled>
+                        <button class="btn btn-rosa btn-revelar" id="btn-revelar" type="button" disabled>
                             👁️ Ver resposta
                         </button>
                     </div>
@@ -415,7 +415,7 @@ export class FlashcardComponent {
                 <div class="conclusao-icone">🎉</div>
                 <h2>Estudo concluído!</h2>
                 <p>Você completou todos os flashcards de <strong>${this._escapeHtml(nomeMateria)}</strong>.</p>
-                <button class="btn btn-primary" onclick="window.location.reload()">
+                <button class="btn btn-rosa" onclick="window.location.reload()">
                     📚 Voltar para matérias
                 </button>
             </div>

@@ -277,7 +277,16 @@ class App {
         window.addEventListener('popstate', (e) => {
             if (this.telaAtual === 'estudo') this.mostrarTelaMaterias();
         });
+        // ⭐ Evento do botão de Logout
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            if (confirm('Deseja realmente sair?')) {
+                this.logout();
+            }
+        });
     }
+}
 
 <<<<<<< Updated upstream
     mostrarTelaEstudo() {

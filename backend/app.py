@@ -20,7 +20,7 @@ app.config["JWT_SECRET_KEY"] = os.getenv("SECRET_KEY")
 jwt = JWTManager(app)
 
 # Configuração do CORS
-CORS(app, origins=["http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:3000", "http://127.0.0.1:3000"])
+CORS(app, origins=["http://localhost:5500", "http://127.0.0.1:5500", "http://localhost:3000", "http://127.0.0.1:3000", "http://127.0.0.1*"])
 
 # Registra as rotas
 app.register_blueprint(materias_bp)
