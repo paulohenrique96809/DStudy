@@ -6,10 +6,7 @@ import { progresso } from './progresso.js';
 import { flashcardComponent } from './components/flashcard.js';
 import { progressoComponent } from './components/progresso.js';
 import { setModoSimulacao, isModoSimulacao, get, post } from './api.js';
-<<<<<<< Updated upstream
-import { auth } from './auth.js'; 
-=======
->>>>>>> Stashed changes
+import { auth } from './auth.js';
 
 class App {
     constructor() {
@@ -18,50 +15,95 @@ class App {
         this.progresso = progresso;
         this.flashcardComponent = flashcardComponent;
         this.progressoComponent = progressoComponent;
-        
-        this.telaAtual = 'login';
+
+        this.telaAtual = 'home';
         this.materiaSelecionada = null;
-        
+
         this.init();
     }
 
     async init() {
         console.log('🚀 ===== APLICAÇÃO INICIADA =====');
-<<<<<<< Updated upstream
-        
+        console.log(`🔧 API: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
+
+        // ⭐ Configura a logo global (se existir)
+    const logoGlobal = document.getElementById('btn-voltar-home-global');
+    if (logoGlobal) {
+        logoGlobal.onclick = () => {
+            if (auth.estaLogado()) {
+                this.mostrarTelaMaterias();
+            } else {
+                this.mostrarTelaHome();
+            }
+        };
+    }
+
         if (!auth.estaLogado()) {
-            this.mostrarTelaLogin();
+            this.mostrarTelaHome();
             return;
         }
 
         await this.iniciarAppLogado();
+
+        
     }
 
     // ==========================================
-    // CONTROLE DE TELAS DE AUTENTICAÇÃO
+    // CONTROLE DE TELAS
     // ==========================================
 
     esconderTodasAsTelas() {
-        document.getElementById('tela-login').style.display = 'none';
-        document.getElementById('tela-cadastro').style.display = 'none';
-        document.getElementById('tela-materias').style.display = 'none';
-        document.getElementById('tela-estudo').style.display = 'none';
+        const telas = ['tela-home', 'tela-login', 'tela-cadastro', 'tela-materias', 'tela-estudo'];
+        telas.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+    }
+
+    /**
+     * ⭐ NOVO: Tela inicial (home com axolote e botões)
+     */
+    mostrarTelaHome() {
+        this.telaAtual = 'home';
+        this.esconderTodasAsTelas();
+
+        const tela = document.getElementById('tela-home');
+        if (tela) tela.style.display = 'block';
+
+        
+
+        const btnComecar = document.getElementById('btn-comece-agora');
+        const btnJaTenho = document.getElementById('btn-ja-tenho-conta');
+
+        if (btnComecar) {
+            btnComecar.onclick = () => this.mostrarTelaCadastro();
+        }
+        if (btnJaTenho) {
+            btnJaTenho.onclick = () => this.mostrarTelaLogin();
+        }
     }
 
     mostrarTelaLogin() {
         this.telaAtual = 'login';
         this.esconderTodasAsTelas();
-=======
-        console.log(`🔧 API: ${isModoSimulacao() ? 'SIMULAÇÃO' : 'REAL'}`);
->>>>>>> Stashed changes
-        
+
         const tela = document.getElementById('tela-login');
         if (tela) tela.style.display = 'block';
-        
-        // Limpa os formulários ao voltar para o login
+
         const formLogin = document.getElementById('form-login');
         if (formLogin) formLogin.reset();
-        
+
+        const logoLogin = document.getElementById('btn-voltar-home-login');
+    if (logoLogin) {
+        logoLogin.onclick = () => {
+            if (auth.estaLogado()) {
+                this.mostrarTelaMaterias();
+            } else {
+                this.mostrarTelaHome();
+            }
+        }
+    }
+
         this.configurarFormularioLogin();
         this.configurarNavegacaoAuth();
     }
@@ -69,19 +111,22 @@ class App {
     mostrarTelaCadastro() {
         this.telaAtual = 'cadastro';
         this.esconderTodasAsTelas();
-        
+
         const tela = document.getElementById('tela-cadastro');
         if (tela) tela.style.display = 'block';
-        
-        // Limpa os formulários ao entrar no cadastro
+
         const formCadastro = document.getElementById('form-cadastro');
         if (formCadastro) formCadastro.reset();
-        
-        // Esconde mensagens de erro/sucesso antigas
+
         const erro = document.getElementById('cadastro-erro');
         const sucesso = document.getElementById('cadastro-sucesso');
         if (erro) erro.style.display = 'none';
         if (sucesso) sucesso.style.display = 'none';
+
+const logoCadastro = document.getElementById('btn-voltar-home-cadastro');
+    if (logoCadastro) {
+        logoCadastro.onclick = () => this.mostrarTelaHome();
+    }
 
         this.configurarFormularioCadastro();
         this.configurarNavegacaoAuth();
@@ -114,7 +159,7 @@ class App {
 
         novoForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('login-email').value.trim();
             const senha = document.getElementById('login-senha').value;
             const btnSubmit = novoForm.querySelector('button[type="submit"]');
@@ -167,10 +212,11 @@ class App {
 
         novoForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const nome = document.getElementById('cadastro-nome').value.trim();
             const email = document.getElementById('cadastro-email').value.trim();
             const senha = document.getElementById('cadastro-senha').value;
+            const confirmar = document.getElementById('cadastro-confirmar-senha')?.value;
             const btnSubmit = novoForm.querySelector('button[type="submit"]');
 
             // 1. Validação básica local
@@ -190,26 +236,32 @@ class App {
                 return;
             }
 
+            // ⭐ NOVO: valida confirmação de senha (se o campo existir)
+            if (confirmar !== undefined && senha !== confirmar) {
+                if (erroDiv) {
+                    erroDiv.textContent = 'As senhas não coincidem.';
+                    erroDiv.style.display = 'block';
+                }
+                return;
+            }
+
             try {
                 if (erroDiv) erroDiv.style.display = 'none';
                 if (sucessoDiv) sucessoDiv.style.display = 'none';
-                
+
                 if (btnSubmit) {
                     btnSubmit.textContent = 'CRIANDO...';
                     btnSubmit.disabled = true;
                 }
 
-                // 2. Envia para o Back-End
                 await post('/cadastro', { nome, email, senha });
 
-                // 3. Sucesso!
                 if (sucessoDiv) {
                     sucessoDiv.textContent = 'Conta criada com sucesso! Redirecionando...';
                     sucessoDiv.style.display = 'block';
                 }
                 if (btnSubmit) btnSubmit.textContent = 'SUCESSO!';
 
-                // 4. Redireciona para o login após 2 segundos
                 setTimeout(() => {
                     this.mostrarTelaLogin();
                 }, 2000);
@@ -238,27 +290,24 @@ class App {
         const tela = document.getElementById('tela-materias');
         if (tela) tela.style.display = 'block';
 
+        // ⭐ NOVO: configura o botão de logout
+        const btnLogout = document.getElementById('btn-logout');
+        if (btnLogout) {
+            btnLogout.onclick = () => this.logout();
+        }
+
         this.setupEventListeners();
-        
+
         try {
-<<<<<<< Updated upstream
-            await materias.carregar();
-            await this.progresso.carregarTudo(materias.lista);
-            materias.renderizar();
-=======
-            // 1️⃣ PRIMEIRO: Carrega a lista de matérias (sem renderizar)
             console.log('📚 Carregando matérias...');
             await materias.carregar();
-            
-            // 2️⃣ SEGUNDO: Calcula o progresso de TODAS as matérias
+
             console.log('📊 Carregando progresso...');
             await this.progresso.carregarTudo(materias.lista);
-            
-            // 3️⃣ TERCEIRO: Agora sim, renderiza os cards com os dados prontos
+
             console.log('🎨 Renderizando interface...');
             materias.renderizar();
-            
->>>>>>> Stashed changes
+
             console.log('🏁 ===== APLICAÇÃO PRONTA =====');
         } catch (error) {
             console.error('❌ [MAIN] Erro na inicialização:', error);
@@ -266,14 +315,12 @@ class App {
     }
 
     setupEventListeners() {
-        // Escuta o evento disparado quando o usuário clica em "Estudar"
         document.addEventListener('materiaSelecionada', (e) => {
             console.log('📖 [MAIN] Evento materiaSelecionada recebido!');
             this.materiaSelecionada = e.detail.materia;
             this.mostrarTelaEstudo();
         });
 
-        // Escuta o botão "Voltar" do navegador
         window.addEventListener('popstate', (e) => {
             if (this.telaAtual === 'estudo') this.mostrarTelaMaterias();
         });
@@ -288,15 +335,14 @@ class App {
     }
 }
 
-<<<<<<< Updated upstream
     mostrarTelaEstudo() {
         if (!this.materiaSelecionada) return;
         this.telaAtual = 'estudo';
         this.esconderTodasAsTelas();
-        
+
         const tela = document.getElementById('tela-estudo');
         if (tela) tela.style.display = 'block';
-        
+
         window.history.pushState({ tela: 'estudo' }, '', '?estudo');
         this.estudo.iniciar(this.materiaSelecionada);
     }
@@ -306,64 +352,19 @@ class App {
         this.telaAtual = 'materias';
         this.materiaSelecionada = null;
         this.esconderTodasAsTelas();
-        
+
         const tela = document.getElementById('tela-materias');
         if (tela) tela.style.display = 'block';
-        
+
         this.estudo.mostrarMensagem('');
         this.flashcardComponent.limpar();
-        
+
         try {
             await this.progresso.carregarTudo(materias.lista);
             materias.renderizar();
         } catch (error) {
             console.error('❌ [MAIN] Erro ao atualizar progresso:', error);
         }
-=======
-    /**
-     * Mostra a tela de estudo
-     */
-    mostrarTelaEstudo() {
-        if (!this.materiaSelecionada) return;
-
-        this.telaAtual = 'estudo';
-        
-        // Esconde a tela de matérias e mostra a de estudo
-        document.getElementById('tela-materias').style.display = 'none';
-        document.getElementById('tela-materias').classList.remove('ativa');
-        document.getElementById('tela-estudo').style.display = 'block';
-        document.getElementById('tela-estudo').classList.add('ativa');
-        
-        // Adiciona ao histórico do navegador
-        window.history.pushState({ tela: 'estudo' }, '', '?estudo');
-        
-        // Inicia o estudo
-        this.estudo.iniciar(this.materiaSelecionada);
-    }
-
-    /**
-     * Volta para a tela de matérias
-     */
-    async mostrarTelaMaterias() {
-        if (this.telaAtual === 'materias') return;
-        
-        this.telaAtual = 'materias';
-        this.materiaSelecionada = null;
-        
-        // Esconde a tela de estudo e mostra a de matérias
-        document.getElementById('tela-materias').style.display = 'block';
-        document.getElementById('tela-materias').classList.add('ativa');
-        document.getElementById('tela-estudo').style.display = 'none';
-        document.getElementById('tela-estudo').classList.remove('ativa');
-        
-        // Limpa o estudo
-        this.estudo.mostrarMensagem('');
-        this.flashcardComponent.limpar();
-        
-        // Atualiza o progresso antes de renderizar novamente
-        await this.progresso.carregarTudo(materias.lista);
-        materias.renderizar();
->>>>>>> Stashed changes
     }
 
     logout() {

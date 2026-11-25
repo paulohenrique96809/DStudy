@@ -2,7 +2,7 @@
    DSTUDY — ESTILOS GLOBAIS (Fonte, Paleta, Reset)
    ============================================================ */
 
-@font-face {
+   @font-face {
     font-family: 'PearSoda';
     src: url('../fonts/PearSoda.ttf') format('truetype');
     font-weight: normal;
@@ -63,19 +63,17 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 90px;
-    z-index: 9999;
+    z-index: 9999; /* Garante que fica acima dos cards e das bolhas */
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px 0;
-    margin: 0;
-    background-color: var(--roxo-escuro, #1A1234); 
-    border-bottom: 2px solid var(--lavanda, #b8a4d4);
+    padding: 0;
+    /* ⭐ FUNDAMENTAL: Coloca um fundo escuro para a logo não se misturar com os cards ao rolar */
+    background-color: #1A1234; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Opcional: uma sombrinha para dar profundidade */
 }
 
-/* Container de matérias */
 #tela-materias .container {
     max-width: 1000px;
     margin: 0 auto;

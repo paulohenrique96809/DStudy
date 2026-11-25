@@ -37,10 +37,8 @@
         <img src="assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-13">
     </div>
 
-    <!-- ============================================================ -->
-    <!-- HEADER GLOBAL (FIXO NO TOPO)                                  -->
-    <!-- ============================================================ -->
-    <header class="topo topo-global" id="btn-voltar-home-global">
+     <!-- ⭐ Header global (aparece em todas as telas) -->
+    <header class="topo topo-global" id="btn-voltar-home-global" style="cursor: pointer;">
         <div class="logo-container">
             <img src="assets/img/logo.png" alt="Cavecinha DStudy" class="logo-icone">
             <span class="logo-texto">DStudy</span>
@@ -83,16 +81,12 @@
             <form class="form-login" id="form-login">
                 <div class="grupo-campo">
                     <label for="login-email">E-MAIL:</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="login-email" name="email" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="email" id="login-email" name="email" class="input-pixel" autocomplete="username">
                 </div>
 
                 <div class="grupo-campo">
                     <label for="login-senha">SENHA:</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="login-senha" name="senha" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="password" id="login-senha" name="senha" class="input-pixel" autocomplete="current-password">
                 </div>
 
                 <div id="login-erro" class="erro-msg" style="display: none;"></div>
@@ -112,34 +106,27 @@
     <!-- TELA 2: CADASTRO                                              -->
     <!-- ============================================================ -->
     <div id="tela-cadastro" class="tela">
+       
         <main class="cadastro-conteudo">
             <form class="form-cadastro" id="form-cadastro">
                 <div class="grupo-campo">
                     <label for="cadastro-nome">NOME:</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="cadastro-nome" name="nome" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="text" id="cadastro-nome" name="nome" class="input-pixel" autocomplete="name">
                 </div>
 
                 <div class="grupo-campo">
                     <label for="cadastro-email">E-MAIL:</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="cadastro-email" name="email" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="email" id="cadastro-email" name="email" class="input-pixel" autocomplete="email">
                 </div>
 
                 <div class="grupo-campo espaco-extra">
                     <label for="cadastro-senha">SENHA:</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="cadastro-senha" name="senha" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="password" id="cadastro-senha" name="senha" class="input-pixel" autocomplete="new-password">
                 </div>
 
                 <div class="grupo-campo">
                     <label for="cadastro-confirmar-senha">CONFIRMAR SENHA:</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="cadastro-confirmar-senha" name="confirmar-senha" class="input-pixel" autocomplete="off">
-                    </div>
+                    <input type="password" id="cadastro-confirmar-senha" name="confirmar-senha" class="input-pixel" autocomplete="new-password">
                 </div>
 
                 <div id="cadastro-erro" class="erro-msg" style="display: none;"></div>
@@ -192,7 +179,6 @@
                 </div>
             </div>
 
-            <!-- Botão de Logout -->
             <button type="button" class="btn btn-roxo" id="btn-logout" style="margin-top: 20px;">
                 SAIR
             </button>
@@ -204,6 +190,9 @@
     <!-- ============================================================ -->
     <div id="tela-estudo" class="tela">
         <div class="container">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 14px; color: #666;">📚 Estudo</span>
+            </div>
             <div id="estudo-info"></div>
             <div id="estudo-container">
                 <p class="empty-state">Selecione uma matéria para começar</p>

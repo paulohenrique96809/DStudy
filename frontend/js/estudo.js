@@ -15,14 +15,9 @@ export class Estudo {
         this.container = document.getElementById('estudo-container');
         this.infoContainer = document.getElementById('estudo-info');
         
-<<<<<<< Updated upstream
         // ⭐ USUÁRIO FIXO (temporário até ter login)
         
         console.log('📖 [ESTUDO] Container:', this.container);
-=======
-        // ⭐ Usuário fixo temporário (1)
-        this.usuarioId = 1;
->>>>>>> Stashed changes
     }
 
     async iniciar(materia) {
@@ -38,12 +33,7 @@ export class Estudo {
         try {
             this.mostrarLoading();
 
-<<<<<<< Updated upstream
             const url = `/materias/${materia.id}/flashcards`;
-=======
-            // ⭐ Busca a fila de flashcards disponíveis no Back-End
-            const url = `/materias/${materia.id}/flashcards?usuario_id=${this.usuarioId}`;
->>>>>>> Stashed changes
             const resposta = await get(url);
             
             if (!Array.isArray(resposta) || resposta.length === 0) {
@@ -146,10 +136,6 @@ export class Estudo {
             // Aguarda um tempo para o usuário ler o feedback
             await this.aguardar(2000);
 
-<<<<<<< Updated upstream
-=======
-            // Atualiza o progresso geral
->>>>>>> Stashed changes
             await progresso.carregarTudo(materias.lista);
             materias.renderizar();
 
