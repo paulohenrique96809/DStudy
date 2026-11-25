@@ -1,0 +1,341 @@
+/* ============================================================
+   DSTUDY — PÁGINA DE FLASHCARDS
+   --u = 1px do Figma (frame ~1434px), escala com a tela
+   ============================================================ */
+:root {
+    --u: clamp(0.84px, calc(100vw / 1434 * 0.9), 1.44px);
+}
+
+body {
+    position: relative; /* as bolhas e o rodapé se posicionam pela página inteira */
+}
+
+/* ---------- Bolhas (posições do Figma: left em %, top em u) ---------- */
+.bolhas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bolha {
+    position: absolute;
+    height: auto;
+    opacity: 0.9;
+    image-rendering: pixelated;
+}
+
+.bolhapequena { width: calc(20 * var(--u)); }
+.bolhamedia   { width: calc(40 * var(--u)); }
+.bolhagrande  { width: calc(76 * var(--u)); }
+
+/* Pequenas */
+.bolha-1  { top: calc(82 * var(--u));  left: 7.7%;  }
+.bolha-2  { top: calc(24 * var(--u));  left: 29.3%; }
+.bolha-3  { top: calc(71 * var(--u));  left: 94.2%; }
+.bolha-4  { top: calc(337 * var(--u)); left: 91.6%; }
+.bolha-5  { top: calc(412 * var(--u)); left: 1.1%;  }
+.bolha-6  { top: calc(630 * var(--u)); left: 11.9%; }
+.bolha-7  { top: calc(674 * var(--u)); left: 37.4%; }
+.bolha-8  { top: calc(756 * var(--u)); left: 95.7%; }
+
+/* Médias */
+.bolha-9  { top: calc(76 * var(--u));  left: 14.2%; }
+.bolha-10 { top: calc(26 * var(--u));  left: 82.6%; }
+.bolha-11 { top: calc(223 * var(--u)); left: 1.7%;  }
+.bolha-12 { top: calc(183 * var(--u)); left: 95.4%; }
+.bolha-13 { top: calc(531 * var(--u)); left: 9.3%;  }
+.bolha-14 { top: calc(651 * var(--u)); left: 18.8%; }
+.bolha-15 { top: calc(634 * var(--u)); left: 94.3%; }
+.bolha-16 { top: calc(756 * var(--u)); left: 64.1%; }
+
+/* Grandes */
+.bolha-17 { top: calc(48 * var(--u));  left: 68.4%; }
+.bolha-18 { top: calc(517 * var(--u)); left: 86.1%; }
+.bolha-19 { top: calc(677 * var(--u)); left: 3.1%;  }
+
+/* ============================================================
+   LOGO (mesmos valores do Cadastro e do Login)
+   ============================================================ */
+.topo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    z-index: 10;
+}
+
+.logo-icone {
+    position: absolute;
+    left: calc(50% - 129 * var(--u));
+    top: calc(1 * var(--u));
+    height: calc(93 * var(--u));
+    width: auto;
+    image-rendering: pixelated;
+}
+
+.logo-texto {
+    position: absolute;
+    left: calc(50% - 28 * var(--u));
+    top: calc(21 * var(--u));
+    font-family: 'PearSoda', monospace;
+    font-size: calc(60 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
+    color: #FFF8F0;
+}
+
+/* ============================================================
+   CONTEÚDO PRINCIPAL
+   ============================================================ */
+.flashcards-conteudo {
+    position: relative;
+    z-index: 5;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(104 * var(--u)) 20px calc(110 * var(--u));
+}
+
+/* ---------- Caixa da pergunta ----------
+   Usa o caixa.png em 9 partes (border-image): os cantos em degraus
+   mantêm o tamanho e só o meio estica, então a caixa pode ser larga e baixa.
+   Se os cantos ficarem estranhos, ajuste o "8%" e o "22" abaixo.
+   Alternativa simples: apague a linha do border-image e use
+   background: url('../assets/img/caixa.png') center / 100% 100% no-repeat; */
+.cartao-pergunta {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: calc(1080 * var(--u));
+    min-height: calc(270 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border: solid transparent;
+    border-width: calc(22 * var(--u));
+    border-image: url('../assets/img/caixa.png') 8% fill / calc(22 * var(--u)) stretch;
+    image-rendering: pixelated;
+}
+
+/* Pílula com o nome da matéria */
+.tag-materia {
+    flex: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: calc(298 * var(--u));
+    height: calc(33 * var(--u));
+    padding: 0 calc(24 * var(--u));
+
+    background: url('../assets/img/botaoroxo.png') center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+
+    font-family: 'PearSoda', monospace;
+    font-size: calc(17 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
+    text-transform: uppercase;
+    color: #FFF8F0;
+}
+
+/* Texto da pergunta */
+.pergunta {
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: calc(10 * var(--u)) calc(40 * var(--u)) calc(24 * var(--u));
+
+    font-family: 'PearSoda', monospace;
+    font-weight: normal;
+    font-size: calc(46 * var(--u));
+    line-height: calc(58 * var(--u));
+    text-align: center;
+    text-wrap: balance;
+    color: #FFF8F0;
+}
+
+/* ---------- Contador ---------- */
+.contador {
+    margin: calc(21 * var(--u)) 0 0;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(24 * var(--u));
+    line-height: 1;
+    text-transform: uppercase;
+    text-align: center;
+    color: #FFF8F0;
+}
+
+/* ---------- Alternativas ---------- */
+.alternativas {
+    width: 100%;
+    max-width: calc(1080 * var(--u));
+    display: flex;
+    flex-direction: column;
+    gap: calc(12 * var(--u));
+    margin-top: calc(22 * var(--u));
+}
+
+/* Botão rosa em 9 partes (border-image), igual à caixa.
+   Se os cantos ficarem estranhos, ajuste "18% 5%" e "10" / "12".
+   Alternativa simples: apague a linha do border-image e use
+   background: url('../assets/img/botaorosa.png') center / 100% 100% no-repeat; */
+.alternativa {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: calc(64 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+    margin: 0;
+    padding: calc(2 * var(--u)) calc(18 * var(--u));
+
+    background: none;
+    border: solid transparent;
+    border-width: calc(10 * var(--u)) calc(12 * var(--u));
+    border-image: url('../assets/img/botaorosa.png') 18% 5% fill / calc(10 * var(--u)) calc(12 * var(--u)) stretch;
+    image-rendering: pixelated;
+
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: calc(36 * var(--u));
+    text-align: left;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+
+.alt-letra {
+    flex: none;
+    min-width: calc(40 * var(--u));
+}
+
+.alt-texto {
+    flex: 1;
+}
+
+.alternativa:hover  { filter: brightness(1.1); }
+.alternativa:active { transform: translateY(calc(3 * var(--u))); }
+
+.alternativa:focus-visible {
+    outline: 2px solid #FFD971;
+    outline-offset: 3px;
+}
+
+/* ---------- Estados (o Paulo aplica as classes) ---------- */
+.alternativa.selecionada {
+    outline: calc(3 * var(--u)) solid #FFF8F0;
+    outline-offset: calc(3 * var(--u));
+}
+
+.alternativa.correta {
+    outline: calc(4 * var(--u)) solid #FFD971;
+    outline-offset: calc(3 * var(--u));
+    filter: brightness(1.1);
+}
+
+.alternativa.errada {
+    filter: brightness(0.55) saturate(0.7);
+}
+
+/* Depois de responder, o Paulo adiciona "respondida" em #alternativas */
+.alternativas.respondida .alternativa {
+    pointer-events: none;
+}
+
+/* ---------- Botão Próximo ---------- */
+.btn-proxima {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: calc(320 * var(--u));
+    height: calc(72 * var(--u));
+    margin: calc(20 * var(--u)) auto 0;
+    padding: 0;
+
+    background: url('../assets/img/botaopadrao.png') center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    border: none;
+
+    font-family: 'PearSoda', monospace;
+    font-size: calc(36 * var(--u));
+    line-height: 1;
+    color: #FFF8F0;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+
+    /* Escondido (mas reservando o espaço, para a página não "pular") */
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.btn-proxima.visivel {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.btn-proxima:hover  { filter: brightness(1.1); }
+.btn-proxima:active { transform: translateY(4px); }
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+.rodape-areia {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.img-rodape {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ============================================================
+   ROLAGEM
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+
+/* ---------- Tablet: mesma composição, escala maior ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --u: calc(100vw / 1100 * 0.9);
+    }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 700px) {
+    :root {
+        --u: min(calc(100vw / 480 * 0.9), 0.9px);
+    }
+
+    .bolha { opacity: 0.5; }
+
+    /* Esconde as bolhas que ficariam atrás do conteúdo */
+    .bolha-7, .bolha-14, .bolha-18 { display: none; }
+}

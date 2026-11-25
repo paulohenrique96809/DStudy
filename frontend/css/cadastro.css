@@ -138,20 +138,7 @@ label {
     box-sizing: border-box;
 }
 
-.input-pixel,
-.input-pixel:-webkit-autofill,
-.input-pixel:-webkit-autofill:hover,
-.input-pixel:-webkit-autofill:focus,
-.input-pixel:-webkit-autofill:active {
-    background-color: transparent !important;
-    background-image: none !important;
-    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-    box-shadow: 0 0 0 1000px transparent inset !important;
-    -webkit-text-fill-color: var(--texto-principal, #FFF8F0) !important;
-    color: var(--texto-principal, #FFF8F0) !important;
-    font-family: 'PearSoda', monospace !important;
-    transition: background-color 5000s ease-in-out 0s;
-}
+
 
 .input-pixel:hover,
 .input-pixel:focus {

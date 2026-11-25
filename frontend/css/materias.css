@@ -1,0 +1,317 @@
+/* ============================================================
+   DSTUDY — PÁGINA DE MATÉRIAS
+   --u = 1px do Figma (frame de 1434px), escala com a tela
+   ============================================================ */
+:root {
+    --u: clamp(0.84px, calc(100vw / 1434 * 0.9), 1.44px);
+}
+
+body {
+    position: relative; /* as bolhas e o rodapé se posicionam pela página inteira */
+}
+
+/* ---------- Bolhas ---------- */
+.bolhas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bolha {
+    position: absolute;
+    height: auto;
+    opacity: 0.9;
+    image-rendering: pixelated;
+}
+
+.bolhapequena { width: calc(20 * var(--u)); }
+.bolhamedia   { width: calc(40 * var(--u)); }
+.bolhagrande  { width: calc(76 * var(--u)); }
+
+/* left em %, top em u (posições medidas no Figma) */
+/* Parte de cima */
+.bolha-1  { top: calc(7 * var(--u));    left: 73.9%; }
+.bolha-2  { top: calc(238 * var(--u));  left: 71.1%; }
+.bolha-3  { top: calc(349 * var(--u));  left: 12.9%; }
+.bolha-4  { top: calc(627 * var(--u));  left: 53.2%; }
+.bolha-5  { top: calc(76 * var(--u));   left: 75.1%; }
+.bolha-6  { top: calc(423 * var(--u));  left: 8%; }
+.bolha-7  { top: calc(94 * var(--u));   left: 17.7%; }
+.bolha-8  { top: calc(369 * var(--u));  left: 93.1%; }
+.bolha-9  { top: calc(621 * var(--u));  left: 12.4%; }
+/* Parte de baixo */
+.bolha-10 { top: calc(1023 * var(--u)); left: 41.6%; }
+.bolha-11 { top: calc(1320 * var(--u)); left: 8.8%; }
+.bolha-12 { top: calc(1395 * var(--u)); left: 15.1%; }
+.bolha-13 { top: calc(1526 * var(--u)); left: 8.8%; }
+.bolha-14 { top: calc(1296 * var(--u)); left: 80.1%; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.topo-materias {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: calc(5 * var(--u)) calc(8 * var(--u));
+    z-index: 10;
+}
+
+.btn-menu, .btn-perfil {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-menu img   { width: calc(60 * var(--u)); height: auto; image-rendering: pixelated; }
+.btn-perfil img { width: calc(60 * var(--u)); height: auto; image-rendering: pixelated; }
+.btn-perfil     { margin-top: calc(3 * var(--u)); }
+
+/* ============================================================
+   HEADER - LOGO COMPOSTA
+   ============================================================ */
+.logo-central {
+    position: absolute;
+    top: calc(58 * var(--u));
+    left: calc(50% - 44 * var(--u));
+    transform: translateX(-50%);
+    width: calc(310 * var(--u));
+    z-index: 10;
+}
+
+.logo-texto-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+}
+
+/* Axolote sobrepondo o "Y" */
+.logo-materias {
+    position: absolute;
+    width: calc(353 * var(--u));
+    height: auto;
+    left: calc(94 * var(--u));
+    top: calc(-40 * var(--u));
+    image-rendering: pixelated;
+}
+
+.texto-boas-vindas {
+    position: absolute;
+    left: calc(100 * var(--u));
+    top: calc(86 * var(--u));
+    white-space: nowrap;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: 1;
+    letter-spacing: calc(1 * var(--u));
+    color: #FFF8F0;
+}
+
+/* ============================================================
+   CONTEÚDO PRINCIPAL
+   ============================================================ */
+.materias-conteudo {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(241 * var(--u)) 20px calc(138 * var(--u));
+}
+
+/* ---------- Destaque Matéria ---------- */
+.destaque-materia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: calc(8 * var(--u));
+    margin-bottom: calc(184 * var(--u));
+    width: 100%;
+}
+
+.titulo-materia {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(36 * var(--u));
+    line-height: calc(48 * var(--u));
+    min-height: calc(96 * var(--u)); /* reserva 2 linhas: a barra não pula ao trocar de matéria */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: calc(420 * var(--u));
+    text-wrap: balance;
+    color: #FFF8F0;
+}
+
+/* ---------- Barra de Progresso ---------- */
+.barra-progresso-container {
+    width: calc(640 * var(--u));
+    position: relative;
+}
+
+.gif-progresso {
+    width: 100%;
+    height: auto;
+    display: none;
+}
+
+.gif-progresso.ativo {
+    display: block;
+}
+
+/* ---------- Painéis de Matérias ---------- */
+.paineis-materias {
+    display: flex;
+    gap: calc(208 * var(--u));
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.coluna-ano {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(18 * var(--u));
+    flex: none;
+    width: calc(384 * var(--u));
+}
+
+.titulo-ano {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(46 * var(--u));
+    line-height: 1;
+    letter-spacing: calc(2 * var(--u));
+    color: #FFF8F0;
+    text-align: center;
+    width: 100%;
+}
+
+.painel-vinho {
+    width: 100%;
+    background-image: url('../assets/img/caixa.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+    padding: calc(36 * var(--u)) calc(32 * var(--u)) calc(58 * var(--u));
+    display: flex;
+    flex-direction: column;
+    gap: calc(77 * var(--u));
+}
+
+/* Terceiro ano: botões um pouco mais afastados da borda */
+.coluna-ano:last-child .painel-vinho {
+    padding-left: calc(36 * var(--u));
+    padding-right: calc(36 * var(--u));
+}
+
+/* ---------- Botões de Matéria ---------- */
+.btn-materia {
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;
+    height: calc(70 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+}
+
+.btn-materia:hover {
+    transform: scale(1.02);
+}
+
+.fundo-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    image-rendering: pixelated;
+    z-index: 1;
+}
+
+.btn-materia span {
+    position: relative;
+    z-index: 2;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: calc(20 * var(--u));
+    color: #FFF8F0;
+    text-align: center;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+.rodape-areia {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.img-rodape {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ============================================================
+   ROLAGEM
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+
+/* ---------- Tablet: mantém 2 colunas, escala maior ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --u: calc(100vw / 1100 * 0.9);
+    }
+}
+
+/* ---------- Celular: painéis empilhados ---------- */
+@media (max-width: 700px) {
+    :root {
+        --u: min(calc(100vw / 480 * 0.9), 0.9px);
+    }
+
+    .barra-progresso-container {
+        width: calc(440 * var(--u));
+    }
+
+    .destaque-materia {
+        margin-bottom: calc(110 * var(--u));
+    }
+
+    .paineis-materias {
+        flex-direction: column;
+        align-items: center;
+        gap: calc(90 * var(--u));
+    }
+}

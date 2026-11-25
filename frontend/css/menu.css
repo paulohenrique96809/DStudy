@@ -1,0 +1,114 @@
+/* ============================================================
+   DSTUDY — MENU (abre abaixo do botão #btn-menu)
+   Usa a variável --u da página (não redefine nada).
+   Estado aberto/fechado: classe "aberto" no #menu-lateral.
+   ============================================================ */
+
+.menu-lateral {
+    /* Ajustes finos (valores em u, sem unidade) */
+    --icone: 52;     /* caixa dos ícones */
+    --mascote-w: 135; /* largura do mascote */
+
+    position: absolute;
+    top: calc(68 * var(--u));   /* logo abaixo do botão de menu */
+    left: calc(8 * var(--u));   /* alinhado à esquerda do botão */
+    z-index: 11;
+
+    box-sizing: border-box;
+    width: max-content;
+    min-width: calc(187 * var(--u));
+    padding: calc(15 * var(--u)) calc(12 * var(--u)) 0 calc(10 * var(--u));
+
+    background-image: url('../assets/img/caixa.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+
+    /* Fechado */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(calc(-8 * var(--u)));
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+/* Aberto */
+.menu-lateral.aberto {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+}
+
+/* ---------- Mascote ---------- */
+.menu-mascote {
+    display: block;
+    width: calc(var(--mascote-w) * var(--u));
+    height: auto;
+    margin: 0 auto calc(4 * var(--u));
+    image-rendering: pixelated;
+}
+
+/* ---------- Lista de opções ---------- */
+.menu-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: calc(6 * var(--u));
+    height: calc(126 * var(--u));
+    text-decoration: none;
+    color: #FFF8F0;
+    transition: filter 0.15s ease;
+}
+
+.menu-icone {
+    flex: none;
+    width: calc(var(--icone) * var(--u));
+    height: calc(var(--icone) * var(--u));
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.menu-texto {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(36 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
+    color: #FFF8F0;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.menu-item:hover {
+    filter: brightness(1.2);
+}
+
+.menu-item:active {
+    transform: translateY(calc(2 * var(--u)));
+}
+
+.menu-item:focus-visible {
+    outline: 2px solid #FFD971;
+    outline-offset: -2px;
+}
+
+/* ---------- Camada transparente (fecha ao clicar fora) ----------
+   Fica abaixo do header (z-index 10), então o botão de menu
+   continua clicável com o menu aberto. */
+.menu-fundo {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    background: transparent;
+}
+
+.menu-lateral.aberto + .menu-fundo {
+    display: block;
+}

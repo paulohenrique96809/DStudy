@@ -120,7 +120,7 @@ export async function apiRequest(endpoint, options = {}) {
         const response = await fetch(url, config);
         
         // 4. Se o token expirou ou é inválido (401), desloga o usuário
-        if (response.status === 401) {
+        if (response.status === 401 && !endpoint.startsWith('/login')) {
             localStorage.removeItem('dstudy_token');
             localStorage.removeItem('dstudy_usuario');
             window.location.reload(); // Recarrega para voltar à tela de login
