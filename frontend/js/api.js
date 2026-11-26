@@ -120,10 +120,11 @@ export async function apiRequest(endpoint, options = {}) {
         const response = await fetch(url, config);
         
         // 4. Se o token expirou ou é inválido (401), desloga o usuário
+        // /login devolve 401 para credenciais erradas: isso NÃO é sessão expirada
         if (response.status === 401 && !endpoint.startsWith('/login')) {
             localStorage.removeItem('dstudy_token');
             localStorage.removeItem('dstudy_usuario');
-            window.location.reload(); // Recarrega para voltar à tela de login
+            window.location.href = 'login.html'; // volta para o login
             throw new Error('Sessão expirada. Faça login novamente.');
         }
 

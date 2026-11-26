@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DStudy — Cadastro</title>
+
+    <!-- Estilos Globais e Específicos da Página -->
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/cadastro.css">
+</head>
+<body>
+
+    <!-- ==============================
+         FUNDO DECORATIVO (BOLHAS)
+         18 bolhas: 8 pequenas, 7 médias, 3 grandes
+         ============================== -->
+    <div class="bolhas" aria-hidden="true">
+        <!-- Pequenas -->
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-1">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-2">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-3">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-4">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-5">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-6">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-7">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-8">
+
+        <!-- Médias -->
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-9">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-10">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-11">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-12">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-13">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-14">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-15">
+
+        <!-- Grandes -->
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-16">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-17">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-18">
+    </div>
+
+    <!-- ==============================
+         LOGO (centralizada)
+         ============================== -->
+    <header class="topo">
+        <div class="logo-container">
+            <img src="../assets/img/logo.png" alt="Caveirinha DStudy" class="logo-icone">
+            <span class="logo-texto">DStudy</span>
+        </div>
+    </header>
+
+    <!-- ==============================
+         FORMULÁRIO
+         ============================== -->
+    <main class="cadastro-conteudo">
+        <form class="form-cadastro" id="form-cadastro" action="../pages/materias.html">
+
+            <!-- Nome -->
+            <div class="grupo-campo">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" class="input-pixel" autocomplete="name">
+            </div>
+
+            <!-- E-mail -->
+            <div class="grupo-campo">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" class="input-pixel" autocomplete="email">
+            </div>
+
+            <!-- Senha -->
+            <div class="grupo-campo espaco-extra">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" class="input-pixel" autocomplete="new-password">
+            </div>
+
+            <!-- Confirmar Senha -->
+            <div class="grupo-campo">
+                <label for="confirmar-senha">Confirmar senha:</label>
+                <input type="password" id="confirmar-senha" name="confirmar-senha" class="input-pixel" autocomplete="new-password">
+            </div>
+
+            <div id="cadastro-erro" class="erro-msg" hidden></div>
+            <div id="cadastro-sucesso" class="erro-msg sucesso" hidden></div>
+
+            <!-- Botão -->
+            <button type="submit" class="btn btn-rosa" id="btn-confirmar">
+                Confirmar
+            </button>
+
+            <p class="trocar-tela">
+                Já tem conta? <a href="login.html">Faça login</a>
+            </p>
+
+        </form>
+    </main>
+
+    <script type="module" src="../js/pages/cadastro.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+/* ============================================================
+   DSTUDY — COMPLEMENTOS DO APP (Paulo)
+   Só o que as páginas da Yasmin não têm: mensagens de formulário,
+   botão SAIR, feedback do flashcard e mensagens da sessão de estudo.
+   Carregue DEPOIS do CSS da página. Usa a variável --u de cada página.
+   ============================================================ */
+
+/* O atributo [hidden] precisa vencer os "display: flex" dos CSS das páginas */
+[hidden] { display: none !important; }
+
+/* ---------- Login e Cadastro ---------- */
+.erro-msg {
+    box-sizing: border-box;
+    padding: calc(10 * var(--u)) calc(16 * var(--u));
+    background: #571044;
+    border: 1px solid #dc3545;
+    color: #ffb8b8;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(24 * var(--u));
+    line-height: 1.4;
+    text-align: center;
+}
+.erro-msg.sucesso {
+    background: #14452f;
+    border-color: #2ecc71;
+    color: #d7ffe8;
+}
+
+.trocar-tela {
+    margin: calc(20 * var(--u)) 0 0;
+    text-align: center;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(28 * var(--u));
+    color: #FFF8F0;
+}
+.trocar-tela a { color: #FF4D94; text-decoration: none; }
+.trocar-tela a:hover { text-decoration: underline; }
+
+/* ---------- Matérias ---------- */
+#btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(240 * var(--u));
+    height: calc(64 * var(--u));
+    margin: calc(70 * var(--u)) auto 0;
+    padding: 0;
+    background: url('../assets/img/botaoroxo.png') center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    border: none;
+    cursor: pointer;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(34 * var(--u));
+    line-height: 1;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+#btn-logout:hover  { filter: brightness(1.1); }
+#btn-logout:active { transform: translateY(4px); }
+
+.estado-msg {
+    margin: 0;
+    padding: calc(20 * var(--u)) 0;
+    text-align: center;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(26 * var(--u));
+    color: #FFF8F0;
+}
+
+/* ---------- Flashcards ---------- */
+.feedback-resposta {
+    min-height: calc(34 * var(--u)); /* reserva a altura: a página não "pula" */
+    margin: calc(12 * var(--u)) 0 0;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(26 * var(--u));
+    line-height: 1.2;
+    text-align: center;
+    color: #FFF8F0;
+}
+.feedback-resposta.acerto { color: #FFD971; }
+.feedback-resposta.erro   { color: #FF4D94; }
+
+/* Mensagens da sessão (carregando, rodada concluída, parabéns...) */
+#estudo-container {
+    width: 100%;
+    max-width: calc(var(--caixa-w) * var(--u));
+    margin-top: calc(40 * var(--u));
+    text-align: center;
+    font-family: 'PearSoda', monospace;
+    color: #FFF8F0;
+}
+.estudo-titulo {
+    margin: 0 0 calc(14 * var(--u));
+    font-weight: normal;
+    font-size: calc(46 * var(--u));
+    line-height: calc(58 * var(--u));
+}
+.estudo-texto {
+    margin: 0 0 calc(10 * var(--u));
+    font-size: calc(28 * var(--u));
+    line-height: calc(38 * var(--u));
+}
+.estudo-botoes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(10 * var(--u));
+    margin-top: calc(20 * var(--u));
+}
+.btn-estudo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(320 * var(--u));
+    height: calc(64 * var(--u));
+    padding: 0;
+    background: url('../assets/img/botaopadrao.png') center / 100% 100% no-repeat;
+    image-rendering: pixelated;
+    border: none;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: 1;
+    color: #FFF8F0;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+.btn-estudo:hover  { filter: brightness(1.1); }
+.btn-estudo:active { transform: translateY(4px); }

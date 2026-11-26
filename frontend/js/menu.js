@@ -1,20 +1,19 @@
 // frontend/js/menu.js
 
 /**
- * Abre/fecha o menu da tela de matérias (alterna a classe "aberto").
- * Chame iniciarMenu() uma vez, depois que o app logado for iniciado.
+ * Menu da página de matérias: abre/fecha alternando a classe "aberto" no #menu-lateral
+ * (a camada #menu-fundo aparece sozinha pelo CSS, por ser irmã do nav).
+ * Os itens são links normais (materias.html, apoio.html...): navegar é com o navegador.
  */
 export function iniciarMenu() {
     const btn = document.getElementById('btn-menu');
     const menu = document.getElementById('menu-lateral');
     const fundo = document.getElementById('menu-fundo');
 
-    if (!btn || !menu || btn.dataset.menuPronto) return;
-    btn.dataset.menuPronto = '1';
+    if (!btn || !menu) return;
 
     const definir = (aberto) => {
         menu.classList.toggle('aberto', aberto);
-        if (fundo) fundo.classList.toggle('aberto', aberto);
         menu.setAttribute('aria-hidden', String(!aberto));
         btn.setAttribute('aria-expanded', String(aberto));
     };
@@ -25,8 +24,8 @@ export function iniciarMenu() {
         if (e.key === 'Escape') definir(false);
     });
 
-    // Telas "sobre", "apoio" e "perfil" ainda não existem: por enquanto só fecham o menu
-    menu.querySelectorAll('.menu-item').forEach(item => {
+    // Itens sem destino ainda (ex.: CONFIG.) só fecham o menu
+    menu.querySelectorAll('.menu-item[href="#"]').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             definir(false);

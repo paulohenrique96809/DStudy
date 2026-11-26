@@ -256,6 +256,16 @@ body {
     text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
 }
 
+/* Botões de matéria agora são links (<a>) */
+a.btn-materia,
+a.btn-materia:visited,
+a.btn-materia:hover,
+a.btn-materia:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+
 /* ============================================================
    RODAPÉ
    ============================================================ */

@@ -1,4 +1,5 @@
 // frontend/js/materias.js
+// Carrega as matérias da API e monta os painéis da página materias.html.
 
 import { get } from './api.js';
 import { progresso } from './progresso.js';
@@ -11,17 +12,31 @@ const MATERIAS_SEGUNDO_ANO = [
     'Carreiras e Competência'
 ];
 
+// Rótulos curtos (com quebra de linha) para caber nos botões do design.
+// Matéria que não estiver aqui usa o nome da API em maiúsculas.
+const ROTULOS = {
+    'Lógica de Programação': 'LÓGICA DE<br>PROGRAMAÇÃO',
+    'Processos de Desenvolvimento de Software': 'PROCESSOS DE<br>DES. DE SOFTWARE',
+    'Redes e Segurança': 'REDES<br>E SEGURANÇA',
+    'Carreiras e Competência': 'CARREIRA E<br>COMPETÊNCIAS',
+    'Modelagem e Desenvolvimento de Banco de Dados': 'MODELAGEM E DES.<br>DE BANCO DE DADOS',
+    'Inteligência Artificial': 'INTELIGÊNCIA<br>ARTIFICIAL',
+    'Programação Back-End': 'PROGRAMAÇÃO<br>BACK-END',
+    'Programação Front-End': 'PROGRAMAÇÃO<br>FRONT-END',
+    'Programação Mobile': 'PROGRAMAÇÃO<br>MOBILE',
+    'Projeto Multidisciplinar em Desenvolvimento de Sistemas': 'PROJETO<br>MULTIDISCIPLINAR',
+    'Versionamento de Código e Sistemas de Mensageria': 'VERSIONAMENTO<br>DE CÓDIGO'
+};
+
 export class Materias {
     constructor() {
         this.lista = [];
+        this.destaqueId = null;
         this.containerSegundo = document.getElementById('materias-segundo-ano');
         this.containerTerceiro = document.getElementById('materias-terceiro-ano');
-        this.destaqueId = null;
-        console.log('📚 [MATERIAS] Containers:', this.containerSegundo, this.containerTerceiro);
     }
 
     async carregar() {
-        console.log('📚 [MATERIAS] Carregando...');
         try {
             this.lista = await get('/materias');
             console.log(`✅ [MATERIAS] ${this.lista.length} matérias carregadas`);
@@ -37,7 +52,7 @@ export class Materias {
         if (!this.containerSegundo || !this.containerTerceiro) return;
 
         if (!this.lista || this.lista.length === 0) {
-            this._preencher('<p class="empty-state">Nenhuma matéria disponível.</p>', '');
+            this._preencher('<p class="estado-msg">Nenhuma matéria disponível.</p>', '');
             return;
         }
 
@@ -49,21 +64,18 @@ export class Materias {
             terceiro.map(m => this._htmlBotao(m)).join('')
         );
 
-        [this.containerSegundo, this.containerTerceiro].forEach(container => {
-            container.querySelectorAll('.btn-materia').forEach(btn => {
-                const id = parseInt(btn.dataset.id);
-                btn.addEventListener('click', () => this.selecionar(id));
-                btn.addEventListener('mouseenter', () => this.atualizarDestaque(this._achar(id)));
-                btn.addEventListener('focus', () => this.atualizarDestaque(this._achar(id)));
-            });
+        // Os botões são links para flashcards.html?materia=ID; aqui só o destaque
+        document.querySelectorAll('.btn-materia').forEach(btn => {
+            const id = parseInt(btn.dataset.id);
+            btn.addEventListener('mouseenter', () => this.atualizarDestaque(this._achar(id)));
+            btn.addEventListener('focus', () => this.atualizarDestaque(this._achar(id)));
         });
 
-        // Mantém o destaque na matéria atual (ou na primeira da lista)
         this.atualizarDestaque(this._achar(this.destaqueId) || this.lista[0]);
     }
 
     /**
-     * Atualiza o título e o GIF do bloco de destaque.
+     * Atualiza título e GIF do destaque.
      * O percentual vem da API; aqui ele só escolhe qual dos 4 GIFs mostrar.
      */
     atualizarDestaque(materia) {
@@ -71,10 +83,7 @@ export class Materias {
         this.destaqueId = materia.id;
 
         const titulo = document.getElementById('titulo-materia-destaque');
-        if (titulo) {
-            titulo.textContent = materia.nome;
-            titulo.dataset.materiaId = materia.id;
-        }
+        if (titulo) titulo.textContent = materia.nome;
 
         const p = progresso.getProgressoParaCard(materia.id);
         const nivel = Math.min(4, Math.floor((p.percentual || 0) / 25) + 1);
@@ -84,18 +93,9 @@ export class Materias {
         });
     }
 
-    async selecionar(id) {
-        const materia = this._achar(id);
-        if (!materia) {
-            console.error(`❌ Matéria ${id} não encontrada`);
-            return;
-        }
-        console.log(`📖 [MATERIAS] Selecionada: ${materia.nome}`);
-        document.dispatchEvent(new CustomEvent('materiaSelecionada', { detail: { materia } }));
-    }
-
     mostrarErro(mensagem) {
-        this._preencher(`<p class="error-state">${this._escape(mensagem)}</p>`, '');
+        if (!this.containerSegundo || !this.containerTerceiro) return;
+        this._preencher(`<p class="estado-msg">${this._escape(mensagem)}</p>`, '');
     }
 
     // ===== helpers =====
@@ -112,13 +112,14 @@ export class Materias {
     _htmlBotao(materia) {
         const p = progresso.getProgressoParaCard(materia.id);
         const nome = this._escape(materia.nome);
+        const rotulo = ROTULOS[materia.nome] || nome.toUpperCase();
         const dica = `${p.dominados || 0}/${p.total || 0} flashcards`;
 
         return `
-            <button type="button" class="btn-materia" data-id="${materia.id}" data-titulo="${nome}" title="${dica}">
-                <img src="assets/img/botaopadrao.png" alt="" class="fundo-btn">
-                <span>${nome}</span>
-            </button>
+            <a href="flashcards.html?materia=${materia.id}" class="btn-materia" data-id="${materia.id}" data-titulo="${nome}" title="${dica}">
+                <img src="../assets/img/botaopadrao.png" alt="" class="fundo-btn">
+                <span>${rotulo}</span>
+            </a>
         `;
     }
 

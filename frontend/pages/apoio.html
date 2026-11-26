@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DStudy — Apoio</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/apoio.css">
+</head>
+<body>
+
+    <!-- ==============================
+         FUNDO DECORATIVO (BOLHAS)
+         15 bolhas: 7 pequenas, 6 médias, 2 grandes
+         ============================== -->
+    <div class="bolhas" aria-hidden="true">
+        <!-- Pequenas -->
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-1">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-2">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-3">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-4">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-5">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-6">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-7">
+
+        <!-- Médias -->
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-8">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-9">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-10">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-11">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-12">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-13">
+
+        <!-- Grandes -->
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-14">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-15">
+    </div>
+
+    <!-- ==============================
+         LOGO (centralizada)
+         ============================== -->
+    <header class="topo">
+        <div class="logo-container">
+            <img src="../assets/img/logo.png" alt="Caveirinha DStudy" class="logo-icone">
+            <span class="logo-texto">DStudy</span>
+        </div>
+    </header>
+
+    <!-- ==============================
+         CONTEÚDO PRINCIPAL
+         ============================== -->
+    <main class="apoio-conteudo">
+
+        <section class="cartao-apoio">
+            <h1 class="apoio-titulo">Apoie o DStudy</h1>
+
+            <!-- Texto de exemplo: troque pela mensagem final -->
+            <p class="apoio-mensagem" id="apoio-mensagem">
+                O Dstudy é um projeto criado por estudantes para estudantes, e é mantido por pessoas que acreditam na educação de qualidade e gratuita. Se o DStudy te ajudou de alguma forma, considere nos apoiar. Sua ajuda é muito importante para mantermos o projeto ativo e em constante evolução!
+            </p>
+
+            <div class="apoio-corpo">
+
+                <!-- QR Code (troque assets/img/qrcode.png pela sua imagem) -->
+                <div class="qr-moldura">
+                    <img src="../assets/img/qrcode.png" alt="QR Code para pagamento via Pix" class="qr-img" id="qrcode">
+                </div>
+
+                <!-- Chave Pix + botão copiar -->
+                <div class="pix-area">
+                    <label for="chave-pix" class="pix-label">Chave Pix:</label>
+                    <!-- Valor de exemplo: troque pela chave real -->
+                    <input type="text" id="chave-pix" class="input-pixel" value="sua-chave-pix-aqui" readonly>
+                    <button type="button" class="btn btn-rosa" id="btn-copiar">Copiar</button>
+                </div>
+
+            </div>
+        </section>
+
+        <a href="../pages/materias.html" class="btn btn-padrao" id="btn-voltar">Voltar</a>
+
+    </main>
+
+    <script type="module" src="../js/pages/apoio.js"></script>
+
+</body>
+</html>

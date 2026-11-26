@@ -1,0 +1,294 @@
+/* ============================================================
+   DSTUDY — PÁGINA DE APOIO
+   --u = 1px do Figma (frame ~1434px), escala com a tela.
+   A escala também respeita a ALTURA da janela (100vh / 840),
+   para tudo caber em uma tela sem rolar.
+   ============================================================ */
+:root {
+    --u: clamp(0.7px, min(calc(100vw / 1434 * 0.9), calc(100vh / 840)), 1.44px);
+}
+
+body {
+    position: relative; /* as bolhas se posicionam pela página inteira */
+}
+
+/* ---------- Bolhas (mesmas posições do Login, em %) ---------- */
+.bolhas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.bolha {
+    position: absolute;
+    height: auto;
+    opacity: 0.9;
+    image-rendering: pixelated;
+}
+
+.bolhapequena { width: calc(20 * var(--u)); }
+.bolhamedia   { width: calc(40 * var(--u)); }
+.bolhagrande  { width: calc(76 * var(--u)); }
+
+/* Pequenas */
+.bolha-1  { top: 5%;    left: 25.6%; }
+.bolha-2  { top: 2.6%;  left: 85%;   }
+.bolha-3  { top: 39.3%; left: 11.8%; }
+.bolha-4  { top: 64.2%; left: 63.8%; }
+.bolha-5  { top: 78.6%; left: 39.9%; }
+.bolha-6  { top: 76.3%; left: 92.7%; }
+.bolha-7  { top: 94.2%; left: 20.1%; }
+
+/* Médias */
+.bolha-8  { top: 14%;   left: 6.7%;  }
+.bolha-9  { top: 15.6%; left: 57.3%; }
+.bolha-10 { top: 20.3%; left: 91.7%; }
+.bolha-11 { top: 60.5%; left: 87.3%; }
+.bolha-12 { top: 77.3%; left: 4.7%;  }
+.bolha-13 { top: 91.8%; left: 79.6%; }
+
+/* Grandes */
+.bolha-14 { top: 26.3%; left: 79.7%; }
+.bolha-15 { top: 61.9%; left: 18.2%; }
+
+/* ============================================================
+   LOGO (mesmos valores do Cadastro, Login e Flashcards)
+   ============================================================ */
+.topo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    z-index: 10;
+}
+
+.logo-icone {
+    position: absolute;
+    left: calc(50% - 129 * var(--u));
+    top: calc(1 * var(--u));
+    height: calc(93 * var(--u));
+    width: auto;
+    image-rendering: pixelated;
+}
+
+.logo-texto {
+    position: absolute;
+    left: calc(50% - 28 * var(--u));
+    top: calc(21 * var(--u));
+    font-family: 'PearSoda', monospace;
+    font-size: calc(60 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
+    color: #FFF8F0;
+}
+
+/* ============================================================
+   CONTEÚDO PRINCIPAL
+   ============================================================ */
+.apoio-conteudo {
+    position: relative;
+    z-index: 5;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* centraliza na vertical, abaixo da logo */
+    padding: calc(100 * var(--u)) 20px calc(70 * var(--u));
+}
+
+/* ---------- Caixa vinho (caixa.png em 9 partes, como nos Flashcards) ---------- */
+.cartao-apoio {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: calc(960 * var(--u));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: calc(14 * var(--u)) calc(30 * var(--u)) calc(26 * var(--u));
+
+    border: solid transparent;
+    border-width: calc(22 * var(--u));
+    border-image: url('../assets/img/caixa.png') 8% fill / calc(22 * var(--u)) stretch;
+    image-rendering: pixelated;
+}
+
+.apoio-titulo {
+    margin: 0;
+    font-family: 'PearSoda', monospace;
+    font-weight: normal;
+    font-size: calc(54 * var(--u));
+    line-height: calc(60 * var(--u));
+    color: #FFF8F0;
+}
+
+.apoio-mensagem {
+    max-width: calc(760 * var(--u));
+    margin: calc(10 * var(--u)) 0 calc(24 * var(--u));
+    font-family: 'PearSoda', monospace;
+    font-size: calc(28 * var(--u));
+    line-height: calc(38 * var(--u));
+    text-wrap: balance;
+    color: #FFF8F0;
+}
+
+/* ---------- QR Code + chave Pix ---------- */
+.apoio-corpo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(50 * var(--u));
+}
+
+/* QR Code: só a imagem (o PNG já tem fundo branco) */
+.qr-moldura {
+    --qr-zoom: 1;   /* acima de 1 "corta" a margem branca do PNG (ex.: 1.4) */
+    flex: none;
+    width: calc(240 * var(--u));
+    height: calc(240 * var(--u));
+    padding: 0;
+    overflow: hidden;
+    background: none;
+}
+
+.qr-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(var(--qr-zoom));
+    /* NÃO usar "pixelated" aqui: ao reduzir um QR grande, ele destrói os quadradinhos */
+    image-rendering: auto;
+}
+
+.pix-area {
+    flex: none;
+    width: calc(560 * var(--u));
+    display: flex;
+    flex-direction: column;
+    gap: calc(2 * var(--u));
+    text-align: left;
+}
+
+.pix-label {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: calc(30 * var(--u));
+    color: #FFF8F0;
+    padding-left: calc(13 * var(--u));
+}
+
+/* Caixa de texto (mesma do Cadastro e do Login), só leitura */
+.input-pixel {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(77 * var(--u));
+    padding: 0 calc(26 * var(--u));
+
+    background-image: url('../assets/img/caixabolha.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    image-rendering: pixelated;
+
+    border: none;
+    outline: none;
+
+    font-family: 'PearSoda', monospace;
+    font-size: calc(26 * var(--u));
+    color: #FFF8F0;
+    text-overflow: ellipsis;
+}
+
+.input-pixel:hover,
+.input-pixel:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: calc(240 * var(--u));
+    height: calc(64 * var(--u));
+    margin: calc(18 * var(--u)) auto 0;
+    padding: 0;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'PearSoda', monospace;
+    font-size: calc(34 * var(--u));
+    line-height: 1;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    image-rendering: pixelated;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+
+.btn-rosa   { background-image: url('../assets/img/botaorosa.png'); }
+.btn-padrao { background-image: url('../assets/img/botaopadrao.png'); }
+
+.btn:hover  { filter: brightness(1.1); }
+.btn:active { transform: translateY(4px); }
+
+/* Voltar fica um pouco mais afastado da caixa */
+#btn-voltar {
+    margin-top: calc(24 * var(--u));
+}
+
+/* ============================================================
+   ROLAGEM
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
+
+/* ---------- Tablet: mesma composição, escala maior ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --u: calc(100vw / 1100 * 0.9);
+    }
+}
+
+/* ---------- Celular: QR Code em cima, chave embaixo ---------- */
+@media (max-width: 700px) {
+    :root {
+        --u: min(calc(100vw / 480 * 0.9), 0.9px);
+    }
+
+    .apoio-corpo {
+        flex-direction: column;
+        gap: calc(30 * var(--u));
+    }
+
+    .pix-area {
+        width: 100%;
+    }
+
+    .bolha { opacity: 0.5; }
+
+    /* Esconde as bolhas que ficariam atrás do conteúdo */
+    .bolha-4, .bolha-9, .bolha-11 { display: none; }
+}

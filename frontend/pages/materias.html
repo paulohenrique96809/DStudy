@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DStudy — Matérias</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/materias.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    
+</head>
+<body>
+
+       <!-- BOLHAS -->
+    <div class="bolhas" aria-hidden="true">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-1">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-2">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-3">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-4">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-5">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-6">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-7">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-8">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-9">
+        <!-- Parte de baixo da página -->
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-10">
+        <img src="../assets/img/bolhapequena.png" alt="" class="bolha bolhapequena bolha-11">
+        <img src="../assets/img/bolhamedia.png" alt="" class="bolha bolhamedia bolha-12">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-13">
+        <img src="../assets/img/bolhagrande.png" alt="" class="bolha bolhagrande bolha-14">
+    </div>
+    
+    <!-- HEADER -->
+    <header class="topo-materias">
+        <button class="btn-menu" id="btn-menu" aria-label="Abrir menu">
+            <img src="../assets/img/menu.png" alt="Menu">
+        </button>
+
+        <div class="logo-central">
+            <!-- Axolote em cima -->
+            <img src="../assets/img/axolotetexto.png" alt="Axolote DStudy" class="logo-materias">
+            <!-- DStudy logo abaixo -->
+            <img src="../assets/img/DStudy.png" alt="DStudy" class="logo-texto-img">
+            <!-- Bem vindo colado na logo -->
+            <span class="texto-boas-vindas">Bem vindo ao DStudy!</span>
+        </div>
+
+        <a href="../pages/perfil.html" class="btn-perfil" aria-label="Perfil">
+            <img src="../assets/img/perfil.png" alt="Perfil">
+        </a>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="materias-conteudo">
+
+        <!-- Destaque da Matéria e Barra de Progresso -->
+        <section class="destaque-materia">
+            <h2 class="titulo-materia" id="titulo-materia-destaque" data-materia="logica">Lógica e Linguagem de Programação</h2>
+            
+            <!-- BARRA DE PROGRESSO PREPARADA PARA O PAULO -->
+            <div class="barra-progresso-container" id="barra-progresso">
+                <!-- O Paulo vai adicionar/remover a classe 'ativo' via JS para mostrar o GIF correto -->
+                <img src="../assets/img/evolucao01.gif" alt="Progresso" class="gif-progresso ativo" data-nivel="1">
+                <img src="../assets/img/evolucao02.gif" alt="Progresso" class="gif-progresso" data-nivel="2">
+                <img src="../assets/img/evolucao03.gif" alt="Progresso" class="gif-progresso" data-nivel="3">
+                <img src="../assets/img/evolucao04.gif" alt="Progresso" class="gif-progresso" data-nivel="4">
+            </div>
+        </section>
+
+              <!-- Painéis de Matérias -->
+        <section class="paineis-materias">
+
+            <!-- SEGUNDO ANO -->
+            <div class="coluna-ano">
+                <h3 class="titulo-ano">SEGUNDO ANO</h3>
+                <div class="painel-vinho" id="materias-segundo-ano">
+                    <p class="estado-msg">Carregando...</p>
+                </div>
+            </div>
+
+            <!-- TERCEIRO ANO -->
+            <div class="coluna-ano">
+                <h3 class="titulo-ano">TERCEIRO ANO</h3>
+                <div class="painel-vinho" id="materias-terceiro-ano">
+                    <p class="estado-msg">Carregando...</p>
+                </div>
+            </div>
+
+        </section>
+
+        <button type="button" id="btn-logout">Sair</button>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="rodape-areia">
+        <img src="../assets/img/fundo.png" alt="Cenário de areia e plantas" class="img-rodape">
+    </footer>
+    <!-- ==============================
+         MENU (abre abaixo do botão #btn-menu)
+         O Paulo alterna a classe "aberto" neste <nav>
+         ============================== -->
+    <nav class="menu-lateral" id="menu-lateral" aria-label="Menu principal" aria-hidden="true">
+        <img src="../assets/img/axolotelogodark.png" alt="" class="menu-mascote">
+
+        <ul class="menu-lista">
+            <li>
+                <a href="../pages/materias.html" class="menu-item" id="menu-study">
+                    <img src="../assets/img/iconlivros.png" alt="" class="menu-icone">
+                    <span class="menu-texto">STUDY</span>
+                </a>
+            </li>
+            <li>
+                <a href="../pages/sobre.html" class="menu-item" id="menu-sobre">
+                    <img src="../assets/img/iconsobre.png" alt="" class="menu-icone">
+                    <span class="menu-texto">SOBRE</span>
+                </a>
+            </li>
+            <li>
+                <a href="../pages/apoio.html" class="menu-item" id="menu-apoio">
+                    <img src="../assets/img/iconcoracao.png" alt="" class="menu-icone">
+                    <span class="menu-texto">APOIO</span>
+                </a>
+            </li>
+            <!-- CONFIG.: apague este <li> inteiro se a opção sair do projeto -->
+            <li>
+                <a href="#" class="menu-item" id="menu-config">
+                    <img src="../assets/img/iconengrenagem.png" alt="" class="menu-icone">
+                    <span class="menu-texto">CONFIG.</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Camada transparente: fecha o menu ao clicar fora dele -->
+    <div class="menu-fundo" id="menu-fundo"></div>
+
+     <script type="module" src="../js/pages/materias.js"></script>
+
+</body>
+</html>

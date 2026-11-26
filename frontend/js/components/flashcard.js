@@ -1,489 +1,213 @@
 // frontend/js/components/flashcard.js
 
 /**
- * FLASHCARD - Componente visual de flashcard
- * 
- * Responsabilidades:
- * - Renderizar o flashcard (pergunta + alternativas alt_a/b/c/d)
- * - Controlar o estado (frente/verso) com animação 3D
- * - Mostrar badge de dificuldade (⭐ a ⭐⭐⭐⭐)
- * - Comparar a resposta do aluno automaticamente
- * - Mostrar feedback visual (acerto/erro)
- * 
- * Estrutura esperada do flashcard:
- * {
- *   id: 1,
- *   pergunta: "O que significa SQL?",
- *   alt_a: "Structured Query Language",
- *   alt_b: "Simple Question Language",
- *   alt_c: "System Query Logic",
- *   alt_d: "Standard Quality Language",
- *   dificuldade: 1
- * }
- * 
- * ⚠️ O campo "correta" NÃO vem da API (segurança). 
- * Ele só chega no retorno do POST /responder.
+ * FLASHCARD - Componente visual (design da Yasmin, página flashcards.html)
+ *
+ * O markup do card já está no HTML. Este componente só preenche textos e troca classes:
+ *   .alternativa.selecionada | .correta | .errada   (em cada alternativa)
+ *   .alternativas.respondida                        (trava novos cliques)
+ *   .btn-proxima.visivel                            (mostra o "Próximo")
+ *
+ * Fluxo: clicou numa alternativa -> onResponder(letra) -> o estudo.js envia ao back-end
+ * e chama mostrarResultado() -> o aluno clica em "Próximo" -> onProximo().
+ * Nenhuma regra de domínio aqui: só mostra o que o back-end devolveu.
  */
-
 export class FlashcardComponent {
     constructor() {
-        this.container = document.getElementById('flashcard-container');
         this.flashcard = null;
-        this.mostrandoResposta = false;
-        this.animando = false;
-        this.respostaSelecionada = null; // 'a', 'b', 'c' ou 'd'
-        this.callbacks = {
-            onRevelar: null,
-            onResponder: null
-        };
-        
-        this._configurarTeclado();
-        
-        console.log('🃏 [FLASHCARD] Container:', this.container);
+        this.respondida = false;
+        this.respostaSelecionada = null; // 'a' | 'b' | 'c' | 'd'
+        this.callbacks = { onResponder: null, onProximo: null };
+
+        this._ligarEventos();
     }
-    /**
-     * ⭐ CONFIGURA ATALHOS DE TECLADO
-     */
-    _configurarTeclado() {
+
+    // ---------- elementos do HTML ----------
+    get _alternativas() { return document.getElementById('alternativas'); }
+    get _btnProxima()   { return document.getElementById('btn-proxima'); }
+    get _feedback()     { return document.getElementById('feedback-resposta'); }
+
+    /** As partes do card que aparecem/somem juntas */
+    get _partes() {
+        return [
+            document.querySelector('.cartao-pergunta'),
+            document.getElementById('contador'),
+            this._alternativas,
+            this._feedback,
+            this._btnProxima
+        ].filter(Boolean);
+    }
+
+    _botoes() {
+        return Array.from(document.querySelectorAll('#alternativas .alternativa'));
+    }
+
+    _letra(btn) {
+        return (btn.dataset.letra || '').toLowerCase();
+    }
+
+    _ligarEventos() {
+        const alternativas = this._alternativas;
+        if (!alternativas) return; // página sem flashcard
+
+        alternativas.addEventListener('click', (e) => {
+            const btn = e.target.closest('.alternativa');
+            if (btn) this._escolher(this._letra(btn));
+        });
+
+        this._btnProxima?.addEventListener('click', () => this._proximo());
+
+        // Atalhos: A-D / 1-4 escolhem; Enter ou Espaço avançam
         document.addEventListener('keydown', (e) => {
-            if (!this.flashcard) return;
+            if (!this.flashcard || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
 
-            // Espaço: virar o cartão (só se ainda não virou)
-            if (e.key === ' ' && !this.mostrandoResposta && !this.animando) {
+            const letras = { '1': 'a', '2': 'b', '3': 'c', '4': 'd', a: 'a', b: 'b', c: 'c', d: 'd' };
+            const letra = letras[e.key.toLowerCase()];
+
+            if (!this.respondida && letra) {
                 e.preventDefault();
-                this.mostrarResposta();
+                this._escolher(letra);
+                return;
             }
 
-            // Enter: revelar resposta (só se alternativa selecionada)
-            if (e.key === 'Enter' && !this.mostrandoResposta && this.respostaSelecionada) {
+            if (this.respondida && (e.key === 'Enter' || e.key === ' ') && this._proximaVisivel()) {
                 e.preventDefault();
-                this.mostrarResposta();
-            }
-
-            // Teclas 1-4 ou A-D: selecionar alternativa
-            const teclas = {
-                '1': 'a', '2': 'b', '3': 'c', '4': 'd',
-                'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd'
-            };
-            
-            if (teclas[e.key.toLowerCase()] && !this.mostrandoResposta) {
-                e.preventDefault();
-                this._selecionarPorLetra(teclas[e.key.toLowerCase()]);
-            }
-
-            // Esc: limpar feedback
-            if (e.key === 'Escape') {
-                this.limparFeedback();
+                this._proximo();
             }
         });
     }
 
     /**
-     * ⭐ RENDERIZA O FLASHCARD
+     * Preenche o card. Devolve false se o flashcard for inválido.
+     * @param {Object} flashcard - { id, pergunta, alternativas: [...] } (ou alt_a..alt_d)
+     * @param {Object} opcoes - { materia, atual, total, onResponder(letra), onProximo() }
      */
-    renderizar(flashcard, callbacks = {}) {
-        if (!this.container) {
-            console.warn('⚠️ [FLASHCARD] Container não encontrado');
-            return;
-        }
+    renderizar(flashcard, opcoes = {}) {
+        if (!this._alternativas || !flashcard || !flashcard.pergunta) return false;
 
-        if (!flashcard || !flashcard.pergunta) {
-            this._mostrarMensagemErro('Flashcard inválido');
-            return;
-        }
+        const alternativas = this._extrairAlternativas(flashcard);
+        if (alternativas.length === 0) return false;
 
-        // Reseta estado
         this.flashcard = flashcard;
-        this.mostrandoResposta = false;
-        this.animando = false;
+        this.respondida = false;
         this.respostaSelecionada = null;
         this.callbacks = {
-            onRevelar: callbacks.onRevelar || null,
-            onResponder: callbacks.onResponder || null
+            onResponder: opcoes.onResponder || null,
+            onProximo: opcoes.onProximo || null
         };
 
-        const pergunta = this._escapeHtml(flashcard.pergunta);
-        
-        // ⭐ GERA O BADGE DE DIFICULDADE
-        const badgeDificuldade = this._renderizarBadgeDificuldade(flashcard.dificuldade);
-        
-        // ⭐ CONVERTE alt_a/b/c/d em array de alternativas
-        const alternativas = this._extrairAlternativas(flashcard);
-        
-        if (alternativas.length === 0) {
-            this._mostrarMensagemErro('Flashcard sem alternativas');
-            return;
-        }
+        document.getElementById('tag-materia').textContent = opcoes.materia || '';
+        document.getElementById('pergunta').textContent = flashcard.pergunta;
+        document.getElementById('contador').textContent = `Card ${opcoes.atual} de ${opcoes.total}`;
 
-        const conteudoAlternativas = this._renderizarAlternativas(alternativas);
+        const porLetra = Object.fromEntries(alternativas.map(a => [a.letra, a.texto]));
+        this._botoes().forEach(btn => {
+            const texto = porLetra[this._letra(btn)];
+            btn.hidden = texto === undefined;
+            btn.querySelector('.alt-texto').textContent = texto ?? '';
+            btn.classList.remove('selecionada', 'correta', 'errada');
+        });
 
-        this.container.innerHTML = `
-            <div class="flashcard-wrapper">
-                <div class="flashcard-3d" id="flashcard-3d">
-                    <!-- FRENTE: PERGUNTA + ALTERNATIVAS -->
-                    <div class="flashcard-face flashcard-front">
-                        ${badgeDificuldade}
-                        <div class="flashcard-badge">📝 Escolha uma alternativa</div>
-                        <div class="flashcard-pergunta">${pergunta}</div>
-                        ${conteudoAlternativas}
-                        <button class="btn btn-rosa btn-revelar" id="btn-revelar" type="button" disabled>
-                            👁️ Ver resposta
-                        </button>
-                    </div>
-                    
-                    <!-- VERSO: RESULTADO -->
-                    <div class="flashcard-face flashcard-back">
-                        <div class="flashcard-resultado" id="flashcard-resultado"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="flashcard-feedback" id="flashcard-feedback" role="alert" aria-live="polite"></div>
-        `;
+        this._alternativas.classList.remove('respondida');
+        this._mostrarFeedback('', '');
 
-        this._configurarEventos();
+        const btnProxima = this._btnProxima;
+        btnProxima.classList.remove('visivel');
+        btnProxima.textContent = opcoes.atual < opcoes.total ? 'Próximo' : 'Finalizar';
 
-        console.log(`🃏 [FLASHCARD] Renderizado: "${flashcard.pergunta}" (dificuldade: ${flashcard.dificuldade})`);
+        this._partes.forEach(el => { el.hidden = false; });
+        return true;
     }
 
-    /**
-     * ⭐ EXTRAI ALTERNATIVAS DO FLASHCARD
-     * 
-     * Suporta dois formatos:
-     * 1. Formato atual (da API): alt_a, alt_b, alt_c, alt_d
-     * 2. Formato antigo (fallback): alternativas: [...]
-     */
+    /** Aceita alternativas: [...] (API atual) ou alt_a..alt_d (formato antigo) */
     _extrairAlternativas(flashcard) {
-        // Formato atual (API da Ingredy)
-        if (flashcard.alt_a !== undefined) {
-            const alternativas = [];
-            if (flashcard.alt_a) alternativas.push({ letra: 'a', texto: flashcard.alt_a });
-            if (flashcard.alt_b) alternativas.push({ letra: 'b', texto: flashcard.alt_b });
-            if (flashcard.alt_c) alternativas.push({ letra: 'c', texto: flashcard.alt_c });
-            if (flashcard.alt_d) alternativas.push({ letra: 'd', texto: flashcard.alt_d });
-            return alternativas;
-        }
-
-        // Formato antigo (fallback)
         if (Array.isArray(flashcard.alternativas)) {
-            return flashcard.alternativas.map((texto, i) => ({
-                letra: String.fromCharCode(97 + i),
-                texto: texto
-            }));
+            return flashcard.alternativas
+                .map((texto, i) => ({ letra: String.fromCharCode(97 + i), texto }))
+                .filter(a => a.texto);
         }
 
-        return [];
+        return ['a', 'b', 'c', 'd']
+            .filter(l => flashcard[`alt_${l}`])
+            .map(l => ({ letra: l, texto: flashcard[`alt_${l}`] }));
+    }
+
+    _escolher(letra) {
+        if (!this.flashcard || this.respondida) return;
+        const btn = this._botoes().find(b => this._letra(b) === letra);
+        if (!btn || btn.hidden) return;
+
+        this.respondida = true;
+        this.respostaSelecionada = letra;
+
+        btn.classList.add('selecionada');
+        this._alternativas.classList.add('respondida');
+
+        if (this.callbacks.onResponder) this.callbacks.onResponder(letra);
     }
 
     /**
-     * ⭐ RENDERIZA AS ALTERNATIVAS
-     */
-    _renderizarAlternativas(alternativas) {
-        return `
-            <div class="flashcard-alternativas" role="radiogroup" aria-label="Alternativas">
-                ${alternativas.map((alt) => `
-                    <button 
-                        class="alternativa-item" 
-                        data-letra="${alt.letra}"
-                        type="button"
-                        role="radio"
-                        aria-checked="false"
-                        aria-label="Alternativa ${alt.letra.toUpperCase()}: ${this._escapeHtml(alt.texto)}"
-                    >
-                        <span class="alternativa-letra">${alt.letra.toUpperCase()}</span>
-                        <span class="alternativa-texto">${this._escapeHtml(alt.texto)}</span>
-                    </button>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    /**
-     * ⭐ CONFIGURA OS EVENTOS
-     */
-    _configurarEventos() {
-        const btnRevelar = document.getElementById('btn-revelar');
-        const alternativas = this.container.querySelectorAll('.alternativa-item');
-
-        if (btnRevelar) {
-            btnRevelar.addEventListener('click', () => this.mostrarResposta());
-        }
-
-        alternativas.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                if (this.mostrandoResposta) return;
-                this._selecionarAlternativa(e.currentTarget);
-            });
-        });
-    }
-
-    /**
-     * ⭐ SELECIONA UMA ALTERNATIVA POR LETRA
-     */
-    _selecionarPorLetra(letra) {
-        const btn = this.container.querySelector(`.alternativa-item[data-letra="${letra}"]`);
-        if (btn) this._selecionarAlternativa(btn);
-    }
-
-    /**
-     * ⭐ SELECIONA UMA ALTERNATIVA
-     */
-    _selecionarAlternativa(elemento) {
-        this.container.querySelectorAll('.alternativa-item').forEach(btn => {
-            btn.classList.remove('selected');
-            btn.setAttribute('aria-checked', 'false');
-        });
-
-        elemento.classList.add('selected');
-        elemento.setAttribute('aria-checked', 'true');
-        this.respostaSelecionada = elemento.dataset.letra;
-
-        // Habilita o botão "Ver resposta"
-        const btnRevelar = document.getElementById('btn-revelar');
-        if (btnRevelar) btnRevelar.disabled = false;
-
-        console.log(`🎯 [FLASHCARD] Alternativa selecionada: ${this.respostaSelecionada}`);
-    }
-
-    /**
-     * ⭐ VIRA O CARTÃO E DISPARA CALLBACK
-     */
-    mostrarResposta() {
-        if (this.animando || this.mostrandoResposta) return;
-
-        if (!this.respostaSelecionada) {
-            this.mostrarErro('Escolha uma alternativa antes de ver a resposta.');
-            return;
-        }
-
-        this.animando = true;
-        this.mostrandoResposta = true;
-
-        const card = document.getElementById('flashcard-3d');
-        if (card) card.classList.add('virado');
-
-        if (this.callbacks.onRevelar) {
-            this.callbacks.onRevelar(this.flashcard);
-        }
-
-        // ⭐ DISPARA O CALLBACK DE RESPOSTA
-        setTimeout(() => {
-            this.animando = false;
-            if (this.callbacks.onResponder) {
-                this.callbacks.onResponder(this.respostaSelecionada);
-            }
-        }, 500);
-
-        console.log(`👁️ [FLASHCARD] Resposta revelada (letra: ${this.respostaSelecionada})`);
-    }
-
-    /**
-     * ⭐ MOSTRA RESULTADO (chamado pelo estudo.js após receber do Back-End)
+     * Mostra o resultado devolvido pelo back-end.
+     * @param {boolean} acertou
+     * @param {Object} info - { correta, dominado, sequencia }
      */
     mostrarResultado(acertou, info = {}) {
-        const resultado = document.getElementById('flashcard-resultado');
-        if (!resultado) return;
+        // Se o back-end não mandar a letra correta, só dá para marcar a escolhida
+        const correta = (info.correta || '').toLowerCase() || (acertou ? this.respostaSelecionada : null);
 
-        const correta = info.correta || '';
+        this._botoes().forEach(btn => {
+            const letra = this._letra(btn);
+            btn.classList.remove('selecionada', 'correta', 'errada');
 
-        resultado.innerHTML = `
-            <div class="resultado-icone">${acertou ? '✅' : '❌'}</div>
-            <div class="resultado-titulo ${acertou ? 'acerto' : 'erro'}">
-                ${acertou ? 'Você acertou!' : 'Você errou!'}
-            </div>
-            <div class="resultado-resposta">
-                <strong>Resposta correta:</strong>
-                <span>Alternativa ${correta.toUpperCase()}</span>
-            </div>
-            ${!acertou ? `
-                <div class="resultado-sua-resposta">
-                    <strong>Sua resposta:</strong>
-                    <span>Alternativa ${this.respostaSelecionada.toUpperCase()}</span>
-                </div>
-            ` : ''}
-        `;
-
-        this._destacarAlternativas(correta);
-    }
-
-    /**
-     * ⭐ DESTACA VISUALMENTE AS ALTERNATIVAS (certa/errada)
-     */
-    _destacarAlternativas(letraCorreta) {
-        this.container.querySelectorAll('.alternativa-item').forEach(btn => {
-            const letra = btn.dataset.letra;
-            
-            btn.classList.remove('selected', 'correta', 'incorreta');
-            btn.disabled = true;
-            
-            if (letra === letraCorreta) {
-                btn.classList.add('correta');
-            } else if (letra === this.respostaSelecionada) {
-                btn.classList.add('incorreta');
-            }
+            if (letra === correta) btn.classList.add('correta');
+            else if (!acertou && letra === this.respostaSelecionada) btn.classList.add('errada');
         });
+
+        let mensagem = acertou ? 'Acertou!' : 'Errou!';
+        if (info.dominado) mensagem += ' Flashcard dominado!';
+        else if (info.sequencia > 0) mensagem += ` Sequência: ${info.sequencia}/3`;
+        this._mostrarFeedback(mensagem, acertou ? 'acerto' : 'erro');
+
+        const btnProxima = this._btnProxima;
+        btnProxima.classList.add('visivel');
+        btnProxima.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 
-    /**
-     * ⭐ MOSTRA FEEDBACK
-     */
-    mostrarFeedback(acertou, info = {}) {
-        const feedback = document.getElementById('flashcard-feedback');
-        if (!feedback) return;
-
-        const mensagem = info.mensagem || (acertou ? '✅ Correto! Muito bem!' : '❌ Errou! Continue praticando.');
-        const classe = acertou ? 'feedback-success' : 'feedback-error';
-
-        let infoExtra = '';
-        
-        if (info.dominado) {
-            infoExtra = '<span class="feedback-dominado">🏆 Flashcard dominado!</span>';
-        } else if (info.sequencia !== undefined && info.sequencia > 0) {
-            infoExtra = `<span class="feedback-sequencia">🔥 Sequência: ${info.sequencia}/3</span>`;
-        }
-
-        feedback.innerHTML = `
-            <div class="${classe}">
-                <div class="feedback-mensagem">${mensagem}</div>
-                ${infoExtra}
-            </div>
-        `;
-        
-        feedback.style.display = 'block';
-    }
-
-    /**
-     * ⭐ MOSTRA ERRO
-     */
+    /** Erro ao falar com a API: destrava as alternativas para tentar de novo */
     mostrarErro(mensagem) {
-        const feedback = document.getElementById('flashcard-feedback');
-        if (!feedback) return;
-
-        feedback.innerHTML = `
-            <div class="feedback-error">
-                <div class="feedback-mensagem">❌ ${this._escapeHtml(mensagem)}</div>
-            </div>
-        `;
-        feedback.style.display = 'block';
-
-        setTimeout(() => {
-            feedback.style.display = 'none';
-        }, 3000);
-    }
-
-    limparFeedback() {
-        const feedback = document.getElementById('flashcard-feedback');
-        if (feedback) {
-            feedback.innerHTML = '';
-            feedback.style.display = 'none';
-        }
-    }
-
-    /**
-     * ⭐ PREPARA PRÓXIMO
-     */
-    prepararProximo() {
-        const card = document.getElementById('flashcard-3d');
-        if (card) card.classList.remove('virado');
-
-        this.mostrandoResposta = false;
-        this.animando = false;
+        this.respondida = false;
         this.respostaSelecionada = null;
-        
-        this.limparFeedback();
+        this._alternativas?.classList.remove('respondida');
+        this._botoes().forEach(b => b.classList.remove('selecionada'));
+        this._mostrarFeedback(mensagem, 'erro');
     }
 
+    _proximaVisivel() {
+        return !!this._btnProxima && this._btnProxima.classList.contains('visivel');
+    }
+
+    _proximo() {
+        if (!this.respondida || !this._proximaVisivel()) return;
+        this._btnProxima.classList.remove('visivel'); // evita clique duplo
+        if (this.callbacks.onProximo) this.callbacks.onProximo();
+    }
+
+    _mostrarFeedback(texto, tipo) {
+        const el = this._feedback;
+        if (!el) return;
+        el.textContent = texto;
+        el.className = `feedback-resposta ${tipo || ''}`.trim();
+    }
+
+    /** Esconde o card e zera o estado */
     limpar() {
-        if (this.container) {
-            this.container.innerHTML = '';
-        }
-        
         this.flashcard = null;
-        this.mostrandoResposta = false;
-        this.animando = false;
+        this.respondida = false;
         this.respostaSelecionada = null;
-        this.callbacks = {
-            onRevelar: null,
-            onResponder: null
-        };
+        this.callbacks = { onResponder: null, onProximo: null };
+        this._partes.forEach(el => { el.hidden = true; });
+        this._mostrarFeedback('', '');
     }
-
-    mostrarConclusao(nomeMateria) {
-        if (!this.container) return;
-
-        this.container.innerHTML = `
-            <div class="flashcard-conclusao">
-                <div class="conclusao-icone">🎉</div>
-                <h2>Estudo concluído!</h2>
-                <p>Você completou todos os flashcards de <strong>${this._escapeHtml(nomeMateria)}</strong>.</p>
-                <button class="btn btn-rosa" onclick="window.location.reload()">
-                    📚 Voltar para matérias
-                </button>
-            </div>
-        `;
-    }
-
-    // ============================================================
-    // ⭐ UTILITÁRIOS
-    // ============================================================
-
-    /**
-     * ⭐ ESCAPA HTML PARA EVITAR XSS
-     */
-    _escapeHtml(texto) {
-        if (typeof texto !== 'string') return '';
-        const div = document.createElement('div');
-        div.textContent = texto;
-        return div.innerHTML;
-    }
-
-    /**
-     * ⭐ MOSTRA MENSAGEM DE ERRO NO CONTAINER
-     */
-    _mostrarMensagemErro(mensagem) {
-        this.container.innerHTML = `
-            <div class="flashcard-erro">
-                <p>❌ ${this._escapeHtml(mensagem)}</p>
-            </div>
-        `;
-    }
-
-    /**
-     * ⭐ RETORNA O LABEL DA DIFICULDADE
-     * @param {number} nivel - 1, 2, 3 ou 4
-     * @returns {string} - Label formatada
-     */
-    _getLabelDificuldade(nivel) {
-        const labels = {
-            1: '⭐ Fácil',
-            2: '⭐⭐ Médio',
-            3: '⭐⭐⭐ Difícil',
-            4: '⭐⭐⭐⭐ Muito Difícil'
-        };
-        return labels[nivel] || '';
-    }
-
-    /**
-     * ⭐ RENDERIZA O BADGE DE DIFICULDADE
-     * @param {number} nivel - Nível da dificuldade (1 a 4)
-     * @returns {string} - HTML do badge (ou vazio se não tiver dificuldade)
-     */
-    _renderizarBadgeDificuldade(nivel) {
-        if (!nivel || nivel < 1 || nivel > 4) return '';
-        
-        return `
-            <div class="dificuldade-badge dificuldade-${nivel}">
-                ${this._getLabelDificuldade(nivel)}
-            </div>
-        `;
-    }
-
-    // ============================================================
-    // ⭐ GETTERS
-    // ============================================================
-
-    getFlashcardAtual() { return this.flashcard; }
-    estaMostrandoResposta() { return this.mostrandoResposta; }
-    getRespostaSelecionada() { return this.respostaSelecionada; }
 }
 
 export const flashcardComponent = new FlashcardComponent();

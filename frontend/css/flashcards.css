@@ -1,9 +1,15 @@
 /* ============================================================
    DSTUDY — PÁGINA DE FLASHCARDS
-   --u = 1px do Figma (frame ~1434px), escala com a tela
+   --u = 1px do Figma (frame ~1434px), escala com a tela.
+   Nesta página a escala também respeita a ALTURA da janela
+   (100vh / 815), para tudo caber em uma tela sem rolar.
    ============================================================ */
 :root {
-    --u: clamp(0.84px, calc(100vw / 1434 * 0.9), 1.44px);
+    --u: clamp(0.7px, min(calc(100vw / 1434 * 0.9), calc(100vh / 815)), 1.44px);
+
+    /* Larguras (em u, sem unidade) */
+    --caixa-w: 960;  /* caixa da pergunta */
+    --alt-w: 1080;   /* alternativas */
 }
 
 body {
@@ -98,20 +104,21 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: calc(104 * var(--u)) 20px calc(110 * var(--u));
+    /* o padding de baixo libera o espaço do rodapé de areia */
+    padding: calc(90 * var(--u)) 20px calc(90 * var(--u));
 }
 
 /* ---------- Caixa da pergunta ----------
    Usa o caixa.png em 9 partes (border-image): os cantos em degraus
-   mantêm o tamanho e só o meio estica, então a caixa pode ser larga e baixa.
+   mantêm o tamanho e só o meio estica.
    Se os cantos ficarem estranhos, ajuste o "8%" e o "22" abaixo.
    Alternativa simples: apague a linha do border-image e use
    background: url('../assets/img/caixa.png') center / 100% 100% no-repeat; */
 .cartao-pergunta {
     box-sizing: border-box;
     width: 100%;
-    max-width: calc(1080 * var(--u));
-    min-height: calc(270 * var(--u));
+    max-width: calc(var(--caixa-w) * var(--u));
+    min-height: calc(220 * var(--u));
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -166,7 +173,7 @@ body {
 
 /* ---------- Contador ---------- */
 .contador {
-    margin: calc(21 * var(--u)) 0 0;
+    margin: calc(14 * var(--u)) 0 0;
     font-family: 'PearSoda', monospace;
     font-size: calc(24 * var(--u));
     line-height: 1;
@@ -178,11 +185,11 @@ body {
 /* ---------- Alternativas ---------- */
 .alternativas {
     width: 100%;
-    max-width: calc(1080 * var(--u));
+    max-width: calc(var(--alt-w) * var(--u));
     display: flex;
     flex-direction: column;
-    gap: calc(12 * var(--u));
-    margin-top: calc(22 * var(--u));
+    gap: calc(10 * var(--u));
+    margin-top: calc(16 * var(--u));
 }
 
 /* Botão rosa em 9 partes (border-image), igual à caixa.
@@ -192,7 +199,7 @@ body {
 .alternativa {
     box-sizing: border-box;
     width: 100%;
-    min-height: calc(64 * var(--u));
+    min-height: calc(58 * var(--u));
     display: flex;
     align-items: center;
     gap: calc(14 * var(--u));
@@ -260,8 +267,8 @@ body {
     justify-content: center;
     box-sizing: border-box;
     width: calc(320 * var(--u));
-    height: calc(72 * var(--u));
-    margin: calc(20 * var(--u)) auto 0;
+    height: calc(64 * var(--u));
+    margin: calc(14 * var(--u)) auto 0;
     padding: 0;
 
     background: url('../assets/img/botaopadrao.png') center / 100% 100% no-repeat;
@@ -269,7 +276,7 @@ body {
     border: none;
 
     font-family: 'PearSoda', monospace;
-    font-size: calc(36 * var(--u));
+    font-size: calc(34 * var(--u));
     line-height: 1;
     color: #FFF8F0;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);

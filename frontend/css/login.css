@@ -1,8 +1,17 @@
 /* ============================================================
    DSTUDY — PÁGINA DE LOGIN
+   --u = 1px do Figma (frame ~1434px), escala com a tela
    ============================================================ */
+:root {
+    --u: clamp(0.84px, calc(100vw / 1434 * 0.9), 1.44px);
+}
 
-/* ---------- Bolhas ---------- */
+body {
+    position: relative; /* as bolhas se posicionam pela página inteira */
+}
+
+/* ---------- Bolhas (fundo decorativo) ----------
+   Posições em % do frame do Figma */
 .bolhas {
     position: absolute;
     inset: 0;
@@ -18,136 +27,137 @@
     image-rendering: pixelated;
 }
 
-/* ---------- Tamanhos das bolhas (proporcionais) ---------- */
-.bolhapequena { width: 22px; }
-.bolhamedia   { width: 48px; }
-.bolhagrande  { width: 84px; }
+.bolhapequena { width: calc(20 * var(--u)); }
+.bolhamedia   { width: calc(40 * var(--u)); }
+.bolhagrande  { width: calc(76 * var(--u)); }
 
 /* Pequenas */
-.bolha-1  { top: 5%;   left: 15%;  }
-.bolha-2  { top: 20%;  left: 95%;  }
-.bolha-3  { top: 35%;  left: 5%;   }
-.bolha-4  { top: 45%;  left: 95%;  }
-.bolha-5  { top: 85%;  left: 10%;  }
-.bolha-6  { top: 92%;  left: 80%;  }
+.bolha-1  { top: 5%;    left: 25.6%; }
+.bolha-2  { top: 2.6%;  left: 85%;   }
+.bolha-3  { top: 39.3%; left: 11.8%; }
+.bolha-4  { top: 64.2%; left: 63.8%; }
+.bolha-5  { top: 78.6%; left: 39.9%; }
+.bolha-6  { top: 76.3%; left: 92.7%; }
+.bolha-7  { top: 94.2%; left: 20.1%; }
 
 /* Médias */
-.bolha-7  { top: 12%;  left: 25%;  }
-.bolha-8  { top: 50%;  left: 25%;  }
-.bolha-9  { top: 30%;  left: 75%;  }
-.bolha-10 { top: 90%;  left: 50%;  }
+.bolha-8  { top: 14%;   left: 6.7%;  }
+.bolha-9  { top: 15.6%; left: 57.3%; }
+.bolha-10 { top: 20.3%; left: 91.7%; }
+.bolha-11 { top: 60.5%; left: 87.3%; }
+.bolha-12 { top: 77.3%; left: 4.7%;  }
+.bolha-13 { top: 91.8%; left: 79.6%; }
 
 /* Grandes */
-.bolha-11 { top: 15%;  left: 85%;  }
-.bolha-12 { top: 80%;  left: 85%;  }
-.bolha-13 { top: 70%;  left: 12%;  }
+.bolha-14 { top: 26.3%; left: 79.7%; }
+.bolha-15 { top: 61.9%; left: 18.2%; }
 
-/* Novas médias */
-.bolha-15 { top: 20%;  left: 45%;  }
-.bolha-16 { top: 75%;  left: 65%;  }
-
-/* ---------- Logo ---------- */
+/* ============================================================
+   LOGO
+   Mesmos valores do Cadastro. Caveirinha e texto têm posição própria
+   (em u, a partir do centro da tela), então dá para ajustar cada um sozinho.
+   ============================================================ */
 .topo {
     position: absolute;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
     z-index: 10;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
 .logo-icone {
-    height: 72px;
+    position: absolute;
+    left: calc(50% - 129 * var(--u));
+    top: calc(1 * var(--u));
+    height: calc(93 * var(--u));
     width: auto;
     image-rendering: pixelated;
 }
 
 .logo-texto {
+    position: absolute;
+    left: calc(50% - 28 * var(--u));
+    top: calc(21 * var(--u));
     font-family: 'PearSoda', monospace;
-    font-size: 52px;
-    color: var(--texto-principal, #FFF8F0);
-    letter-spacing: 2px;
-    margin-top: 5px;
+    font-size: calc(60 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
+    color: #FFF8F0;
 }
 
-/* ---------- Conteúdo e Formulário ---------- */
+/* ============================================================
+   CONTEÚDO CENTRAL E FORMULÁRIO
+   ============================================================ */
 .login-conteudo {
     position: relative;
     z-index: 5;
+    box-sizing: border-box;
     min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 100px 20px 40px;
+    align-items: center;     /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+
+    /* Os paddings reservam o espaço da logo em telas baixas e deixam
+       o bloco ~7u acima do centro, como no Figma */
+    padding: calc(80 * var(--u)) 20px calc(94 * var(--u));
 }
 
 .form-login {
     width: 100%;
-    max-width: 480px;
+    max-width: calc(636 * var(--u));
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: calc(29 * var(--u));
 }
 
 .grupo-campo {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: calc(2 * var(--u));
 }
 
-label {
-    font-size: 20px;
-    color: var(--texto-principal, #FFF8F0);
-    letter-spacing: 1px;
-    padding-left: 4px;
+.grupo-campo label {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: calc(30 * var(--u));
+    color: #FFF8F0;
+    padding-left: calc(13 * var(--u));
 }
 
-.input-wrapper {
-    width: 100%;
-    height: 60px;
-    /* A bolha vai aqui! */
-    background-image: url('../assets/img/caixabolha.png') !important;
-    background-size: 100% 100% !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    position: relative;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-}
-
+/* ---------- Inputs com imagem de fundo ---------- */
 .input-pixel {
+    box-sizing: border-box;
     width: 100%;
-    height: 100%; /* Ocupa toda a div wrapper */
-    padding: 0 20px;
-    background: transparent !important;
-    background-color: transparent !important;
+    height: calc(77 * var(--u));
+    padding: 0 calc(26 * var(--u));
+
+    background-image: url('../assets/img/caixabolha.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    image-rendering: pixelated;
+
     border: none;
     outline: none;
+
     font-family: 'PearSoda', monospace;
-    font-size: 24px;
-    color: var(--texto-principal, #FFF8F0) !important; /* Força o texto a ser claro */
-    box-sizing: border-box;
+    font-size: calc(32 * var(--u));
+    color: #FFF8F0;
 }
 
-.input-pixel,
+/* Tratamento do Autofill (mesmo do Cadastro) */
 .input-pixel:-webkit-autofill,
 .input-pixel:-webkit-autofill:hover,
 .input-pixel:-webkit-autofill:focus,
 .input-pixel:-webkit-autofill:active {
-    background-color: transparent !important;
-    background-image: none !important;
-    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-    box-shadow: 0 0 0 1000px transparent inset !important;
-    -webkit-text-fill-color: var(--texto-principal, #FFF8F0) !important;
-    color: var(--texto-principal, #FFF8F0) !important;
+    -webkit-box-shadow: 0 0 0 1000px #1A1234 inset !important;
+    -webkit-text-fill-color: #FFF8F0 !important;
     font-family: 'PearSoda', monospace !important;
     transition: background-color 5000s ease-in-out 0s;
+    border: none !important;
+    outline: none !important;
 }
 
 .input-pixel:hover,
@@ -157,47 +167,29 @@ label {
     border: none !important;
 }
 
-#tela-login .trocar-tela {
-    text-align: center;
-    margin-top: 5px;
-    font-size: 22px;
-    color: var(--texto-principal, #FFF8F0);
-    font-family: 'PearSoda', monospace;
-    width: 100%;
-    flex: 0 0 auto;
-}
-
-#tela-login .trocar-tela a {
-    color: var(--rosa-magenta, #FF4D94);
-    text-decoration: none;
-    transition: opacity 0.2s;
-}
-
-#tela-login .trocar-tela a:hover {
-    opacity: 0.8;
-    text-decoration: underline;
-}
-
-/* Botão */
+/* ---------- Botão ---------- */
 .btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    width: calc(320 * var(--u));
+    height: calc(72 * var(--u));
+    margin: calc(78 * var(--u)) auto 0;
+    padding: 0;
     text-align: center;
     text-decoration: none;
     font-family: 'PearSoda', monospace;
-    font-size: 24px;
-    line-height: 1.6;
-    color: var(--texto-principal, #FFF8F0);
+    font-size: calc(36 * var(--u));
+    line-height: 1;
+    color: #FFFFFF;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-    padding: 16px 28px;
-    width: 100%;
-    max-width: 300px;
-    margin: 20px auto 0;
+
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
+    image-rendering: pixelated;
     border: none;
     cursor: pointer;
     transition: transform 0.08s ease, filter 0.15s ease;
@@ -205,32 +197,38 @@ label {
 
 .btn-rosa { background-image: url('../assets/img/botaorosa.png'); }
 
-.btn:hover { filter: brightness(1.1); }
+.btn:hover  { filter: brightness(1.1); }
 .btn:active { transform: translateY(4px); }
 
-/* ---------- Responsividade ---------- */
-@media (max-width: 1024px) {
-    .form-login { max-width: 450px; }
-    .input-pixel { height: 56px; font-size: 22px; }
-    .btn { font-size: 22px; padding: 14px 24px; max-width: 280px; }
-    .logo-icone { height: 64px; }
-    .logo-texto { font-size: 44px; }
+/* ============================================================
+   ROLAGEM
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
 }
 
-@media (max-width: 768px) {
-    .login-conteudo {
-        padding: 100px 20px 40px;
-        min-height: auto;
-    }
-    .form-login { gap: 16px; max-width: 100%; }
-    label { font-size: 16px; }
-    .input-pixel { height: 48px; font-size: 18px; padding: 0 14px; }
-    .btn { font-size: 18px; padding: 12px 20px; max-width: 100%; margin-top: 16px; }
-    .logo-icone { height: 40px; }
-    .logo-texto { font-size: 30px; }
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
 
-    .bolhapequena { width: 20px; }
-    .bolhamedia   { width: 40px; }
-    .bolhagrande  { width: 70px; }
-    .bolha-7, .bolha-9, .bolha-11, .bolha-13 { display: none; }
+/* ---------- Tablet: mesma composição, escala maior ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --u: calc(100vw / 1100 * 0.9);
+    }
+}
+
+/* ---------- Celular: formulário em largura total ---------- */
+@media (max-width: 700px) {
+    :root {
+        --u: min(calc(100vw / 480 * 0.9), 0.9px);
+    }
+
+    .bolha { opacity: 0.5; }
+
+    /* Esconde as bolhas que ficariam atrás do formulário */
+    .bolha-4, .bolha-9, .bolha-11 { display: none; }
 }

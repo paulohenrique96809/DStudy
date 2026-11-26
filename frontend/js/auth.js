@@ -49,3 +49,25 @@ export class Auth {
 }
 
 export const auth = new Auth();
+
+// ===== GUARDAS DE PÁGINA =====
+
+/**
+ * Páginas que exigem login (matérias, flashcards, apoio).
+ * Devolve true se pode continuar; senão manda para o login e devolve false.
+ */
+export function exigirLogin(destino = 'login.html') {
+    if (auth.estaLogado()) return true;
+    window.location.replace(destino);
+    return false;
+}
+
+/**
+ * Páginas públicas (home, login, cadastro): quem já está logado vai direto às matérias.
+ * Devolve true se a página pode seguir; false se está redirecionando.
+ */
+export function redirecionarSeLogado(destino = 'materias.html') {
+    if (!auth.estaLogado()) return true;
+    window.location.replace(destino);
+    return false;
+}
