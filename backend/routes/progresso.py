@@ -75,6 +75,7 @@ def responder():
 
     return jsonify({
         "acertou": acertou,
+        "correta": flashcard.correta,
         "dominado": progresso.dominado,
         "acertos_consecutivos": progresso.acertos_consecutivos,
         "flashcards_restantes": progresso.flashcards_restantes

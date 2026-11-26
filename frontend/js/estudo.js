@@ -1,9 +1,8 @@
 // frontend/js/estudo.js
+// Controla a sessão de estudo da página flashcards.html.
 
 import { get, post } from './api.js';
 import { flashcardComponent } from './components/flashcard.js';
-import { progresso } from './progresso.js';
-import { materias } from './materias.js';
 
 export class Estudo {
     constructor() {
@@ -12,55 +11,39 @@ export class Estudo {
         this.flashcardAtual = null;
         this.indiceAtual = 0;
         this.estaRespondendo = false;
-        this.container = document.getElementById('estudo-container');
-        this.infoContainer = document.getElementById('estudo-info');
-        
-        // ⭐ USUÁRIO FIXO (temporário até ter login)
-        
-        console.log('📖 [ESTUDO] Container:', this.container);
+        this.container = document.getElementById('estudo-container'); // mensagens da sessão
     }
+
+    // ==========================================
+    // SESSÃO
+    // ==========================================
 
     async iniciar(materia) {
         this.materia = materia;
         console.log(`📖 [ESTUDO] Iniciando: ${materia.nome}`);
 
-        flashcardComponent.limpar();
-        this.flashcards = [];
-        this.flashcardAtual = null;
-        this.indiceAtual = 0;
-        this.estaRespondendo = false;
+        this.limpar();
+        this.mostrarLoading();
 
         try {
-            this.mostrarLoading();
-
-            const url = `/materias/${materia.id}/flashcards`;
-            const resposta = await get(url);
-            
-            if (!Array.isArray(resposta) || resposta.length === 0) {
-                this.mostrarMensagem('🎉 Você já dominou todos os flashcards desta matéria!');
-                return;
-            }
-
-            this.flashcards = resposta.filter(f => f && f.pergunta);
+            const resposta = await get(`/materias/${materia.id}/flashcards`);
+            this.flashcards = Array.isArray(resposta) ? resposta.filter(f => f && f.pergunta) : [];
 
             if (this.flashcards.length === 0) {
-                this.mostrarMensagem('⚠️ Nenhum flashcard válido.');
+                await this.fimDaFila();
                 return;
             }
 
             console.log(`✅ [ESTUDO] ${this.flashcards.length} flashcards carregados`);
-            
-            this.esconderContainer();
             this.mostrarFlashcard();
 
         } catch (error) {
             console.error('❌ [ESTUDO] Erro:', error);
-            this.mostrarMensagem('❌ Erro ao carregar flashcards.');
+            this.mostrarMensagem('Erro ao carregar flashcards.');
         }
     }
 
     mostrarFlashcard() {
-        // Se chegou ao fim da fila atual
         if (this.indiceAtual >= this.flashcards.length) {
             this.fimDaFila();
             return;
@@ -69,44 +52,20 @@ export class Estudo {
         this.flashcardAtual = this.flashcards[this.indiceAtual];
         this.estaRespondendo = false;
 
-        this.atualizarInfo();
-        
-        flashcardComponent.renderizar(this.flashcardAtual, {
-            onRevelar: (flashcard) => this._aoRevelar(flashcard),
-            onResponder: (letraEscolhida) => this.responder(letraEscolhida)
+        const ok = flashcardComponent.renderizar(this.flashcardAtual, {
+            materia: this.materia.nome,
+            atual: this.indiceAtual + 1,
+            total: this.flashcards.length,
+            onResponder: (letra) => this.responder(letra),
+            onProximo: () => this.proximo()
         });
-    }
 
-    _aoRevelar(flashcard) {
-        console.log(`👁️ [ESTUDO] Resposta revelada: ${flashcard.id}`);
-    }
+        if (!ok) {
+            this.mostrarMensagem('Flashcard inválido.');
+            return;
+        }
 
-    atualizarInfo() {
-        if (!this.infoContainer) return;
-
-        const total = this.flashcards.length;
-        const atual = this.indiceAtual + 1;
-        const progressoEstudo = Math.round((this.indiceAtual / total) * 100);
-
-        this.infoContainer.innerHTML = `
-            <div class="estudo-header">
-                <div class="estudo-materia">
-                    <span class="materia-icone">📚</span>
-                    <span class="materia-nome">${this.materia.nome}</span>
-                </div>
-                <div class="estudo-contador">
-                    <span class="contador-atual">${atual}</span>
-                    <span class="contador-separador">/</span>
-                    <span class="contador-total">${total}</span>
-                </div>
-            </div>
-            <div class="estudo-progresso">
-                <div class="progresso-barra">
-                    <div class="progresso-fill" style="width: ${progressoEstudo}%"></div>
-                </div>
-                <span class="progresso-texto">${progressoEstudo}%</span>
-            </div>
-        `;
+        this._esconderMensagens();
     }
 
     async responder(letraEscolhida) {
@@ -114,36 +73,17 @@ export class Estudo {
         this.estaRespondendo = true;
 
         try {
-            const payload = {
-                usuario_id: this.usuarioId,
+            // O usuário vem do token JWT; o back-end decide acerto, domínio e fila
+            const resultado = await post('/responder', {
                 flashcard_id: this.flashcardAtual.id,
                 resposta: letraEscolhida
-            };
-
-            const resultado = await post('/responder', payload);
+            });
 
             flashcardComponent.mostrarResultado(resultado.acertou, {
                 correta: resultado.correta || null,
                 dominado: resultado.dominado,
                 sequencia: resultado.acertos_consecutivos
             });
-
-            flashcardComponent.mostrarFeedback(resultado.acertou, {
-                dominado: resultado.dominado,
-                sequencia: resultado.acertos_consecutivos
-            });
-
-            // Aguarda um tempo para o usuário ler o feedback
-            await this.aguardar(2000);
-
-            await progresso.carregarTudo(materias.lista);
-            materias.renderizar();
-
-            flashcardComponent.prepararProximo();
-
-            // Avança para o próximo
-            this.indiceAtual++;
-            this.mostrarFlashcard();
 
         } catch (error) {
             console.error('❌ [ESTUDO] Erro ao registrar:', error);
@@ -152,132 +92,156 @@ export class Estudo {
         }
     }
 
+    proximo() {
+        this.indiceAtual++;
+        this.mostrarFlashcard();
+    }
+
     /**
-     * ⭐ NOVO MÉTODO (P10): Fim da fila
-     * Chamado quando o usuário termina os flashcards da sessão atual.
-     * Em vez de "Concluir" e travar, verifica se tem mais no Back-End.
+     * Acabou a fila atual: pergunta ao back-end o que fazer.
+     * - há flashcards disponíveis         -> "Rodada concluída"
+     * - tudo dominado                     -> "Parabéns"
+     * - nada disponível, mas faltam cards -> estão na espera da repetição espaçada
      */
     async fimDaFila() {
-        console.log('🏁 [ESTUDO] Fim da fila atual. Verificando se há mais flashcards...');
+        this.mostrarLoading();
 
-        // Esconde o flashcard
-        flashcardComponent.limpar();
-
-        // Verifica no Back-End se existem mais flashcards disponíveis
         try {
-            const url = `/materias/${this.materia.id}/flashcards?usuario_id=${this.usuarioId}`;
-            const proximosFlashcards = await get(url);
+            const id = this.materia.id;
+            const disponiveis = await get(`/materias/${id}/flashcards`);
 
-            // Se o Back-End retornar uma lista vazia, significa que o usuário dominou tudo
-            if (!Array.isArray(proximosFlashcards) || proximosFlashcards.length === 0) {
-                this.concluirMateria();
+            if (Array.isArray(disponiveis) && disponiveis.length > 0) {
+                this.mostrarRodadaConcluida(disponiveis.length);
                 return;
             }
 
-            // Se ainda existem flashcards em espera, mostra a tela de "Rodada concluída"
-            this.mostrarTelaRodadaConcluida(proximosFlashcards.length);
+            // Lista vazia não quer dizer "dominou tudo": confere no progresso
+            const p = await get(`/materias/${id}/progresso`);
+            if (p.total_flashcards > 0 && p.dominados >= p.total_flashcards) {
+                this.concluirMateria();
+            } else {
+                this.mostrarEmEspera(p.dominados, p.total_flashcards);
+            }
 
         } catch (error) {
-            console.error('❌ [ESTUDO] Erro ao verificar novos flashcards:', error);
-            this.mostrarMensagem('❌ Erro ao verificar a fila de estudos.');
+            console.error('❌ [ESTUDO] Erro ao verificar a fila:', error);
+            this.mostrarMensagem('Erro ao verificar a fila de estudos.');
         }
     }
 
-    /**
-     * ⭐ NOVO MÉTODO (P10): Tela de rodada concluída
-     */
-    mostrarTelaRodadaConcluida(restantes) {
-        this.mostrarContainer();
-        
-        if (this.infoContainer) {
-            this.infoContainer.innerHTML = '';
-        }
+    // ==========================================
+    // TELAS DE FIM DE SESSÃO
+    // ==========================================
 
-        if (this.container) {
-            this.container.innerHTML = `
-                <div class="estudo-concluido">
-                    <h3>🎉 Rodada concluída!</h3>
-                    <p>Você respondeu todos os flashcards disponíveis agora.</p>
-                    <p>Ainda faltam <strong>${restantes}</strong> flashcards para você dominar esta matéria.</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 20px;">
-                        💡 Os flashcards que você errou ou ainda não dominou voltarão a aparecer em breve.
-                    </p>
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
-                        <button class="btn btn-primary" onclick="window.location.reload()">
-                            🔄 Recomeçar
-                        </button>
-                        <button class="btn btn-secondary" onclick="window.history.back()">
-                            📚 Voltar para matérias
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+    _voltar() {
+        window.location.href = 'materias.html';
     }
 
-    /**
-     * ⭐ NOVO MÉTODO (P10): Matéria 100% concluída
-     */
+    mostrarRodadaConcluida(disponiveis) {
+        this._mostrarCaixa({
+            titulo: 'Rodada concluída!',
+            linhas: [
+                'Você respondeu todos os flashcards desta rodada.',
+                `Já há ${disponiveis} flashcard(s) liberado(s) para a próxima.`
+            ],
+            botoes: [
+                { texto: 'Continuar', aoClicar: () => this.iniciar(this.materia) },
+                { texto: 'Voltar', aoClicar: () => this._voltar() }
+            ]
+        });
+    }
+
+    mostrarEmEspera(dominados, total) {
+        this._mostrarCaixa({
+            titulo: 'Rodada concluída!',
+            linhas: [
+                `Você dominou ${dominados} de ${total} flashcards.`,
+                'Os que faltam voltam a aparecer em breve.'
+            ],
+            botoes: [
+                { texto: 'Tentar de novo', aoClicar: () => this.iniciar(this.materia) },
+                { texto: 'Voltar', aoClicar: () => this._voltar() }
+            ]
+        });
+    }
+
     concluirMateria() {
         console.log('🏆 [ESTUDO] Matéria 100% dominada!');
-        this.mostrarContainer();
-        
-        if (this.infoContainer) {
-            this.infoContainer.innerHTML = '';
-        }
-
-        if (this.container) {
-            this.container.innerHTML = `
-                <div class="estudo-concluido">
-                    <h3>🏆 Parabéns!</h3>
-                    <p>Você dominou <strong>todos</strong> os flashcards desta matéria!</p>
-                    <button class="btn btn-primary" onclick="window.history.back()">
-                        📚 Voltar para matérias
-                    </button>
-                </div>
-            `;
-        }
+        this._mostrarCaixa({
+            titulo: 'Parabéns!',
+            linhas: ['Você dominou todos os flashcards desta matéria!'],
+            botoes: [{ texto: 'Voltar', aoClicar: () => this._voltar() }]
+        });
     }
 
-    // ===== CONTROLE DE VISIBILIDADE =====
-    
-    esconderContainer() {
-        if (this.container) {
-            this.container.style.display = 'none';
-            this.container.innerHTML = '';
-        }
+    // ==========================================
+    // MENSAGENS (#estudo-container)
+    // ==========================================
+
+    /** Zera a sessão e esconde card e mensagens */
+    limpar() {
+        flashcardComponent.limpar();
+        this.flashcards = [];
+        this.flashcardAtual = null;
+        this.indiceAtual = 0;
+        this.estaRespondendo = false;
+        this._esconderMensagens();
     }
 
-    mostrarContainer() {
-        if (this.container) {
-            this.container.style.display = 'block';
+    mostrarMensagem(texto) {
+        flashcardComponent.limpar();
+        if (!this.container) return;
+        this.container.innerHTML = '';
+        if (texto) {
+            const p = document.createElement('p');
+            p.className = 'estudo-texto';
+            p.textContent = texto;
+            this.container.appendChild(p);
         }
-    }
-
-    mostrarMensagem(mensagem) {
-        this.mostrarContainer();
-        if (this.container) {
-            this.container.innerHTML = `<p class="empty-state">${mensagem}</p>`;
-        }
-        if (this.infoContainer) {
-            this.infoContainer.innerHTML = '';
-        }
+        this.container.hidden = !texto;
     }
 
     mostrarLoading() {
-        this.mostrarContainer();
-        if (this.container) {
-            this.container.innerHTML = `
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <p>Carregando flashcards...</p>
-                </div>
-            `;
-        }
+        this.mostrarMensagem('Carregando flashcards...');
     }
 
-    aguardar(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    _esconderMensagens() {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+        this.container.hidden = true;
+    }
+
+    _mostrarCaixa({ titulo, linhas = [], botoes = [] }) {
+        flashcardComponent.limpar();
+        if (!this.container) return;
+
+        this.container.innerHTML = '';
+
+        const h = document.createElement('h2');
+        h.className = 'estudo-titulo';
+        h.textContent = titulo;
+        this.container.appendChild(h);
+
+        linhas.forEach(linha => {
+            const p = document.createElement('p');
+            p.className = 'estudo-texto';
+            p.textContent = linha;
+            this.container.appendChild(p);
+        });
+
+        const area = document.createElement('div');
+        area.className = 'estudo-botoes';
+        botoes.forEach(({ texto, aoClicar }) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'btn-estudo';
+            b.textContent = texto;
+            b.addEventListener('click', aoClicar);
+            area.appendChild(b);
+        });
+        this.container.appendChild(area);
+
+        this.container.hidden = false;
     }
 }
 

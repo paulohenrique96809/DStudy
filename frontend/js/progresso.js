@@ -68,11 +68,14 @@ export class Progresso {
                 total_flashcards: totalFlashcards,
                 flashcards_dominados: totalDominados,
                 progresso_geral: progressoGeral,
-                por_materia: porMateria // ⭐ Array com os dados de cada card
+                por_materia: porMateria // Array com dados de cada card
             };
 
             console.log('✅ [PROGRESSO] Calculado:', this.dados);
+            
+            // Renderiza o progresso geral (a barra lá embaixo)
             this.renderizar();
+            
             return this.dados;
 
         } catch (error) {
@@ -128,6 +131,7 @@ export class Progresso {
             return { total: 0, dominados: 0, percentual: 0 };
         }
 
+        // Retorna os dados formatados
         return { 
             total: p.total, 
             dominados: p.dominados, 

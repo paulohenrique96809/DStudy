@@ -1,8 +1,17 @@
 /* ============================================================
    DSTUDY — PÁGINA DE CADASTRO
+   --u = 1px do Figma (frame ~1434px), escala com a tela
    ============================================================ */
+:root {
+    --u: clamp(0.84px, calc(100vw / 1434 * 0.9), 1.44px);
+}
 
-/* ---------- Bolhas ---------- */
+body {
+    position: relative; /* as bolhas se posicionam pela página inteira */
+}
+
+/* ---------- Bolhas (fundo decorativo) ----------
+   left em % da largura; top em u (a página rola, como no Figma) */
 .bolhas {
     position: absolute;
     inset: 0;
@@ -18,137 +27,140 @@
     image-rendering: pixelated;
 }
 
-.bolhapequena { width: 28px; }
-.bolhamedia   { width: 60px; }
-.bolhagrande  { width: 105px; }
+.bolhapequena { width: calc(20 * var(--u)); }
+.bolhamedia   { width: calc(40 * var(--u)); }
+.bolhagrande  { width: calc(76 * var(--u)); }
 
 /* Pequenas */
-.bolha-1  { top: 5%;   left: 15%;  }
-.bolha-2  { top: 20%;  left: 95%;  }
-.bolha-3  { top: 35%;  left: 5%;   }
-.bolha-4  { top: 45%;  left: 95%;  }
-.bolha-5  { top: 85%;  left: 10%;  }
-.bolha-6  { top: 92%;  left: 80%;  }
+.bolha-1  { top: calc(30 * var(--u));  left: 11.4%; }
+.bolha-2  { top: calc(467 * var(--u)); left: 40.1%; }
+.bolha-3  { top: calc(575 * var(--u)); left: 8.7%;  }
+.bolha-4  { top: calc(575 * var(--u)); left: 87.1%; }
+.bolha-5  { top: calc(645 * var(--u)); left: 62.7%; }
+.bolha-6  { top: calc(784 * var(--u)); left: 20.4%; }
+.bolha-7  { top: calc(7 * var(--u));   left: 94.3%; }
+.bolha-8  { top: calc(872 * var(--u)); left: 73.1%; }
 
 /* Médias */
-.bolha-7  { top: 12%;  left: 25%;  }
-.bolha-8  { top: 50%;  left: 25%;  }
-.bolha-9  { top: 30%;  left: 75%;  }
-.bolha-10 { top: 90%;  left: 60%;  }
+.bolha-9  { top: calc(113 * var(--u)); left: 22.5%; }
+.bolha-10 { top: calc(40 * var(--u));  left: 83.4%; }
+.bolha-11 { top: calc(245 * var(--u)); left: 3.9%;  }
+.bolha-12 { top: calc(262 * var(--u)); left: 57.7%; }
+.bolha-13 { top: calc(378 * var(--u)); left: 90.2%; }
+.bolha-14 { top: calc(764 * var(--u)); left: 79.6%; }
+.bolha-15 { top: calc(935 * var(--u)); left: 3.5%;  }
 
 /* Grandes */
-.bolha-11 { top: 15%;  left: 85%;  }
-.bolha-12 { top: 80%;  left: 85%;  }
-.bolha-13 { top: 25%;  left: 8%;   }
-.bolha-14 { top: 70%;  left: 12%;  }
+.bolha-16 { top: calc(114 * var(--u)); left: 87.1%; }
+.bolha-17 { top: calc(397 * var(--u)); left: 10.1%; }
+.bolha-18 { top: calc(852 * var(--u)); left: 87.4%; }
 
-/* ---------- Logo ---------- */
+/* ============================================================
+   LOGO
+   Caveirinha e texto têm posição própria (em u, a partir do centro
+   da tela), então dá para ajustar cada um sozinho.
+   ============================================================ */
 .topo {
     position: absolute;
-    top: 30px; /* Reduzido de 45px */
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
     z-index: 10;
 }
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
 .logo-icone {
-    height: 72px; /* Reduzido de 96px */
+    position: absolute;
+    left: calc(50% - 129 * var(--u));
+    top: calc(1 * var(--u));
+    height: calc(93 * var(--u));
     width: auto;
     image-rendering: pixelated;
 }
 
 .logo-texto {
+    position: absolute;
+    left: calc(50% - 28 * var(--u));
+    top: calc(21 * var(--u));
     font-family: 'PearSoda', monospace;
-    font-size: 52px; /* Reduzido de 68px */
+    font-size: calc(60 * var(--u));
+    line-height: 1;
+    white-space: nowrap;
     color: #FFF8F0;
-    letter-spacing: 2px;
-    margin-top: 5px;
 }
 
-/* ---------- Conteúdo e Formulário ---------- */
+/* ============================================================
+   CONTEÚDO CENTRAL E FORMULÁRIO
+   ============================================================ */
 .cadastro-conteudo {
     position: relative;
     z-index: 5;
+    box-sizing: border-box;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 120px 20px 40px; /* Reduzido de 140px */
+    padding: calc(140 * var(--u)) 20px calc(83 * var(--u));
 }
 
 .form-cadastro {
     width: 100%;
-    max-width: 480px;
+    max-width: calc(636 * var(--u));
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    box-sizing: border-box;
-    margin: 0 auto;
-    justify-content: center;
+    gap: calc(39 * var(--u));
 }
 
+/* Separação entre Dados (nome/e-mail) e Senhas */
 .espaco-extra {
-    margin-top: 40px; /* Reduzido de 60px */
+    margin-top: calc(80 * var(--u));
+}
+
+/* No Figma, "Confirmar senha" fica um pouco mais perto de "Senha" */
+.espaco-extra + .grupo-campo {
+    margin-top: calc(-9 * var(--u));
 }
 
 .grupo-campo {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: calc(2 * var(--u));
 }
 
-label {
-    font-size: 20px; /* Reduzido de 24px */
+.grupo-campo label {
+    font-family: 'PearSoda', monospace;
+    font-size: calc(30 * var(--u));
+    line-height: calc(30 * var(--u));
     color: #FFF8F0;
-    letter-spacing: 1px;
-    padding-left: 4px;
+    padding-left: calc(13 * var(--u));
 }
 
+/* ---------- Inputs com imagem de fundo ---------- */
 .input-pixel {
+    box-sizing: border-box;
     width: 100%;
-    height: 60px; /* Reduzido de 72px */
-    padding: 0 20px;
+    height: calc(77 * var(--u));
+    padding: 0 calc(26 * var(--u));
+
     background-image: url('../assets/img/caixabolha.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
+    image-rendering: pixelated;
+
     border: none;
     outline: none;
+
     font-family: 'PearSoda', monospace;
-    font-size: 24px; /* Reduzido de 28px */
+    font-size: calc(32 * var(--u));
     color: #FFF8F0;
 }
 
-/* ---------- Trocar Tela (Link de Login) ---------- */
-#tela-cadastro .trocar-tela {
-    text-align: center;
-    margin-top: 5px;
-    font-size: 22px;
-    color: var(--texto-principal, #FFF8F0);
-    font-family: 'PearSoda', monospace;
-    width: 100%;
-    flex: 0 0 auto;
-}
-
-#tela-cadastro .trocar-tela a {
-    color: var(--rosa-magenta, #FF4D94);
-    text-decoration: none;
-    transition: opacity 0.2s;
-}
-
-#tela-cadastro .trocar-tela a:hover {
-    opacity: 0.8;
-    text-decoration: underline;
-}
-
-/* Autofill */
+/* ---------- Tratamento do Autofill do Navegador ----------
+   O navegador força um fundo branco e texto preto quando preenche
+   automaticamente. O CSS abaixo "disfarça" isso com a cor do fundo
+   da página, mantendo o texto legível. A bolha (background-image)
+   não é preservada nesse estado — é uma limitação do navegador. */
 .input-pixel:-webkit-autofill,
 .input-pixel:-webkit-autofill:hover,
 .input-pixel:-webkit-autofill:focus,
@@ -161,6 +173,7 @@ label {
     outline: none !important;
 }
 
+/* Remove borda/sombra padrão do navegador ao focar */
 .input-pixel:hover,
 .input-pixel:focus {
     outline: none !important;
@@ -168,26 +181,29 @@ label {
     border: none !important;
 }
 
-/* Botão */
+/* ---------- Botão ---------- */
 .btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+    width: calc(320 * var(--u));
+    height: calc(72 * var(--u));
+    margin: calc(54 * var(--u)) auto 0;
+    padding: 0;
     text-align: center;
     text-decoration: none;
     font-family: 'PearSoda', monospace;
-    font-size: 28px; /* Reduzido de 26px */
-    line-height: 1.6;
+    font-size: calc(36 * var(--u));
+    line-height: 1;
     color: #FFFFFF;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-    padding: 16px 28px; /* Reduzido */
-    width: 100%;
-    max-width: 300px; /* Reduzido de 320px */
-    margin: 20px auto 0; /* Reduzido de 24px */
+
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-color: transparent;
+    image-rendering: pixelated;
     border: none;
     cursor: pointer;
     transition: transform 0.08s ease, filter 0.15s ease;
@@ -195,33 +211,38 @@ label {
 
 .btn-rosa { background-image: url('../assets/img/botaorosa.png'); }
 
-.btn:hover { filter: brightness(1.1); }
+.btn:hover  { filter: brightness(1.1); }
 .btn:active { transform: translateY(4px); }
 
-/* ---------- Responsividade ---------- */
-@media (max-width: 1024px) {
-    .form-cadastro { max-width: 450px; }
-    .input-pixel { height: 56px; font-size: 22px; }
-    .btn { font-size: 22px; padding: 14px 24px; max-width: 280px; }
-    .logo-icone { height: 64px; }
-    .logo-texto { font-size: 44px; }
+/* ============================================================
+   ROLAGEM
+   ============================================================ */
+html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh;
 }
 
-@media (max-width: 768px) {
-    .cadastro-conteudo {
-        padding: 100px 20px 40px;
-        min-height: auto;
-    }
-    .form-cadastro { gap: 16px; max-width: 100%; }
-    .espaco-extra { margin-top: 24px; }
-    label { font-size: 16px; }
-    .input-pixel { height: 48px; font-size: 18px; padding: 0 14px; }
-    .btn { font-size: 18px; padding: 12px 20px; max-width: 100%; margin-top: 16px; }
-    .logo-icone { height: 40px; }
-    .logo-texto { font-size: 30px; }
+/* ============================================================
+   RESPONSIVIDADE
+   ============================================================ */
 
-    .bolhapequena { width: 20px; }
-    .bolhamedia   { width: 40px; }
-    .bolhagrande  { width: 70px; }
-    .bolha-7, .bolha-9, .bolha-11, .bolha-13, .bolha-14 { display: none; }
+/* ---------- Tablet: mesma composição, escala maior ---------- */
+@media (max-width: 1024px) {
+    :root {
+        --u: calc(100vw / 1100 * 0.9);
+    }
+}
+
+/* ---------- Celular: formulário em largura total ---------- */
+@media (max-width: 700px) {
+    :root {
+        --u: min(calc(100vw / 480 * 0.9), 0.9px);
+    }
+
+    .bolha { opacity: 0.5; }
+
+    /* Esconde as bolhas que ficariam atrás do formulário */
+    .bolha-2, .bolha-5, .bolha-12 { display: none; }
 }

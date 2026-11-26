@@ -2,22 +2,12 @@
    DSTUDY — ESTILOS GLOBAIS (Fonte, Paleta, Reset)
    ============================================================ */
 
-   @font-face {
+@font-face {
     font-family: 'PearSoda';
     src: url('../fonts/PearSoda.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
-}
-
-:root {
-    --roxo-escuro: #1A1234;
-    --lavanda: #b8a4d4;
-    --amarelo-progresso: #ffd700;
-    --texto-principal: #FFF8F0;
-    --bg-principal: #1A1234;
-    --roxo-medio: #4B3B72;
-    --rosa-magenta: #FF4D94;
 }
 
 /* Reset básico */
@@ -27,56 +17,11 @@
     box-sizing: border-box;
 }
 
-/* Corpo da página - permite rolagem vertical e evita horizontal */
 body {
     min-height: 100vh;
-    background-color: var(--bg-principal); /* Fundo oficial */
+    background-color: #1A1234; /* Fundo oficial */
     font-family: 'PearSoda', monospace;
-    color: var(--texto-principal); /* Texto oficial */
-    overflow-y: auto;     /* Permite rolagem vertical */
-    overflow-x: hidden;   /* Evita rolagem horizontal */
+    color: #FFF8F0; /* Texto oficial */
+    overflow: hidden;          
     position: relative;
-    margin: 0 !important; /* Remove margens externas */
-    padding: 0 !important; /* Remove padding interno */
-}
-
-/* ⭐ Bolhas sempre atrás, sem bloquear cliques */
-.bolhas {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-/* ⭐ Todo conteúdo de tela fica na frente */
-.tela {
-    position: relative;
-    z-index: 1;
-    padding-top: 90px; /* ⭐ Empurra o conteúdo para baixo da logo (ajuste se necessário) */
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-/* Header global fica acima de tudo, mas abaixo de modais */
-.topo-global {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 9999; /* Garante que fica acima dos cards e das bolhas */
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    /* ⭐ FUNDAMENTAL: Coloca um fundo escuro para a logo não se misturar com os cards ao rolar */
-    background-color: #1A1234; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Opcional: uma sombrinha para dar profundidade */
-}
-
-#tela-materias .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
 }
